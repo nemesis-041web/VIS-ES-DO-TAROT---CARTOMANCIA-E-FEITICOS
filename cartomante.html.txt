@@ -1,0 +1,1 @@
+const ADMIN_PASSWORD_HASH = '221025gw'; // <--- Altere aqui
