@@ -885,10 +885,12 @@
     </section>
   </div>
 
+  <!-- BOTÃO FLUTUANTE DE DÚVIDA / WHATSAPP -->
   <button id="helpPopupLauncher" class="help-popup-launcher" type="button" aria-label="Abrir ajuda pelo WhatsApp" title="Ficou com dúvida? Fale conosco">
     <i data-lucide="message-circle-question" class="w-6 h-6" aria-hidden="true"></i>
   </button>
 
+  <!-- MODAL FLUTUANTE DE AJUDA -->
   <div id="helpPopupBackdrop" class="help-popup-backdrop" hidden>
     <section class="help-popup" role="dialog" aria-modal="true" aria-labelledby="helpPopupTitle" aria-describedby="helpPopupDescription">
       <button id="helpPopupClose" class="help-popup-close" type="button" aria-label="Fechar pop-up">
@@ -1814,12 +1816,21 @@
     }
 
     /* -------------------------------------------------------------
-       12. SOUND & UTILITIES
+       12. SOUND & UTILITIES (RESTORED POPUP SOUND)
        ------------------------------------------------------------- */
+    let helpPopupAudioUnlocked = false;
+    let helpPopupAudioPlayed = false;
+
     function formatHelpPhone(phone) {
       const digits = String(phone).replace(/\D/g, '');
       if (digits.length === 13 && digits.startsWith('55')) return `+55 (${digits.slice(2, 4)}) ${digits.slice(4, 9)}-${digits.slice(9)}`;
       return digits ? `+${digits}` : 'WhatsApp não configurado';
+    }
+
+    function playHelpPopupSound() {
+      if (helpPopupAudioPlayed) return;
+      playMagicSound('success'); // Som fofo restaurado aqui
+      helpPopupAudioPlayed = true;
     }
 
     function openHelpPopup() {
@@ -1827,18 +1838,30 @@
       document.getElementById('helpPopupNumber').textContent = formatHelpPhone(cartomantePhone);
       document.getElementById('helpPopupWhatsApp').href = `https://wa.me/${String(cartomantePhone).replace(/\D/g, '')}?text=${encodeURIComponent('Olá! Fiquei com uma dúvida sobre o site Visões do Tarot.')}`;
       backdrop.hidden = false;
+      playMagicSound('click'); // Som sutil ao apertar o botão para abrir
+      if (helpPopupAudioUnlocked) playHelpPopupSound();
     }
 
     function closeHelpPopup() {
       document.getElementById('helpPopupBackdrop').hidden = true;
+      playMagicSound('remove');
     }
 
     function setupHelpPopup() {
       document.getElementById('helpPopupLauncher').addEventListener('click', openHelpPopup);
       document.getElementById('helpPopupClose').addEventListener('click', closeHelpPopup);
       document.getElementById('helpPopupBackdrop').addEventListener('click', e => { if (e.target === e.currentTarget) closeHelpPopup(); });
+      
+      document.addEventListener('pointerdown', () => {
+        helpPopupAudioUnlocked = true;
+        if (!document.getElementById('helpPopupBackdrop').hidden) playHelpPopupSound();
+      }, { once: true });
+
       if (!sessionStorage.getItem('visoes_tarot_help_popup_seen')) {
-        setTimeout(() => { openHelpPopup(); sessionStorage.setItem('visoes_tarot_help_popup_seen', 'true'); }, 8000);
+        setTimeout(() => {
+          openHelpPopup();
+          sessionStorage.setItem('visoes_tarot_help_popup_seen', 'true');
+        }, 8000);
       }
     }
 
