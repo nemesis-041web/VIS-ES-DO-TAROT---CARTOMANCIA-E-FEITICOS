@@ -134,7 +134,7 @@
 </head>
 <body class="bg-tarot-night text-slate-100 font-sans min-h-screen relative overflow-x-hidden selection:bg-tarot-gold selection:text-tarot-night">
 
-  <!-- Fundo Cósmico em Profundidade com Paralaxe Interativo -->
+  <!-- Fundo Cósmico em Profundidade com Paralaxe Interativo (Restaurado) -->
   <canvas id="starsCanvas" class="fixed inset-0 pointer-events-none z-0 opacity-70"></canvas>
 
   <!-- Barra de Progresso Cósmica no Topo -->
@@ -150,7 +150,7 @@
     <div class="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-4 sm:px-6">
       
       <!-- Logótipo com Ícone Animado -->
-      <a href="index.html" class="flex min-w-0 items-center gap-3 group" aria-label="Voltar ao site Visões do Tarot">
+      <a href="vis_es_do_tarot_agendamento_gest_o.html" class="flex min-w-0 items-center gap-3 group" aria-label="Voltar ao site Visões do Tarot">
         <div class="relative grid h-10 w-10 shrink-0 place-items-center rounded-full border border-tarot-gold/60 bg-tarot-night text-xl text-tarot-gold shadow-[0_0_18px_rgba(224,185,115,.25)] transition-transform duration-300 group-hover:scale-105">
           <span class="animate-pulse" aria-hidden="true">✦</span>
           <div class="absolute inset-0 rounded-full border border-dashed border-tarot-gold/40 animate-spin-slow"></div>
@@ -174,7 +174,7 @@
         <a href="#pedido" class="inline-flex min-h-10 items-center gap-2 rounded-xl border border-tarot-gold/50 bg-purple-950/70 px-3 text-[10px] font-bold uppercase tracking-wider text-tarot-goldLight transition hover:bg-tarot-gold hover:text-tarot-night sm:px-4 sm:text-xs" aria-label="Ver meu pedido, 0 itens">
           <span>Pedido</span><span id="catalogCartCount" class="grid h-5 min-w-5 place-items-center rounded-full bg-tarot-gold px-1 text-[10px] font-black text-tarot-night">0</span>
         </a>
-        <a href="index.html" class="hidden min-h-10 items-center gap-2 rounded-xl border border-tarot-gold/40 bg-purple-950/60 px-3 text-[10px] font-bold uppercase tracking-wider text-tarot-goldLight transition hover:bg-tarot-gold hover:text-tarot-night sm:inline-flex sm:px-4 sm:text-xs">
+        <a href="vis_es_do_tarot_agendamento_gest_o.html#agendamento" class="hidden min-h-10 items-center gap-2 rounded-xl border border-tarot-gold/40 bg-purple-950/60 px-3 text-[10px] font-bold uppercase tracking-wider text-tarot-goldLight transition hover:bg-tarot-gold hover:text-tarot-night sm:inline-flex sm:px-4 sm:text-xs">
           <span aria-hidden="true">←</span><span>Voltar ao site</span>
         </a>
       </div>
@@ -647,7 +647,7 @@
         <span id="catalogCartTotal" class="font-cinzel text-xl font-bold text-tarot-goldLight">R$ 0,00</span>
       </div>
       <ul id="catalogCartItems" class="mt-5 space-y-2"></ul>
-      <a href="index" class="mt-6 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-amber-500 via-tarot-gold to-amber-300 px-5 text-center text-xs font-black uppercase tracking-wider text-tarot-night shadow-[0_0_22px_rgba(224,185,115,.22)] transition hover:-translate-y-0.5 hover:shadow-[0_0_32px_rgba(224,185,115,.42)] sm:w-auto">
+      <a href="vis_es_do_tarot_agendamento_gest_o.html#agendamento" class="mt-6 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-amber-500 via-tarot-gold to-amber-300 px-5 text-center text-xs font-black uppercase tracking-wider text-tarot-night shadow-[0_0_22px_rgba(224,185,115,.22)] transition hover:-translate-y-0.5 hover:shadow-[0_0_32px_rgba(224,185,115,.42)] sm:w-auto">
         <span>Continuar para o agendamento</span><span aria-hidden="true">→</span>
       </a>
     </section>
@@ -805,6 +805,10 @@
       const action = document.createElement('button');
       action.type = 'button';
       action.className = 'catalog-add-button mt-6 h-10 w-full inline-flex items-center justify-center rounded-xl border border-tarot-gold/45 px-4 text-[11px] font-bold uppercase tracking-wider text-tarot-goldLight transition hover:-translate-y-0.5 hover:bg-tarot-gold/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-tarot-gold';
+      
+      const inCart = cart.includes(serviceId);
+      action.textContent = inCart ? '✓ No pedido · remover' : 'Adicionar ao pedido';
+      
       action.addEventListener('click', () => toggleCatalogCartItem(serviceId));
       article.append(action);
     });
@@ -834,7 +838,7 @@
 
     document.querySelectorAll('[data-category-color]').forEach(section => categoryObserver.observe(section));
 
-    /* --- MOTOR CÓSMICO 3D (CANVAS + PARALAXE IDÊNTICO À PÁGINA PRINCIPAL) --- */
+    /* --- MOTOR CÓSMICO 3D (CANVAS + PARALAXE RESTAURADO) --- */
     const canvas = document.getElementById('starsCanvas');
     const ctx = canvas.getContext('2d');
     let stars = [];
