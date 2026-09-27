@@ -662,9 +662,9 @@
       </div>
 
       <!-- Form for Consulente to Submit Feedback -->
-      <div class="glass-panel p-6 sm:p-8 rounded-3xl purple-gold-border max-w-2xl mx-auto">
+      <div class="glass-panel p-6 sm:p-8 rounded-3xl purple-gold-border max-w-2xl mx-auto" id="formularioDepoimentoContainer">
         <div class="text-center mb-6">
-          <h3 class="font-cinzel text-xl font-bold text-white flex items-center justify-center gap-2">
+          <h3 id="formDepoimentoTitulo" class="font-cinzel text-xl font-bold text-white flex items-center justify-center gap-2">
             <i data-lucide="star" class="w-5 h-5 text-tarot-gold"></i> Deixe Seu Depoimento
           </h3>
           <p class="text-xs text-slate-300 mt-1">Como foi a sua experiência com as cartas e rituais?</p>
@@ -679,9 +679,7 @@
             <div>
               <label class="block text-xs font-bold uppercase text-slate-300 mb-1">Serviço Realizado *</label>
               <select id="feedbackService" class="w-full px-3.5 py-2.5 rounded-xl bg-tarot-night border border-purple-500/30 text-white text-xs focus:outline-none focus:border-tarot-gold">
-                <option value="Consulta rápida e objetiva">Consulta rápida e objetiva</option>
-                <option value="Tiragem aprofundada">Tiragem aprofundada</option>
-                <option value="Mapa da área em questão">Mapa da área em questão</option>
+                <!-- Preenchido dinamicamente com todos os itens do catálogo e serviços -->
               </select>
             </div>
           </div>
@@ -703,9 +701,11 @@
             <textarea id="feedbackText" required rows="3" placeholder="Conte como a leitura ou magia te auxiliou..." class="w-full px-3.5 py-2.5 rounded-xl bg-tarot-night border border-purple-500/30 text-white text-xs focus:outline-none focus:border-tarot-gold"></textarea>
           </div>
 
-          <button type="submit" class="w-full py-3 rounded-xl bg-tarot-gold hover:bg-tarot-goldLight text-tarot-night font-bold text-xs uppercase tracking-wider transition">
-            Publicar Meu Depoimento
-          </button>
+          <div class="flex gap-2">
+            <button type="submit" id="btnSubmitDepoimento" class="flex-1 py-3 rounded-xl bg-tarot-gold hover:bg-tarot-goldLight text-tarot-night font-bold text-xs uppercase tracking-wider transition">
+              Publicar Meu Depoimento
+            </button>
+          </div>
         </form>
       </div>
     </section>
@@ -821,6 +821,56 @@
     </div>
   </div>
 
+  <!-- MODAL DE EDIÇÃO FLUTUANTE DE DEPOIMENTO COM FUNDO EMBAÇADO -->
+  <div id="editFeedbackBackdrop" class="cart-alert-backdrop" hidden>
+    <div class="glass-panel p-6 sm:p-8 rounded-3xl purple-gold-border max-w-lg w-full relative shadow-2xl bg-tarot-surface">
+      <div class="flex items-center justify-between mb-5">
+        <h3 class="font-cinzel text-lg font-bold text-white flex items-center gap-2">
+          <i data-lucide="edit-3" class="w-5 h-5 text-tarot-gold"></i> Editar Seu Depoimento
+        </h3>
+        <button type="button" onclick="fecharModalEdicaoDepoimento()" class="w-8 h-8 rounded-lg hover:bg-white/10 flex items-center justify-center text-slate-400 hover:text-white transition">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <form id="editFeedbackForm" onsubmit="handleEditFeedbackSubmit(event)" class="space-y-4">
+        <div>
+          <label class="block text-xs font-bold uppercase text-slate-300 mb-1">Seu Nome ou Inicial *</label>
+          <input type="text" id="editFeedbackName" required class="w-full px-3.5 py-2.5 rounded-xl bg-tarot-night border border-purple-500/30 text-white text-xs focus:outline-none focus:border-tarot-gold" />
+        </div>
+        <div>
+          <label class="block text-xs font-bold uppercase text-slate-300 mb-1">Serviço Realizado *</label>
+          <select id="editFeedbackService" class="w-full px-3.5 py-2.5 rounded-xl bg-tarot-night border border-purple-500/30 text-white text-xs focus:outline-none focus:border-tarot-gold">
+            <!-- Preenchido dinamicamente com todos os itens do catálogo e serviços -->
+          </select>
+        </div>
+        <div>
+          <label class="block text-xs font-bold uppercase text-slate-300 mb-1">Sua Avaliação (Estrelas):</label>
+          <div class="flex items-center gap-2" id="editStarRatingSelect">
+            <button type="button" onclick="setEditFeedbackRating(1)" class="edit-star-btn text-tarot-gold text-lg">★</button>
+            <button type="button" onclick="setEditFeedbackRating(2)" class="edit-star-btn text-tarot-gold text-lg">★</button>
+            <button type="button" onclick="setEditFeedbackRating(3)" class="edit-star-btn text-tarot-gold text-lg">★</button>
+            <button type="button" onclick="setEditFeedbackRating(4)" class="edit-star-btn text-tarot-gold text-lg">★</button>
+            <button type="button" onclick="setEditFeedbackRating(5)" class="edit-star-btn text-tarot-gold text-lg">★</button>
+            <span id="editStarRatingLabel" class="text-xs text-tarot-gold font-bold ml-2">5 Estrelas (Excelente)</span>
+          </div>
+        </div>
+        <div>
+          <label class="block text-xs font-bold uppercase text-slate-300 mb-1">Seu Relato / Mensagem *</label>
+          <textarea id="editFeedbackText" required rows="3" class="w-full px-3.5 py-2.5 rounded-xl bg-tarot-night border border-purple-500/30 text-white text-xs focus:outline-none focus:border-tarot-gold"></textarea>
+        </div>
+        <div class="flex gap-2 pt-2">
+          <button type="submit" class="flex-1 py-3 rounded-xl bg-tarot-gold hover:bg-tarot-goldLight text-tarot-night font-bold text-xs uppercase tracking-wider transition">
+            Salvar Alterações
+          </button>
+          <button type="button" onclick="fecharModalEdicaoDepoimento()" class="px-4 py-3 rounded-xl border border-rose-500/40 bg-rose-950/40 text-rose-300 font-bold text-xs uppercase tracking-wider transition">
+            Cancelar
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <div id="cartAlertBackdrop" class="cart-alert-backdrop" hidden>
     <section class="cart-alert alert alert-danger" role="alertdialog" aria-modal="true" aria-labelledby="cartAlertTitle">
       <div class="cart-alert-header">
@@ -931,20 +981,35 @@
     let currentSlideIndex = 0;
 
     /* -------------------------------------------------------------
-       3. FEEDBACKS INITIAL DATA & STORAGE
+       3. FEEDBACKS INITIAL DATA, USER ID & STORAGE
        ------------------------------------------------------------- */
     const STORAGE_KEY_FEEDBACKS = 'visoes_tarot_feedbacks';
+    const STORAGE_KEY_USER_ID = 'visoes_tarot_user_id';
     let feedbacks = [];
+    let editandoFeedbackId = null;
+
+    function getUserId() {
+      let userId = localStorage.getItem(STORAGE_KEY_USER_ID);
+      if (!userId) {
+        userId = 'user_' + Math.random().toString(36).substring(2) + Date.now();
+        localStorage.setItem(STORAGE_KEY_USER_ID, userId);
+      }
+      return userId;
+    }
 
     const INITIAL_FEEDBACKS = [
       {
+        id: 'init_1',
+        userId: 'admin_demo_1',
         name: 'Juliana Mendes',
-        service: 'Consulta rápida e objetiva',
+        service: 'Clareza do Coração',
         rating: 5,
         date: 'Há 2 dias',
         comment: 'Fiquei impressionada! O cartomante falou coisas que ninguém sabia sobre meu ex. Seguindo os conselhos das cartas consegui finalmente ter uma conversa lúcida com ele.'
       },
       {
+        id: 'init_2',
+        userId: 'admin_demo_2',
         name: 'Rodrigo S.',
         service: 'Adoçamento Amoroso',
         rating: 5,
@@ -952,11 +1017,13 @@
         comment: 'Fiz o adoçamento com muito receio, mas em menos de 10 dias o clima pesado em casa sumiu por completo. A clareza e a atenção do atendimento me deixaram muito segura.'
       },
       {
+        id: 'init_3',
+        userId: 'admin_demo_3',
         name: 'Renata Albuquerque',
-        service: 'Mapa da área em questão',
+        service: 'Fluxo de Abundância',
         rating: 5,
         date: 'Há 1 semana',
-        comment: 'Acertou em cheio a proposta de emprego que eu receberia na quinta-feira. Valeu cada centavo dos 30 reais!'
+        comment: 'Acertou em cheio a proposta de emprego que eu receberia na quinta-feira. Valeu cada centavo!'
       }
     ];
 
@@ -968,9 +1035,32 @@
     }
 
     let selectedRating = 5;
+    let editSelectedRating = 5;
 
     /* -------------------------------------------------------------
-       4. CART & BOOKING STORAGE
+       4. POPULAR SELECTS DE SERVIÇOS DINAMICAMENTE
+       ------------------------------------------------------------- */
+    function popularSelectsDeServicos() {
+      const selects = [
+        document.getElementById('feedbackService'),
+        document.getElementById('editFeedbackService')
+      ];
+
+      if (!window.VISOES_SERVICES || window.VISOES_SERVICES.length === 0) return;
+
+      const opcoesHtml = window.VISOES_SERVICES.map(service => 
+        `<option value="${escapeHTML(service.title)}">${escapeHTML(service.title)} (${service.priceLabel || 'R$ ' + service.price.toFixed(2)})</option>`
+      ).join('');
+
+      selects.forEach(selectEl => {
+        if (selectEl) {
+          selectEl.innerHTML = opcoesHtml;
+        }
+      });
+    }
+
+    /* -------------------------------------------------------------
+       5. CART & BOOKING STORAGE
        ------------------------------------------------------------- */
     const STORAGE_KEY_CART = window.VISOES_STORAGE_KEYS.cart;
     const STORAGE_KEY_BOOKINGS = 'visoes_tarot_bookings';
@@ -996,7 +1086,7 @@
     }
 
     /* -------------------------------------------------------------
-       5. CART LOGIC (WITH 50% DEPOSIT CALCULATION)
+       6. CART LOGIC (WITH 50% DEPOSIT CALCULATION)
        ------------------------------------------------------------- */
     function saveCart() {
       window.writeSharedCart(cart);
@@ -1217,14 +1307,15 @@
     }
 
     /* -------------------------------------------------------------
-       6. CATALOG RENDERING (TIRAGENS, MAGIAS FIXAS & AMARRAÇÃO SEPARADA)
+       7. CATALOG RENDERING
        ------------------------------------------------------------- */
     function renderCatalog() {
       const tarotList = document.getElementById('tarotCardsList');
       const fixedRitualsList = document.getElementById('fixedRitualsList');
       const customRitualsList = document.getElementById('customRitualsList');
 
-      // 1. Consultas oraculares
+      if (!tarotList || !fixedRitualsList || !customRitualsList) return;
+
       tarotList.innerHTML = SERVICES_CATALOG.filter(s => s.category === 'tiragem').map(item => {
         const inCart = cart.includes(item.id);
         return `
@@ -1258,10 +1349,8 @@
         `;
       }).join('');
 
-      // 2. Outros serviços sob consulta
       fixedRitualsList.innerHTML = SERVICES_CATALOG.filter(s => s.category === 'magia_fixa').map(item => {
         const inCart = cart.includes(item.id);
-        const depositVal = (item.price * 0.5).toFixed(2);
         return `
           <div class="scroll-item glass-panel p-6 rounded-2xl border ${inCart ? 'border-tarot-gold shadow-[0_0_25px_rgba(224,185,115,0.3)]' : 'border-purple-500/30'} flex flex-col justify-between hover:-translate-y-1 transition duration-300">
             <div>
@@ -1294,7 +1383,6 @@
         `;
       }).join('');
 
-      // 3. Rituais e trabalhos especiais
       customRitualsList.innerHTML = SERVICES_CATALOG.filter(s => s.category === 'magia_custom').map(item => {
         const inCart = cart.includes(item.id);
         return `
@@ -1345,98 +1433,51 @@
     }
 
     /* -------------------------------------------------------------
-       7. MULTIMEDIA CAROUSEL (TABS & CONTROLS)
+       8. MULTIMEDIA CAROUSEL
        ------------------------------------------------------------- */
     function switchMediaTab(tab) {
       currentMediaTab = tab;
       currentSlideIndex = 0;
-
-      // Update Tab Buttons UI
       const tabs = ['photos', 'videos', 'promos'];
       tabs.forEach(t => {
         const btn = document.getElementById(`tabBtn${t.charAt(0).toUpperCase() + t.slice(1)}`);
-        if (t === tab) {
-          btn.className = 'px-5 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 bg-tarot-gold text-tarot-night shadow-md';
-        } else {
-          btn.className = 'px-5 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 text-slate-300 hover:text-white';
+        if (btn) {
+          btn.className = t === tab ? 'px-5 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 bg-tarot-gold text-tarot-night shadow-md' : 'px-5 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 text-slate-300 hover:text-white';
         }
       });
-
       renderCarouselSlide();
     }
 
     function renderCarouselSlide() {
       const container = document.getElementById('mediaCarouselContent');
       const dotsContainer = document.getElementById('carouselDots');
-
       if (!container || !dotsContainer) return;
-
       const slides = MEDIA_DATA[currentMediaTab] || [];
       const current = slides[currentSlideIndex] || slides[0];
-
       if (!current) return;
 
       container.innerHTML = `
         <div class="scroll-item w-full max-w-3xl mx-auto p-6 sm:p-10 rounded-2xl bg-gradient-to-br ${current.accent} border border-tarot-gold/30 flex flex-col md:flex-row items-center gap-8 shadow-inner animate-fadeIn">
-          
-          <!-- Graphic / Representation Icon Box -->
           <div class="w-36 h-36 sm:w-44 sm:h-44 rounded-2xl bg-tarot-night/80 border border-tarot-gold/50 flex flex-col items-center justify-center text-tarot-gold shrink-0 relative overflow-hidden shadow-2xl">
             <i data-lucide="${current.icon}" class="w-16 h-16 animate-float-slow"></i>
             <span class="text-[10px] uppercase font-bold tracking-widest text-slate-300 mt-2">${current.tag}</span>
-            <div class="absolute inset-0 bg-gradient-to-t from-tarot-gold/15 to-transparent pointer-events-none"></div>
           </div>
-
-          <!-- Description Box -->
           <div class="space-y-3 text-center md:text-left flex-1">
-            <span class="text-xs uppercase tracking-widest text-tarot-gold font-bold px-3 py-1 rounded-full bg-tarot-night border border-tarot-gold/30 inline-block">
-              ${current.tag}
-            </span>
-            <h3 class="text-xl sm:text-2xl font-cinzel font-bold text-white leading-snug">
-              ${current.title}
-            </h3>
-            <p class="text-xs sm:text-sm text-slate-300 leading-relaxed font-normal">
-              ${current.desc}
-            </p>
-            ${current.videoInfo ? `
-              <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-black/40 border border-purple-500/30 text-[11px] text-purple-200">
-                <i data-lucide="play" class="w-3.5 h-3.5 text-tarot-gold"></i> ${current.videoInfo}
-              </div>
-            ` : ''}
+            <span class="text-xs uppercase tracking-widest text-tarot-gold font-bold px-3 py-1 rounded-full bg-tarot-night border border-tarot-gold/30 inline-block">${current.tag}</span>
+            <h3 class="text-xl sm:text-2xl font-cinzel font-bold text-white leading-snug">${current.title}</h3>
+            <p class="text-xs sm:text-sm text-slate-300 leading-relaxed font-normal">${current.desc}</p>
           </div>
-
         </div>
       `;
-
-      // Update dots
       dotsContainer.innerHTML = slides.map((_, idx) => `
-        <button onclick="goToMediaSlide(${idx})" class="w-2.5 h-2.5 rounded-full transition-all ${
-          idx === currentSlideIndex ? 'bg-tarot-gold w-6' : 'bg-purple-900/60 hover:bg-purple-700'
-        }"></button>
+        <button onclick="goToMediaSlide(${idx})" class="w-2.5 h-2.5 rounded-full transition-all ${idx === currentSlideIndex ? 'bg-tarot-gold w-6' : 'bg-purple-900/60 hover:bg-purple-700'}"></button>
       `).join('');
-
       lucide.createIcons();
       observeScrollItems(container);
     }
 
-    function nextMediaSlide() {
-      const slides = MEDIA_DATA[currentMediaTab];
-      currentSlideIndex = (currentSlideIndex + 1) % slides.length;
-      renderCarouselSlide();
-    }
-
-    function prevMediaSlide() {
-      const slides = MEDIA_DATA[currentMediaTab];
-      currentSlideIndex = (currentSlideIndex - 1 + slides.length) % slides.length;
-      renderCarouselSlide();
-    }
-
-    function goToMediaSlide(idx) {
-      currentSlideIndex = idx;
-      renderCarouselSlide();
-    }
-
     /* -------------------------------------------------------------
-       8. AVAILABILITY LOGIC (QUA A DOM - QUI/SÁB 17, 19, 21 / OUTROS 16, 18, 20, 22)
+       9. AVAILABILITY LOGIC
        ------------------------------------------------------------- */
     const ALL_WEEK_DAYS = ['Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado', 'Domingo'];
     
@@ -1447,43 +1488,22 @@
       return ['16:00', '18:00', '20:00', '22:00'];
     }
 
-    const DAY_TO_INDEX = {
-      'Domingo': 0,
-      'Segunda-feira': 1,
-      'Terça-feira': 2,
-      'Quarta-feira': 3,
-      'Quinta-feira': 4,
-      'Sexta-feira': 5,
-      'Sábado': 6
-    };
+    const DAY_TO_INDEX = { 'Domingo': 0, 'Segunda-feira': 1, 'Terça-feira': 2, 'Quarta-feira': 3, 'Quinta-feira': 4, 'Sexta-feira': 5, 'Sábado': 6 };
 
     function getNextSlotDate(day, time) {
       const [hour, minute] = (time || '16:00').split(':').map(Number);
       const today = new Date();
       const dayIndex = DAY_TO_INDEX[day] ?? 0;
-      const currentDayIndex = today.getDay();
-      let offset = (dayIndex - currentDayIndex + 7) % 7;
-
+      let offset = (dayIndex - today.getDay() + 7) % 7;
       const candidate = new Date(today);
       candidate.setHours(hour, minute, 0, 0);
       candidate.setDate(candidate.getDate() + offset);
-
-      if (offset === 0 && candidate <= new Date()) {
-        candidate.setDate(candidate.getDate() + 7);
-      }
-
+      if (offset === 0 && candidate <= new Date()) candidate.setDate(candidate.getDate() + 7);
       return candidate;
     }
 
     function getReservedSlotsForDay(day) {
-      return bookings
-        .filter(booking => booking.day === day)
-        .filter(booking => {
-          const slotDate = booking.slotDateTime ? new Date(booking.slotDateTime) : getNextSlotDate(booking.day, booking.time);
-          return slotDate > new Date();
-        })
-        .map(booking => booking.time)
-        .filter(Boolean);
+      return bookings.filter(b => b.day === day).map(b => b.time).filter(Boolean);
     }
 
     function getAvailableTimeSlots(day) {
@@ -1493,29 +1513,10 @@
       return baseSlots.filter(slot => !reserved.has(slot));
     }
 
-    function releaseExpiredBookings() {
-      const hadExpired = bookings.some(item => {
-        const slotDate = item.slotDateTime ? new Date(item.slotDateTime) : getNextSlotDate(item.day, item.time);
-        return slotDate <= new Date();
-      });
-
-      if (!hadExpired) return false;
-
-      bookings = bookings.filter(item => {
-        const slotDate = item.slotDateTime ? new Date(item.slotDateTime) : getNextSlotDate(item.day, item.time);
-        return slotDate > new Date();
-      });
-
-      localStorage.setItem(STORAGE_KEY_BOOKINGS, JSON.stringify(bookings));
-      updateAdminBadge();
-      renderAdminList();
-      renderAvailabilityPicker();
-      return true;
-    }
-
     function renderAvailabilityPicker() {
       const dayPicker = document.getElementById('dayPicker');
       const timePicker = document.getElementById('timePicker');
+      if (!dayPicker || !timePicker) return;
 
       dayPicker.innerHTML = '';
       timePicker.innerHTML = '<div class="col-span-full text-xs text-slate-400">Selecione um dia primeiro.</div>';
@@ -1525,29 +1526,21 @@
         const selected = document.getElementById('bookingDay').value === day;
         const button = document.createElement('button');
         button.type = 'button';
-        button.className = `scroll-item rounded-xl border px-3 py-3 text-left transition ${selected
-          ? 'border-tarot-gold bg-tarot-gold text-tarot-night shadow-[0_0_18px_rgba(224,185,115,0.2)]'
-          : 'border-purple-500/30 bg-[#090314] text-white hover:border-tarot-gold/60 hover:text-tarot-gold'}`;
+        button.className = `scroll-item rounded-xl border px-3 py-3 text-left transition ${selected ? 'border-tarot-gold bg-tarot-gold text-tarot-night shadow-[0_0_18px_rgba(224,185,115,0.2)]' : 'border-purple-500/30 bg-[#090314] text-white hover:border-tarot-gold/60'}`;
         button.innerHTML = `
           <div class="text-xs font-bold uppercase tracking-wide">${day}</div>
-          <div class="text-[10px] mt-1 ${available.length ? 'text-emerald-300' : 'text-rose-300'}">
-            ${available.length ? `${available.length} horários livres` : 'Indisponível'}
-          </div>
+          <div class="text-[10px] mt-1 ${available.length ? 'text-emerald-300' : 'text-rose-300'}">${available.length ? `${available.length} horários livres` : 'Indisponível'}</div>
         `;
-
         if (available.length === 0) {
           button.disabled = true;
           button.className = 'rounded-xl border border-rose-500/30 bg-rose-950/20 text-rose-300 px-3 py-3 text-left opacity-60 cursor-not-allowed';
         } else {
           button.onclick = () => {
-            const selectedDayInput = document.getElementById('bookingDay');
-            const selectedTimeInput = document.getElementById('bookingTime');
-            selectedDayInput.value = selectedDayInput.value === day ? '' : day;
-            selectedTimeInput.value = '';
+            document.getElementById('bookingDay').value = document.getElementById('bookingDay').value === day ? '' : day;
+            document.getElementById('bookingTime').value = '';
             renderAvailabilityPicker();
           };
         }
-
         dayPicker.appendChild(button);
       });
       observeScrollItems(dayPicker);
@@ -1560,26 +1553,14 @@
     function renderAvailableTimeSlots(day) {
       const timePicker = document.getElementById('timePicker');
       const availableSlots = getAvailableTimeSlots(day);
-
       timePicker.innerHTML = '';
-
-      if (!day) {
-        timePicker.innerHTML = '<div class="col-span-full text-xs text-slate-400">Selecione um dia primeiro.</div>';
-        return;
-      }
-
-      if (!availableSlots.length) {
-        timePicker.innerHTML = '<div class="col-span-full text-xs text-rose-300">Nenhum horário livre para este dia. Escolha outro dia.</div>';
-        return;
-      }
+      if (!day) return;
 
       availableSlots.forEach(slot => {
         const selected = document.getElementById('bookingTime').value === slot;
         const button = document.createElement('button');
         button.type = 'button';
-        button.className = `scroll-item rounded-xl border px-3 py-2 text-xs font-bold transition ${selected
-          ? 'border-tarot-gold bg-tarot-gold text-tarot-night'
-          : 'border-purple-500/30 bg-[#090314] text-white hover:border-tarot-gold/60 hover:text-tarot-gold'}`;
+        button.className = `scroll-item rounded-xl border px-3 py-2 text-xs font-bold transition ${selected ? 'border-tarot-gold bg-tarot-gold text-tarot-night' : 'border-purple-500/30 bg-[#090314] text-white'}`;
         button.textContent = slot;
         button.onclick = () => {
           document.getElementById('bookingTime').value = slot;
@@ -1590,49 +1571,60 @@
       observeScrollItems(timePicker);
     }
 
+    /* -------------------------------------------------------------
+       10. DEPOIMENTOS / FEEDBACKS
+       ------------------------------------------------------------- */
     function renderFeedbacks() {
       const container = document.getElementById('feedbacksList');
-      container.innerHTML = feedbacks.map(item => `
-        <div class="scroll-item glass-panel p-6 rounded-2xl border border-purple-500/30 flex flex-col justify-between hover:border-tarot-gold/40 transition">
-          <div>
-            <div class="flex items-center justify-between mb-3">
-              <div class="flex text-tarot-gold text-sm">
-                ${'★'.repeat(item.rating)}${'☆'.repeat(5 - item.rating)}
+      if (!container) return;
+      const currentUserId = getUserId();
+
+      container.innerHTML = feedbacks.map(item => {
+        const isAuthor = item.userId === currentUserId;
+        const estrelasHtml = '★'.repeat(item.rating) + '☆'.repeat(5 - item.rating);
+
+        return `
+          <div class="scroll-item glass-panel p-6 rounded-2xl border border-purple-500/30 flex flex-col justify-between hover:border-tarot-gold/40 transition">
+            <div>
+              <div class="flex items-center justify-between mb-3">
+                <div class="flex text-tarot-gold text-sm">${estrelasHtml}</div>
+                <span class="text-[10px] text-slate-400">${item.date}</span>
               </div>
-              <span class="text-[10px] text-slate-400">${item.date}</span>
+              <p class="text-xs text-slate-300 italic mb-4 leading-relaxed">"${escapeHTML(item.comment)}"</p>
             </div>
-            <p class="text-xs text-slate-300 italic mb-4 leading-relaxed">"${escapeHTML(item.comment)}"</p>
+            <div>
+              <div class="pt-3 border-t border-purple-500/20 flex items-center justify-between">
+                <span class="font-bold text-xs text-white">${escapeHTML(item.name)}</span>
+                <span class="text-[10px] text-purple-300">${escapeHTML(item.service)}</span>
+              </div>
+              ${isAuthor ? `
+                <div class="mt-3 pt-2 border-t border-purple-500/15 flex items-center justify-end gap-2">
+                  <button type="button" onclick="abrirModalEdicaoDepoimento('${item.id}')" class="px-2.5 py-1 rounded-lg bg-purple-950/60 border border-purple-500/30 text-purple-200 text-[10px] font-bold hover:bg-purple-900 transition">Editar</button>
+                  <button type="button" onclick="apagarDepoimento('${item.id}')" class="px-2.5 py-1 rounded-lg bg-rose-950/40 border border-rose-500/30 text-rose-300 text-[10px] font-bold hover:bg-rose-900 transition">Excluir</button>
+                </div>
+              ` : ''}
+            </div>
           </div>
-          <div class="pt-3 border-t border-purple-500/20 flex items-center justify-between">
-            <span class="font-bold text-xs text-white">${escapeHTML(item.name)}</span>
-            <span class="text-[10px] text-purple-300">${escapeHTML(item.service)}</span>
-          </div>
-        </div>
-      `).join('');
+        `;
+      }).join('');
       observeScrollItems(container);
     }
 
     function setFeedbackRating(stars) {
       selectedRating = stars;
-      const labels = [
-        '',
-        '1 Estrela (Fraco)',
-        '2 Estrelas (Regular)',
-        '3 Estrelas (Bom)',
-        '4 Estrelas (Muito Bom)',
-        '5 Estrelas (Excelente)'
-      ];
+      const labels = ['', '1 Estrela', '2 Estrelas', '3 Estrelas', '4 Estrelas', '5 Estrelas (Excelente)'];
       document.getElementById('starRatingLabel').textContent = labels[stars];
+      document.querySelectorAll('.star-btn').forEach((btn, index) => {
+        btn.textContent = index < stars ? '★' : '☆';
+      });
+    }
 
-      const starButtons = document.querySelectorAll('.star-btn');
-      starButtons.forEach((btn, index) => {
-        if (index < stars) {
-          btn.textContent = '★';
-          btn.classList.add('text-tarot-gold');
-        } else {
-          btn.textContent = '☆';
-          btn.classList.remove('text-tarot-gold');
-        }
+    function setEditFeedbackRating(stars) {
+      editSelectedRating = stars;
+      const labels = ['', '1 Estrela', '2 Estrelas', '3 Estrelas', '4 Estrelas', '5 Estrelas (Excelente)'];
+      document.getElementById('editStarRatingLabel').textContent = labels[stars];
+      document.querySelectorAll('.edit-star-btn').forEach((btn, index) => {
+        btn.textContent = index < stars ? '★' : '☆';
       });
     }
 
@@ -1645,6 +1637,8 @@
       if (!name || !text) return;
 
       const newEntry = {
+        id: 'fb_' + Date.now(),
+        userId: getUserId(),
         name,
         service,
         rating: selectedRating,
@@ -1654,12 +1648,88 @@
 
       feedbacks.unshift(newEntry);
       localStorage.setItem(STORAGE_KEY_FEEDBACKS, JSON.stringify(feedbacks));
-
       renderFeedbacks();
       document.getElementById('feedbackForm').reset();
       setFeedbackRating(5);
       playMagicSound('success');
       showToast('Depoimento Enviado!', 'Agradecemos de coração por compartilhar sua luz!');
+      lucide.createIcons();
+    }
+
+    function abrirModalEdicaoDepoimento(id) {
+      const item = feedbacks.find(f => f.id === id);
+      if (!item) return;
+
+      editandoFeedbackId = id;
+      document.getElementById('editFeedbackName').value = item.name;
+      document.getElementById('editFeedbackService').value = item.service;
+      document.getElementById('editFeedbackText').value = item.comment;
+      setEditFeedbackRating(item.rating || 5);
+
+      document.getElementById('editFeedbackBackdrop').hidden = false;
+      lucide.createIcons();
+    }
+
+    function fecharModalEdicaoDepoimento() {
+      editandoFeedbackId = null;
+      document.getElementById('editFeedbackBackdrop').hidden = true;
+    }
+
+    function handleEditFeedbackSubmit(e) {
+      e.preventDefault();
+      if (editandoFeedbackId === null) return;
+
+      const name = document.getElementById('editFeedbackName').value.trim();
+      const service = document.getElementById('editFeedbackService').value;
+      const text = document.getElementById('editFeedbackText').value.trim();
+
+      if (!name || !text) return;
+
+      feedbacks = feedbacks.map(item => {
+        if (item.id === editandoFeedbackId) {
+          return {
+            ...item,
+            name,
+            service,
+            rating: editSelectedRating,
+            comment: text,
+            date: 'Editado agora'
+          };
+        }
+        return item;
+      });
+
+      localStorage.setItem(STORAGE_KEY_FEEDBACKS, JSON.stringify(feedbacks));
+      renderFeedbacks();
+      fecharModalEdicaoDepoimento();
+      playMagicSound('success');
+      showToast('Depoimento Atualizado!', 'Suas alterações foram salvas com sucesso.');
+      lucide.createIcons();
+    }
+
+    let pendingFeedbackDeleteId = null;
+
+    function apagarDepoimento(id) {
+      const item = feedbacks.find(f => f.id === id);
+      if (!item) return;
+      pendingFeedbackDeleteId = id;
+      document.getElementById('feedbackAlertName').textContent = item.name || 'este consulente';
+      document.getElementById('feedbackAlertBackdrop').hidden = false;
+    }
+
+    function closeFeedbackAlert() {
+      pendingFeedbackDeleteId = null;
+      document.getElementById('feedbackAlertBackdrop').hidden = true;
+    }
+
+    function confirmDeleteFeedback() {
+      if (pendingFeedbackDeleteId === null) return;
+      feedbacks = feedbacks.filter(item => item.id !== pendingFeedbackDeleteId);
+      localStorage.setItem(STORAGE_KEY_FEEDBACKS, JSON.stringify(feedbacks));
+      renderFeedbacks();
+      closeFeedbackAlert();
+      playMagicSound('remove');
+      showToast('Depoimento Removido', 'Seu depoimento foi apagado.');
     }
 
     function showBookingValidation(message, input) {
@@ -1671,7 +1741,7 @@
     }
 
     /* -------------------------------------------------------------
-       9. BOOKING FORM HANDLER & WHATSAPP OUTPUT
+       11. BOOKING FORM HANDLER & WHATSAPP OUTPUT
        ------------------------------------------------------------- */
     function recordAdminActivity(activity) {
       let activityLog = [];
@@ -1679,29 +1749,19 @@
         const savedActivity = JSON.parse(localStorage.getItem(STORAGE_KEY_ACTIVITY) || '[]');
         if (Array.isArray(savedActivity)) activityLog = savedActivity;
       } catch (error) {}
-
       activityLog.unshift(activity);
       localStorage.setItem(STORAGE_KEY_ACTIVITY, JSON.stringify(activityLog.slice(0, 100)));
     }
 
     function handleBookingSubmit(event) {
       event.preventDefault();
-
       const nameInput = document.getElementById('userName');
       const phoneInput = document.getElementById('userPhone');
       const name = nameInput.value.trim();
       const phone = phoneInput.value.trim();
 
-      if (!name) {
-        showBookingValidation('O campo nome não pode ficar vazio.', nameInput);
-        return;
-      }
-
-      if (!phone) {
-        showBookingValidation('O campo WhatsApp não pode ficar vazio.', phoneInput);
-        return;
-      }
-
+      if (!name) { showBookingValidation('O campo nome não pode ficar vazio.', nameInput); return; }
+      if (!phone) { showBookingValidation('O campo WhatsApp não pode ficar vazio.', phoneInput); return; }
       if (cart.length === 0) {
         playMagicSound('alert');
         showToast('Carrinho vazio', 'Adicione pelo menos uma consulta ou serviço antes de confirmar.');
@@ -1711,28 +1771,19 @@
 
       const day = document.getElementById('bookingDay').value;
       const time = document.getElementById('bookingTime').value;
-
       if (!day || !time) {
         playMagicSound('alert');
         showToast('Disponibilidade pendente', 'Selecione um dia e um horário disponível antes de confirmar.');
         return;
       }
 
-      if (!getAvailableTimeSlots(day).includes(time)) {
-        showToast('Horário indisponível', 'Este horário já foi selecionado por outro cliente. Escolha outro slot.');
-        renderAvailabilityPicker();
-        return;
-      }
-
       const notes = document.getElementById('bookingNotes').value.trim();
-
       const selectedServices = cart.map(id => SERVICES_CATALOG.find(s => s.id === id)).filter(Boolean);
       const totalAmount = getCartTotal();
       const depositAmount = getDepositTotal();
       const hasCustom = hasCustomPriceItem();
       const arrivalTime = new Date();
 
-      // Record in local admin storage
       const newBooking = {
         id: Date.now(),
         dateCreated: arrivalTime.toLocaleString('pt-BR'),
@@ -1751,371 +1802,111 @@
 
       bookings.unshift(newBooking);
       localStorage.setItem(STORAGE_KEY_BOOKINGS, JSON.stringify(bookings));
-      recordAdminActivity({
-        id: `booking-${newBooking.id}`,
-        type: 'booking',
-        bookingId: newBooking.id,
-        name,
-        phone,
-        day,
-        time,
-        createdAt: arrivalTime.toISOString()
-      });
       updateAdminBadge();
-
-      // Audio chime
       playMagicSound('confirm');
 
-      // Construct formatted message
-      const servicesListText = selectedServices.map(s => 
-        `• ${s.title}: ${s.isCustomPrice ? 'Valor definido pela bruxa parceira' : 'R$ ' + s.price.toFixed(2)}`
-      ).join('\n');
-
-      const whatsappText = 
-`🔮 *SOLICITAÇÃO DE AGENDAMENTO - VISÕES DO TAROT* 🔮
-
-👤 *Consulente:* ${name}
-📱 *WhatsApp:* ${phone}
-📅 *Dia Escolhido:* ${day}
-⏰ *Horário:* ${time} (Atendimento de Qua a Dom)
-
-✨ *SERVIÇOS SELECIONADOS NO CARRINHO:*
-${servicesListText}
-
-💰 *VALOR TOTAL DO ATENDIMENTO:* R$ ${totalAmount.toFixed(2)}${hasCustom ? ' (+ valor definido pela bruxa parceira)' : ''}
-✅ *PAGAMENTO VIA PIX:* R$ ${depositAmount.toFixed(2)}${hasCustom ? ' (+ Valor de Rito Personalizado)' : ''}
-
-📝 *Dúvida / Detalhes:* ${notes || 'Consulta padrão'}
-
-_Estou enviando o pagamento total via PIX para confirmar meu horário com segurança._`;
-
-      const encoded = encodeURIComponent(whatsappText);
-      const targetUrl = `https://wa.me/${cartomantePhone}?text=${encoded}`;
-
-      showToast('Agendamento Preparado!', 'Abrindo seu WhatsApp com o resumo e o valor total do atendimento...');
+      const servicesListText = selectedServices.map(s => `• ${s.title}: ${s.isCustomPrice ? 'Valor definido pela bruxa parceira' : 'R$ ' + s.price.toFixed(2)}`).join('\n');
+      const whatsappText = `🔮 *SOLICITAÇÃO DE AGENDAMENTO - VISÕES DO TAROT* 🔮\n\n👤 *Consulente:* ${name}\n📱 *WhatsApp:* ${phone}\n📅 *Dia Escolhido:* ${day}\n⏰ *Horário:* ${time}\n\n✨ *SERVIÇOS:* \n${servicesListText}\n\n💰 *VALOR TOTAL:* R$ ${totalAmount.toFixed(2)}\n\n_Estou enviando o pagamento total via PIX para confirmar meu horário com segurança._`;
 
       setTimeout(() => {
-        window.open(targetUrl, '_blank');
+        window.open(`https://wa.me/${cartomantePhone}?text=${encodeURIComponent(whatsappText)}`, '_blank');
       }, 1000);
     }
 
     /* -------------------------------------------------------------
-       10. SYNTHESIZED SOUND EFFECTS
+       12. SOUND & UTILITIES
        ------------------------------------------------------------- */
-    let lastHoverSoundAt = 0;
-
-    let helpPopupAudioUnlocked = false;
-    let helpPopupAudioPlayed = false;
-
     function formatHelpPhone(phone) {
       const digits = String(phone).replace(/\D/g, '');
-      if (digits.length === 13 && digits.startsWith('55')) {
-        return `+55 (${digits.slice(2, 4)}) ${digits.slice(4, 9)}-${digits.slice(9)}`;
-      }
-      if (digits.length === 12 && digits.startsWith('55')) {
-        return `+55 (${digits.slice(2, 4)}) ${digits.slice(4, 8)}-${digits.slice(8)}`;
-      }
+      if (digits.length === 13 && digits.startsWith('55')) return `+55 (${digits.slice(2, 4)}) ${digits.slice(4, 9)}-${digits.slice(9)}`;
       return digits ? `+${digits}` : 'WhatsApp não configurado';
-    }
-
-    function playHelpPopupSound() {
-      if (helpPopupAudioPlayed) return;
-      playMagicSound('success');
-      helpPopupAudioPlayed = true;
     }
 
     function openHelpPopup() {
       const backdrop = document.getElementById('helpPopupBackdrop');
-      const number = document.getElementById('helpPopupNumber');
-      const link = document.getElementById('helpPopupWhatsApp');
-      number.textContent = formatHelpPhone(cartomantePhone);
-      link.href = `https://wa.me/${String(cartomantePhone).replace(/\D/g, '')}?text=${encodeURIComponent('Olá! Fiquei com uma dúvida sobre o site Visões do Tarot.')}`;
+      document.getElementById('helpPopupNumber').textContent = formatHelpPhone(cartomantePhone);
+      document.getElementById('helpPopupWhatsApp').href = `https://wa.me/${String(cartomantePhone).replace(/\D/g, '')}?text=${encodeURIComponent('Olá! Fiquei com uma dúvida sobre o site Visões do Tarot.')}`;
       backdrop.hidden = false;
-      document.getElementById('helpPopupClose').focus();
-      if (helpPopupAudioUnlocked) playHelpPopupSound();
     }
 
     function closeHelpPopup() {
       document.getElementById('helpPopupBackdrop').hidden = true;
-      document.getElementById('helpPopupLauncher').focus();
-    }
-
-    function getHelpVisitorId() {
-      const storageKey = 'visoes_tarot_visitor_id';
-      let visitorId = sessionStorage.getItem(storageKey);
-      if (!visitorId) {
-        visitorId = window.crypto?.randomUUID?.() || `visitante-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
-        sessionStorage.setItem(storageKey, visitorId);
-      }
-      return visitorId;
-    }
-
-    function recordHelpWhatsAppClick() {
-      const name = document.getElementById('userName')?.value.trim() || '';
-      const phone = document.getElementById('userPhone')?.value.trim() || '';
-      recordAdminActivity({
-        id: `doubt-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
-        type: 'question',
-        name,
-        phone,
-        visitorId: getHelpVisitorId(),
-        createdAt: new Date().toISOString()
-      });
     }
 
     function setupHelpPopup() {
-      const backdrop = document.getElementById('helpPopupBackdrop');
       document.getElementById('helpPopupLauncher').addEventListener('click', openHelpPopup);
       document.getElementById('helpPopupClose').addEventListener('click', closeHelpPopup);
-      document.getElementById('helpPopupWhatsApp').addEventListener('click', recordHelpWhatsAppClick);
-      backdrop.addEventListener('click', event => {
-        if (event.target === backdrop) closeHelpPopup();
-      });
-      document.addEventListener('keydown', event => {
-        if (event.key === 'Escape' && !backdrop.hidden) closeHelpPopup();
-      });
-      document.addEventListener('pointerdown', () => {
-        helpPopupAudioUnlocked = true;
-        if (!backdrop.hidden) playHelpPopupSound();
-      }, { once: true });
-      document.addEventListener('keydown', () => {
-        helpPopupAudioUnlocked = true;
-        if (!backdrop.hidden) playHelpPopupSound();
-      }, { once: true });
+      document.getElementById('helpPopupBackdrop').addEventListener('click', e => { if (e.target === e.currentTarget) closeHelpPopup(); });
       if (!sessionStorage.getItem('visoes_tarot_help_popup_seen')) {
-        window.setTimeout(() => {
-          openHelpPopup();
-          sessionStorage.setItem('visoes_tarot_help_popup_seen', 'true');
-        }, 8000);
+        setTimeout(() => { openHelpPopup(); sessionStorage.setItem('visoes_tarot_help_popup_seen', 'true'); }, 8000);
       }
     }
 
-    function playHarmonicChime(freq = 587.33) {
-      if (window.isMagicSoundMuted()) return;
-      try {
-        const ctx = window.getMagicAudioContext();
-        if (!ctx) return;
-        
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(freq, ctx.currentTime);
-        osc.frequency.exponentialRampToValueAtTime(freq * 1.5, ctx.currentTime + 0.3);
-
-        gain.gain.setValueAtTime(0.2, ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.85);
-
-        osc.connect(gain);
-        gain.connect(ctx.destination);
-
-        osc.start();
-        osc.stop(ctx.currentTime + 0.85);
-      } catch (e) {}
-    }
-
     /* -------------------------------------------------------------
-       11. CARTOMANTE ADMIN PANEL & MODAL
+       13. ADMIN MODAL & STARFIELD
        ------------------------------------------------------------- */
     function openAdminModal() {
       document.getElementById('adminPhoneInput').value = cartomantePhone;
       renderAdminList();
       document.getElementById('adminModal').classList.remove('hidden');
     }
-
-    function closeAdminModal() {
-      document.getElementById('adminModal').classList.add('hidden');
-    }
-
+    function closeAdminModal() { document.getElementById('adminModal').classList.add('hidden'); }
     function saveAdminPhone() {
       const val = document.getElementById('adminPhoneInput').value.trim().replace(/\D/g, '');
-      if (val.length >= 10) {
-        cartomantePhone = val;
-        localStorage.setItem(STORAGE_KEY_PHONE, val);
-        showToast('Configuração Salva', `WhatsApp alterado para: ${val}`);
-      } else {
-        showToast('Número Inválido', 'Insira com DDD e código do país (Ex: 5585984217895)');
-      }
+      if (val.length >= 10) { cartomantePhone = val; localStorage.setItem(STORAGE_KEY_PHONE, val); showToast('Salvo', 'WhatsApp atualizado!'); }
     }
-
     function updateAdminBadge() {
       const badge = document.getElementById('adminPendingBadge');
-      if (badge) {
-        if (bookings.length > 0) {
-          badge.classList.remove('hidden');
-        } else {
-          badge.classList.add('hidden');
-        }
-      }
+      if (badge) bookings.length > 0 ? badge.classList.remove('hidden') : badge.classList.add('hidden');
     }
-
     function renderAdminList() {
       const list = document.getElementById('adminBookingsList');
-      const countText = document.getElementById('adminCountText');
-
-      countText.textContent = `${bookings.length} agendamento(s) salvo(s)`;
-
-      if (bookings.length === 0) {
-        list.innerHTML = `
-          <div class="py-12 text-center text-slate-500">
-            <i data-lucide="inbox" class="w-10 h-10 mx-auto stroke-1 mb-2"></i>
-            <p class="text-sm">Nenhum agendamento gravado ainda.</p>
-            <p class="text-xs text-slate-600">Os clientes que submeterem o formulário aparecerão listados aqui com o cálculo do valor total.</p>
-          </div>
-        `;
-        lucide.createIcons();
-        return;
-      }
-
+      document.getElementById('adminCountText').textContent = `${bookings.length} agendamento(s)`;
+      if (bookings.length === 0) { list.innerHTML = '<div class="py-12 text-center text-slate-500 text-xs">Nenhum agendamento gravado.</div>'; return; }
       list.innerHTML = bookings.map(item => `
-        <div class="p-4 rounded-2xl bg-tarot-card border border-purple-500/30 text-xs text-slate-300 space-y-2.5">
-          <div class="flex items-start justify-between">
-            <div>
-              <span class="font-bold text-white text-base">${escapeHTML(item.name)}</span>
-              <div class="text-[11px] text-tarot-gold mt-0.5">
-                Total: R$ ${item.total.toFixed(2)} | <strong class="text-emerald-400">Pagamento total: R$ ${item.deposit.toFixed(2)}</strong>
-              </div>
-            </div>
-            <button onclick="deleteBooking(${item.id})" class="text-slate-500 hover:text-rose-400 p-1" title="Excluir">
-              <i data-lucide="trash" class="w-4 h-4"></i>
-            </button>
-          </div>
-
-          <div class="grid grid-cols-2 gap-2 text-[11px] text-slate-400">
-            <div>📅 <strong>Dia:</strong> ${escapeHTML(item.day)}</div>
-            <div>⏰ <strong>Horário:</strong> ${escapeHTML(item.time)}</div>
-            <div>📱 <strong>WhatsApp:</strong> ${escapeHTML(item.phone)}</div>
-            <div>🕒 <strong>Feito em:</strong> ${escapeHTML(item.dateCreated)}</div>
-          </div>
-
-          <div class="p-2.5 rounded-lg bg-black/50 text-[11px]">
-            <strong class="text-purple-300">Serviços Solicitados:</strong>
-            <ul class="list-disc list-inside mt-1 text-slate-300">
-              ${(item.services || []).map(s => `<li>${escapeHTML(s)}</li>`).join('')}
-            </ul>
-          </div>
-
-          <div class="p-2 rounded-lg bg-[#0c0517] text-slate-400 text-[11px]">
-            <strong>Pergunta / Notas:</strong> ${escapeHTML(item.notes)}
-          </div>
-
-          <div class="pt-1 flex gap-2">
-            <a 
-              href="https://wa.me/${item.phone.replace(/\D/g, '')}?text=Ol%C3%A1%20${encodeURIComponent(item.name)},%20sou%20o%20cartomante%20do%20Vis%C3%B5es%20do%20Tarot!%20Recebi%20seu%20agendamento%20para%20${encodeURIComponent(item.day)}%20%C3%A0s%20${encodeURIComponent(item.time)}.%20Segue%20a%20chave%20PIX%20do%20pagamento%20total%20(R$%20${item.deposit.toFixed(2)}):"
-              target="_blank"
-              class="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center gap-1.5 transition"
-            >
-              <i data-lucide="message-circle" class="w-3.5 h-3.5"></i> Enviar PIX do Total
-            </a>
-          </div>
+        <div class="p-4 rounded-2xl bg-tarot-card border border-purple-500/30 text-xs text-slate-300 space-y-2">
+          <div class="font-bold text-white">${escapeHTML(item.name)} - R$ ${item.total.toFixed(2)}</div>
+          <div>📅 ${escapeHTML(item.day)} às ${escapeHTML(item.time)} | 📱 ${escapeHTML(item.phone)}</div>
         </div>
       `).join('');
-
       lucide.createIcons();
     }
 
-    function deleteBooking(id) {
-      bookings = bookings.filter(b => b.id !== id);
-      localStorage.setItem(STORAGE_KEY_BOOKINGS, JSON.stringify(bookings));
-      updateAdminBadge();
-      renderAdminList();
-      showToast('Registro Excluído', 'Agendamento removido.');
-    }
-
-    function clearAllBookings() {
-      if (bookings.length === 0) return;
-      bookings = [];
-      localStorage.removeItem(STORAGE_KEY_BOOKINGS);
-      updateAdminBadge();
-      renderAdminList();
-      showToast('Histórico Apagado', 'Todos os registros foram removidos.');
-    }
-
-    /* -------------------------------------------------------------
-       12. STARFIELD BACKGROUND & PARALLAX SCROLL
-       ------------------------------------------------------------- */
     const canvas = document.getElementById('starsCanvas');
     const ctx = canvas.getContext('2d');
     let stars = [];
-
-    function resizeCanvas() {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-      createStars();
-    }
-
+    function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; createStars(); }
     function createStars() {
       stars = [];
-      const numStars = Math.floor((canvas.width * canvas.height) / 8500);
-      for (let i = 0; i < numStars; i++) {
-        stars.push({
-          x: Math.random() * canvas.width,
-          y: Math.random() * canvas.height,
-          radius: Math.random() * 1.5 + 0.4,
-          alpha: Math.random() * 0.8 + 0.2,
-          speed: Math.random() * 0.02 + 0.005,
-          twinkleFactor: Math.random() * Math.PI
-        });
+      for (let i = 0; i < Math.floor((canvas.width * canvas.height) / 8500); i++) {
+        stars.push({ x: Math.random() * canvas.width, y: Math.random() * canvas.height, radius: Math.random() * 1.5 + 0.4, alpha: Math.random() * 0.8 + 0.2, speed: Math.random() * 0.02 + 0.005, twinkleFactor: Math.random() * Math.PI });
       }
     }
-
     function drawStars() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       const scrollY = window.scrollY || window.pageYOffset;
-
       for (let star of stars) {
         star.twinkleFactor += star.speed;
         const currentAlpha = star.alpha + Math.sin(star.twinkleFactor) * 0.3;
-        
-        const parallaxY = (star.y - scrollY * (star.radius * 0.15)) % canvas.height;
-        const finalY = parallaxY < 0 ? parallaxY + canvas.height : parallaxY;
-
+        const finalY = (star.y - scrollY * (star.radius * 0.15)) % canvas.height;
         ctx.beginPath();
-        ctx.arc(star.x, finalY, star.radius, 0, Math.PI * 2);
+        ctx.arc(star.x, finalY < 0 ? finalY + canvas.height : finalY, star.radius, 0, Math.PI * 2);
         ctx.fillStyle = `rgba(240, 220, 180, ${Math.max(0.1, Math.min(1, currentAlpha))})`;
-        ctx.shadowBlur = star.radius > 1 ? 5 : 0;
-        ctx.shadowColor = '#e0b973';
         ctx.fill();
       }
-
       requestAnimationFrame(drawStars);
     }
-
     window.addEventListener('resize', resizeCanvas);
 
-    window.addEventListener('scroll', () => {
-      const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
-      const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-      const scrolled = (winScroll / height) * 100;
-      
-      const progressBar = document.getElementById('scrollProgressBar');
-      if (progressBar) progressBar.style.width = scrolled + '%';
-
-      const orb1 = document.getElementById('glowOrb1');
-      const orb2 = document.getElementById('glowOrb2');
-      if (orb1 && orb2) {
-        orb1.style.transform = `translateY(${winScroll * 0.12}px)`;
-        orb2.style.transform = `translateY(${-winScroll * 0.08}px)`;
-      }
-    });
-
-    const observer = new IntersectionObserver((entries) => {
+    const observer = new IntersectionObserver(entries => {
       entries.forEach(entry => {
-        if (entry.target.classList.contains('ritual-section')) {
-          entry.target.classList.toggle('ritual-section-active', entry.isIntersecting);
-          return;
-        }
+        if (entry.target.classList.contains('ritual-section')) { entry.target.classList.toggle('ritual-section-active', entry.isIntersecting); return; }
         entry.target.classList.toggle('revealed', entry.isIntersecting);
       });
     }, { threshold: 0.12 });
 
-    function observeScrollItems(root = document) {
-      root.querySelectorAll('.scroll-item').forEach(el => observer.observe(el));
-    }
+    function observeScrollItems(root = document) { root.querySelectorAll('.scroll-item').forEach(el => observer.observe(el)); }
 
-    /* -------------------------------------------------------------
-       13. TOAST & UTILITIES
-       ------------------------------------------------------------- */
     let toastTimer;
     function showToast(title, message) {
       clearTimeout(toastTimer);
@@ -2124,74 +1915,47 @@ _Estou enviando o pagamento total via PIX para confirmar meu horário com segura
       document.getElementById('toastMessage').textContent = message;
       toast.classList.remove('translate-x-96');
       toast.classList.add('translate-x-0');
-
-      toastTimer = setTimeout(() => {
-        hideToast();
-      }, 4000);
+      toastTimer = setTimeout(hideToast, 4000);
     }
-
-    function hideToast() {
-      const toast = document.getElementById('toastNotification');
-      toast.classList.remove('translate-x-0');
-      toast.classList.add('translate-x-96');
-    }
-
-    function setupSoundInteractions() {
-      document.getElementById('viewServicesButton').addEventListener('click', () => {
-        playMagicSound('navigate');
-      });
-      document.addEventListener('click', event => {
-        const interactive = event.target.closest('button');
-        if (!interactive) return;
-        if (interactive.closest('#feedbacks')) return;
-        const action = interactive.getAttribute('onclick') || '';
-        if (/addToCart|requestRemoveFromCart|confirmRemoveFromCart|handleBookingSubmit/.test(action) || interactive.closest('#bookingForm')) return;
-        playMagicSound('click');
-      });
-    }
+    function hideToast() { document.getElementById('toastNotification').classList.remove('translate-x-0'); document.getElementById('toastNotification').classList.add('translate-x-96'); }
 
     function escapeHTML(str) {
-      return String(str).replace(/[&<>'"]/g, 
-        tag => ({
-          '&': '&amp;',
-          '<': '&lt;',
-          '>': '&gt;',
-          "'": '&#39;',
-          '"': '&quot;'
-        }[tag] || tag)
-      );
+      return String(str).replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag));
     }
 
-    /* -------------------------------------------------------------
-       14. INITIALIZE APP
-       ------------------------------------------------------------- */
     window.addEventListener('DOMContentLoaded', () => {
-      setupSoundInteractions();
       resizeCanvas();
       drawStars();
       updateCartUI();
-      if (document.getElementById('mediaCarouselContent')) {
-        renderCarouselSlide();
-      }
+      popularSelectsDeServicos();
+      if (document.getElementById('mediaCarouselContent')) renderCarouselSlide();
       renderFeedbacks();
       renderAvailabilityPicker();
       updateAdminBadge();
-      releaseExpiredBookings();
-      window.updateSoundToggle();
       setupHelpPopup();
-
-      document.querySelectorAll('.scroll-reveal, .scroll-item').forEach(el => observer.observe(el));
-      document.querySelectorAll('.ritual-section').forEach(el => observer.observe(el));
+      document.querySelectorAll('.scroll-reveal, .scroll-item, .ritual-section').forEach(el => observer.observe(el));
       lucide.createIcons();
-
-      setInterval(() => {
-        releaseExpiredBookings();
-      }, 60000);
     });
   </script>
 
   <footer class="text-center py-5 text-xs text-slate-400 border-t border-purple-500/20 bg-[#090314]">
     &copy; 2026 leydev. Todos os direitos reservados.
   </footer>
+
+  <!-- Modal de Alerta de Exclusão de Depoimento -->
+  <div id="feedbackAlertBackdrop" class="cart-alert-backdrop" hidden>
+    <section class="cart-alert alert alert-danger" role="alertdialog" aria-modal="true" aria-labelledby="feedbackAlertTitle">
+      <div class="cart-alert-header">
+        <div class="cart-alert-icon">!</div>
+        <h2 id="feedbackAlertTitle">Alerta de exclusão</h2>
+      </div>
+      <p>Tem certeza que deseja excluir o depoimento de <strong id="feedbackAlertName">este consulente</strong>? Essa ação não poderá ser desfeita.</p>
+      <div class="cart-alert-actions">
+        <button type="button" class="cart-alert-cancel" onclick="closeFeedbackAlert()">Cancelar</button>
+        <button type="button" class="cart-alert-confirm" onclick="confirmDeleteFeedback()">Excluir depoimento</button>
+      </div>
+    </section>
+  </div>
+
 </body>
 </html>
