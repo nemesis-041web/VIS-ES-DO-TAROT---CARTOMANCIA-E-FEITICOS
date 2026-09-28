@@ -204,7 +204,7 @@
     <!-- AGENDAMENTO -->
     <section id="agendamento" class="max-w-4xl mx-auto px-4 sm:px-6 py-16">
       <div class="glass-panel booking-magic-panel p-6 sm:p-10 rounded-3xl purple-gold-border relative shadow-2xl scroll-reveal">
-        <div class="text-center mb-8">
+       <div class="text-center mb-8">
           <div class="inline-flex p-3 rounded-2xl bg-tarot-gold/10 text-tarot-gold border border-tarot-gold/30 mb-3"><i data-lucide="calendar-clock" class="w-7 h-7"></i></div>
           <h2 class="text-2xl sm:text-4xl font-cinzel font-bold text-white">Agendar Horário</h2>
         </div>
@@ -212,11 +212,11 @@
           <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
             <div>
               <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-2">Seu Nome Completo *</label>
-              <input type="text" id="userName" required class="w-full px-4 py-3.5 rounded-xl bg-[#090314] border border-purple-500/30 text-white focus:border-tarot-gold transition text-sm" />
+              <input type="text" id="userName" required placeholder="Ex: Maria Clara Silva" class="w-full px-4 py-3.5 rounded-xl bg-[#090314] border border-purple-500/30 text-white placeholder-slate-500 focus:outline-none focus:border-tarot-gold transition text-sm" />
             </div>
             <div>
               <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-2">Seu WhatsApp *</label>
-              <input type="tel" id="userPhone" required class="w-full px-4 py-3.5 rounded-xl bg-[#090314] border border-purple-500/30 text-white focus:border-tarot-gold transition text-sm" />
+              <input type="tel" id="userPhone" required placeholder="(00) 90000-0000" class="w-full px-4 py-3.5 rounded-xl bg-[#090314] border border-purple-500/30 text-white placeholder-slate-500 focus:outline-none focus:border-tarot-gold transition text-sm" />
             </div>
           </div>
           <div class="space-y-5">
@@ -227,10 +227,14 @@
             <div class="flex items-center justify-between mb-2"><span class="text-xs font-bold uppercase text-tarot-gold tracking-wider flex items-center gap-1.5"><i data-lucide="layers" class="w-4 h-4"></i> Serviços:</span></div>
             <div id="formServicesSummary" class="text-xs text-slate-300 space-y-1"></div>
           </div>
-          <div><label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-2">Dúvida ou Objetivo:</label><textarea id="bookingNotes" rows="3" class="w-full px-4 py-3.5 rounded-xl bg-[#090314] border border-purple-500/30 text-white focus:border-tarot-gold transition text-sm"></textarea></div>
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-2">Dúvida ou Objetivo:</label>
+            <textarea id="bookingNotes" rows="3" placeholder="Ex: Quero saber sobre a volta do meu ex-parceiro..." class="w-full px-4 py-3.5 rounded-xl bg-[#090314] border border-purple-500/30 text-white placeholder-slate-500 focus:outline-none focus:border-tarot-gold transition text-sm"></textarea>
+          </div>
           <button type="submit" class="w-full py-4 rounded-2xl bg-gradient-to-r from-amber-500 via-tarot-gold to-amber-300 text-tarot-night font-black text-base uppercase tracking-wider transition-all flex items-center justify-center gap-2 hover:scale-[1.01]"><i data-lucide="message-circle" class="w-5 h-5"></i><span>Confirmar no WhatsApp</span></button>
         </form>
       </div>
+    </section>
     </section>
 
     <!-- FEEDBACKS -->
@@ -244,11 +248,11 @@
         <div class="text-center mb-6"><h3 class="font-cinzel text-xl font-bold text-white flex items-center justify-center gap-2"><i data-lucide="star" class="w-5 h-5 text-tarot-gold"></i> Deixe Seu Depoimento</h3></div>
         <form id="feedbackForm" onsubmit="handleFeedbackSubmit(event)" class="space-y-4">
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div><label class="block text-xs font-bold uppercase text-slate-300 mb-1">Seu Nome *</label><input type="text" id="feedbackName" required class="w-full px-3.5 py-2.5 rounded-xl bg-tarot-night border border-purple-500/30 text-white text-xs focus:border-tarot-gold" /></div>
-            <div><label class="block text-xs font-bold uppercase text-slate-300 mb-1">Serviço *</label><select id="feedbackService" class="w-full px-3.5 py-2.5 rounded-xl bg-tarot-night border border-purple-500/30 text-white text-xs focus:border-tarot-gold"></select></div>
+            <div><label class="block text-xs font-bold uppercase text-slate-300 mb-1">Seu Nome *</label><input type="text" id="feedbackName" required placeholder="Ex: Camila R." class="w-full px-3.5 py-2.5 rounded-xl bg-tarot-night border border-purple-500/30 text-white placeholder-slate-500 focus:outline-none text-xs focus:border-tarot-gold" /></div>
+            <div><label class="block text-xs font-bold uppercase text-slate-300 mb-1">Serviço *</label><select id="feedbackService" class="w-full px-3.5 py-2.5 rounded-xl bg-tarot-night border border-purple-500/30 text-white focus:outline-none text-xs focus:border-tarot-gold"></select></div>
           </div>
           <div><label class="block text-xs font-bold uppercase text-slate-300 mb-1">Avaliação:</label><div class="flex items-center gap-2" id="starRatingSelect"><button type="button" onclick="setFeedbackRating(1)" class="star-btn text-tarot-gold text-lg">★</button><button type="button" onclick="setFeedbackRating(2)" class="star-btn text-tarot-gold text-lg">★</button><button type="button" onclick="setFeedbackRating(3)" class="star-btn text-tarot-gold text-lg">★</button><button type="button" onclick="setFeedbackRating(4)" class="star-btn text-tarot-gold text-lg">★</button><button type="button" onclick="setFeedbackRating(5)" class="star-btn text-tarot-gold text-lg">★</button><span id="starRatingLabel" class="text-xs text-tarot-gold font-bold ml-2">5 Estrelas</span></div></div>
-          <div><label class="block text-xs font-bold uppercase text-slate-300 mb-1">Sua Mensagem *</label><textarea id="feedbackText" required rows="3" class="w-full px-3.5 py-2.5 rounded-xl bg-tarot-night border border-purple-500/30 text-white text-xs focus:border-tarot-gold"></textarea></div>
+          <div><label class="block text-xs font-bold uppercase text-slate-300 mb-1">Sua Mensagem *</label><textarea id="feedbackText" required rows="3" placeholder="Conte como a leitura ou magia te auxiliou..." class="w-full px-3.5 py-2.5 rounded-xl bg-tarot-night border border-purple-500/30 text-white placeholder-slate-500 focus:outline-none text-xs focus:border-tarot-gold"></textarea></div>
           <button type="submit" id="btnSubmitDepoimento" class="w-full py-3 rounded-xl bg-tarot-gold text-tarot-night font-bold text-xs uppercase tracking-wider transition">Publicar</button>
         </form>
       </div>
