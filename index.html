@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Visões do Tarot | Consultas, Rituais e Agendamentos</title>
+  <link rel="icon" type="image/svg+xml" href="favicon-tarot.svg" />
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Estilos Externos -->
+  <link rel="stylesheet" href="style.css" />
+  
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore-compat.js"></script>
+
+  <!-- Google Fonts: Cinzel & Montserrat -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;800;900&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            cinzel: ['Cinzel', 'serif'],
+            sans: ['Montserrat', 'sans-serif'],
+          },
+          colors: {
+            tarot: {
+              night: '#07030e', surface: '#0f061e', card: '#180a2f', cardHover: '#230f42',
+              border: '#3c1d68', gold: '#e0b973', goldLight: '#ffd885', goldDark: '#9e782e',
+              purpleGlow: '#9333ea', wine: '#2c0c28',
+            }
+          },
+          animation: {
+            'spin-slow': 'spin 35s linear infinite',
+            'spin-reverse': 'spin-reverse 45s linear infinite',
+            'pulse-glow': 'pulse-glow 3s infinite',
+          },
+          keyframes: {
+            'spin-reverse': { '0%': { transform: 'rotate(0deg)' }, '100%': { transform: 'rotate(-360deg)' } },
+            'pulse-glow': {
+              '0%, 100%': { opacity: '0.4', filter: 'drop-shadow(0 0 12px rgba(224, 185, 115, 0.4))' },
+              '50%': { opacity: '0.9', filter: 'drop-shadow(0 0 25px rgba(224, 185, 115, 0.8))' }
+            }
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-tarot-night text-slate-100 font-sans min-h-screen selection:bg-tarot-gold selection:text-tarot-night relative overflow-x-hidden">
+
+  <!-- Interactive Parallax Background Canvas -->
+  <canvas id="starsCanvas" class="fixed inset-0 pointer-events-none z-0 opacity-70"></canvas>
+  <div class="fixed top-0 left-0 h-1 bg-gradient-to-r from-purple-600 via-tarot-gold to-amber-300 z-50 transition-all duration-75 shadow-[0_0_12px_#e0b973]" id="scrollProgressBar" style="width: 0%;"></div>
+  <div class="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+    <div id="glowOrb1" class="absolute -top-32 left-1/4 w-[550px] h-[550px] bg-purple-900/25 rounded-full blur-[140px] transition-transform duration-700"></div>
+    <div id="glowOrb2" class="absolute top-1/2 -right-24 w-[500px] h-[500px] bg-tarot-gold/15 rounded-full blur-[150px] transition-transform duration-700"></div>
+  </div>
+
+  <!-- HEADER -->
+  <header class="sticky top-0 z-40 glass-panel border-b border-purple-500/20 shadow-xl transition-all duration-300">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3.5 flex items-center justify-between">
+      <a href="#" class="flex items-center gap-3 group">
+        <div class="relative w-10 h-10 rounded-full border border-tarot-gold/60 flex items-center justify-center bg-tarot-night shadow-[0_0_15px_rgba(224,185,115,0.3)] group-hover:scale-105 transition-transform duration-300">
+          <i data-lucide="sparkles" class="w-5 h-5 text-tarot-gold animate-pulse"></i>
+          <div class="absolute inset-0 rounded-full border border-tarot-gold/30 animate-spin-slow"></div>
+        </div>
+        <div>
+          <span class="font-cinzel text-lg sm:text-xl font-bold tracking-widest gold-gradient-text block leading-none">VISÕES DO TAROT</span>
+          <span class="text-[9px] uppercase tracking-[0.25em] text-purple-300/80 font-medium block mt-1">Tarot • Atendimento • Orientação</span>
+        </div>
+      </a>
+      <nav class="hidden lg:flex items-center gap-6 text-xs uppercase tracking-wider font-semibold text-slate-300">
+        <a href="#horarios" class="hover:text-tarot-gold transition">Horários</a>
+        <a href="#servicos" class="hover:text-tarot-gold transition">Serviços</a>
+        <a href="catalogo.html" class="hover:text-tarot-gold transition">Catálogo</a>
+        <a href="#redes-sociais" class="hover:text-tarot-gold transition">Redes</a>
+        <a href="#feedbacks" class="hover:text-tarot-gold transition">Avaliações</a>
+        <a href="#agendamento" class="hover:text-tarot-gold transition">Agendar</a>
+      </nav>
+      <div class="flex items-center gap-2 sm:gap-3">
+        <button id="soundToggle" type="button" onclick="toggleSoundPreference()" aria-pressed="false" class="relative w-10 h-10 rounded-xl bg-purple-950/70 border border-tarot-gold/40 text-tarot-gold hover:bg-tarot-gold hover:text-tarot-night transition-all flex items-center justify-center">
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M11 5 6 9H3v6h3l5 4V5Z"></path>
+            <path class="sound-wave" d="M15.5 8.5a5 5 0 0 1 0 7"></path>
+            <path class="sound-wave" d="M19 5a10 10 0 0 1 0 14"></path>
+            <path class="sound-muted-mark" d="m16 9 5 6m0-6-5 6"></path>
+          </svg>
+        </button>
+        <button onclick="toggleCartDrawer()" class="relative px-3.5 py-2 rounded-xl bg-purple-950/70 border border-tarot-gold/50 text-tarot-gold hover:bg-tarot-gold hover:text-tarot-night transition-all flex items-center gap-2 group shadow-md">
+          <i data-lucide="shopping-bag" class="w-4 h-4 transition-transform group-hover:rotate-12"></i>
+          <span class="text-xs font-bold hidden sm:inline">Carrinho</span>
+          <span id="headerCartCount" class="w-5 h-5 rounded-full bg-tarot-gold text-tarot-night text-[11px] font-black flex items-center justify-center shadow-md">0</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN CONTAINER -->
+  <main class="relative z-10">
+    <div class="top-social-strip">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6 py-2.5 flex items-center justify-center gap-2 sm:gap-3 overflow-x-auto">
+        <span class="text-[10px] uppercase tracking-widest text-tarot-gold font-bold shrink-0">Canais oficiais</span>
+        <a class="top-social-slot" href="https://www.instagram.com/visoesdotarot/" target="_blank"><img class="top-social-icon" src="https://cdn.simpleicons.org/instagram/e0b973" alt=""> Instagram</a>
+        <a class="top-social-slot" href="https://api.whatsapp.com/message/UQQYBS4GVFVKF1" target="_blank"><img class="top-social-icon" src="https://cdn.simpleicons.org/whatsapp/e0b973" alt=""> WhatsApp</a>
+        <span class="top-social-slot"><img class="top-social-icon" src="https://cdn.simpleicons.org/tiktok/e0b973" alt=""> TikTok</span>
+      </div>
+    </div>
+
+    <!-- HERO SECTION -->
+    <section class="max-w-6xl mx-auto px-4 sm:px-6 pt-12 pb-16 text-center relative">
+      <i data-lucide="sparkles" class="hero-magic-float hero-magic-one"></i><i data-lucide="moon-star" class="hero-magic-float hero-magic-two"></i>
+      <i data-lucide="wand-2" class="hero-magic-float hero-magic-three"></i><i data-lucide="stars" class="hero-magic-float hero-magic-four"></i>
+      <div class="absolute left-1/2 -top-12 -translate-x-1/2 w-80 h-80 sm:w-[520px] sm:h-[520px] border border-purple-500/10 rounded-full pointer-events-none animate-spin-slow">
+        <div class="absolute inset-4 border border-tarot-gold/10 rounded-full"></div>
+        <div class="absolute inset-16 border border-dashed border-purple-400/20 rounded-full animate-spin-reverse"></div>
+      </div>
+      <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-tarot-gold/30 glass-panel text-tarot-gold text-xs font-semibold tracking-widest uppercase mb-6 shadow-[0_0_15px_rgba(224,185,115,0.2)] scroll-reveal">
+        <i data-lucide="moon-star" class="w-3.5 h-3.5"></i><span>Leituras • Orientação • Atendimento</span><i data-lucide="sun-medium" class="w-3.5 h-3.5"></i>
+      </div>
+      <h1 class="text-4xl sm:text-6xl md:text-7xl font-cinzel font-black tracking-tight text-white mb-6 leading-[1.1] scroll-reveal">
+        Mais clareza para <br class="hidden sm:inline" />
+        <span class="gold-gradient-text drop-shadow-[0_0_35px_rgba(224,185,115,0.35)]">o seu amor</span>
+      </h1>
+      <p class="text-slate-300 max-w-2xl mx-auto text-sm sm:text-base mb-8 leading-relaxed font-normal scroll-reveal">
+        Consultas de Tarot, orientação pessoal e serviços para amor, carreira e bem-estar. O pagamento é feito <strong>integralmente via PIX</strong> antes da confirmação.
+      </p>
+      <div class="highlight-banner max-w-3xl mx-auto p-4 rounded-2xl bg-gradient-to-r from-amber-950/40 via-purple-950/60 to-amber-950/40 border border-tarot-gold/40 text-xs sm:text-sm text-slate-200 mb-10 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-6 scroll-reveal shadow-lg">
+        <span class="highlight-spark highlight-spark-one"></span><span class="highlight-spark highlight-spark-two"></span><span class="highlight-spark highlight-spark-three"></span>
+        <div class="highlight-item flex items-center gap-2"><i data-lucide="calendar" class="w-4 h-4 text-tarot-gold shrink-0"></i><span><strong>Qua a Dom:</strong> atendimento</span></div>
+        <div class="highlight-divider hidden sm:block text-tarot-gold/40">•</div>
+        <div class="highlight-item flex items-center gap-2"><i data-lucide="badge-dollar-sign" class="w-4 h-4 text-emerald-400 shrink-0"></i><span><strong>Pagamento total:</strong> PIX</span></div>
+        <div class="highlight-divider hidden sm:block text-tarot-gold/40">•</div>
+        <div class="highlight-item flex items-center gap-2"><i data-lucide="flame" class="w-4 h-4 text-purple-400 shrink-0"></i><span><strong>Trabalhos:</strong> consulta prévia</span></div>
+      </div>
+      <div class="flex flex-col sm:flex-row items-center justify-center gap-4 scroll-reveal">
+        <a href="#servicos" class="w-full sm:w-auto px-8 py-4 rounded-xl bg-gradient-to-r from-amber-500 via-tarot-gold to-amber-300 text-tarot-night font-bold text-sm tracking-wide uppercase shadow-[0_0_25px_rgba(224,185,115,0.45)] hover:shadow-[0_0_40px_rgba(224,185,115,0.7)] transition flex items-center justify-center gap-2"><i data-lucide="sparkle" class="w-4 h-4"></i> Ver serviços</a>
+        <a href="catalogo.html" class="w-full sm:w-auto px-8 py-4 rounded-xl border border-tarot-gold/45 bg-purple-950/65 text-tarot-goldLight font-bold text-sm tracking-wide uppercase hover:border-tarot-gold hover:bg-purple-900/70 transition flex items-center justify-center gap-2"><i data-lucide="book-open" class="w-4 h-4"></i> Catálogo</a>
+      </div>
+    </section>
+
+    <!-- HORÁRIOS -->
+    <section id="horarios" class="py-16 bg-tarot-surface/70 border-y border-purple-900/40 relative">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6">
+        <div class="glass-panel p-8 sm:p-12 rounded-3xl purple-gold-border relative overflow-hidden scroll-reveal">
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+            <div class="lg:col-span-7 space-y-4">
+              <div class="inline-flex items-center gap-2 text-tarot-gold text-xs font-bold tracking-widest uppercase"><i data-lucide="hourglass" class="w-4 h-4"></i><span>Disponibilidade</span></div>
+              <h2 class="text-3xl sm:text-4xl font-cinzel font-bold text-white">Horários e reserva</h2>
+              <p class="text-slate-300 text-sm leading-relaxed"><strong>O valor total é enviado via PIX antes da confirmação do horário</strong>, para que você tenha tranquilidade.</p>
+              <div class="pt-2 grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                <div class="p-3 rounded-xl bg-purple-950/80 border border-purple-500/30 flex items-start gap-2.5"><i data-lucide="check-circle" class="w-4 h-4 text-emerald-400"></i><span><strong>Reserva feita:</strong> vaga garantida.</span></div>
+                <div class="p-3 rounded-xl bg-purple-950/80 border border-purple-500/30 flex items-start gap-2.5"><i data-lucide="clock" class="w-4 h-4 text-tarot-gold"></i><span><strong>Janela:</strong> Qua a Dom.</span></div>
+              </div>
+            </div>
+            <div class="lg:col-span-5 space-y-3.5">
+              <div class="p-5 rounded-2xl bg-emerald-950/30 border border-emerald-500/40 shadow-lg flex items-center justify-between">
+                <div class="flex items-center gap-3"><div class="w-11 h-11 rounded-xl bg-emerald-900/60 flex items-center justify-center text-emerald-300"><i data-lucide="calendar-check" class="w-5 h-5"></i></div><div><h4 class="font-bold text-sm text-white">Quarta a Domingo</h4><p class="text-xs text-emerald-300">Consultas</p></div></div>
+                <span class="text-xs font-semibold text-emerald-300">Aberto</span>
+              </div>
+              <div class="p-4 rounded-2xl bg-rose-950/20 border border-rose-500/20 flex items-center justify-between opacity-85">
+                <div class="flex items-center gap-3"><div class="w-10 h-10 rounded-xl bg-rose-900/40 flex items-center justify-center text-rose-300"><i data-lucide="shield-alert" class="w-5 h-5"></i></div><div><h4 class="font-bold text-sm text-slate-300">Segunda & Terça</h4><p class="text-xs text-rose-300/80">Folga</p></div></div>
+                <span class="text-xs font-semibold text-rose-300">Fechado</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SERVIÇOS -->
+    <section id="servicos" class="max-w-7xl mx-auto px-4 sm:px-6 py-16 relative">
+      <div class="text-center max-w-3xl mx-auto mb-14 scroll-reveal">
+        <span class="text-xs uppercase tracking-widest text-tarot-gold font-bold">Atendimento direto</span>
+        <h2 class="text-3xl sm:text-5xl font-cinzel font-black text-white mt-2">Nossos Serviços</h2>
+      </div>
+
+      <div class="mb-16">
+        <div class="flex items-center gap-3 mb-6"><div class="h-[1px] bg-gradient-to-r from-transparent via-tarot-gold/50 to-transparent flex-1"></div><span class="font-cinzel text-lg sm:text-xl font-bold text-tarot-gold flex items-center gap-2"><i data-lucide="cards" class="w-5 h-5"></i> Consultas Gerais</span><div class="h-[1px] bg-gradient-to-r from-transparent via-tarot-gold/50 to-transparent flex-1"></div></div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto" id="tarotCardsList"></div>
+      </div>
+
+      <div class="mb-16">
+        <div class="flex items-center gap-3 mb-6"><div class="h-[1px] bg-gradient-to-r from-transparent via-purple-500/50 to-transparent flex-1"></div><span class="font-cinzel text-lg sm:text-xl font-bold text-purple-300 flex items-center gap-2"><i data-lucide="sparkles" class="w-5 h-5"></i> Outros Serviços</span><div class="h-[1px] bg-gradient-to-r from-transparent via-purple-500/50 to-transparent flex-1"></div></div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8" id="fixedRitualsList"></div>
+      </div>
+
+      <div class="ritual-section">
+        <div class="flex items-center gap-3 mb-6"><div class="h-[1px] bg-gradient-to-r from-transparent via-rose-500/50 to-transparent flex-1"></div><span class="font-cinzel text-lg sm:text-xl font-bold text-rose-300 flex items-center gap-2"><i data-lucide="flame" class="w-5 h-5"></i> Rituais e Trabalhos</span><div class="h-[1px] bg-gradient-to-r from-transparent via-rose-500/50 to-transparent flex-1"></div></div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6" id="customRitualsList"></div>
+      </div>
+    </section>
+
+    <!-- AGENDAMENTO -->
+    <section id="agendamento" class="max-w-4xl mx-auto px-4 sm:px-6 py-16">
+      <div class="glass-panel booking-magic-panel p-6 sm:p-10 rounded-3xl purple-gold-border relative shadow-2xl scroll-reveal">
+       <div class="text-center mb-8">
+          <div class="inline-flex p-3 rounded-2xl bg-tarot-gold/10 text-tarot-gold border border-tarot-gold/30 mb-3"><i data-lucide="calendar-clock" class="w-7 h-7"></i></div>
+          <h2 class="text-2xl sm:text-4xl font-cinzel font-bold text-white">Agendar Horário</h2>
+        </div>
+        <form id="bookingForm" novalidate onsubmit="handleBookingSubmit(event)" class="space-y-6">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <div>
+              <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-2">Seu Nome Completo *</label>
+              <input type="text" id="userName" required placeholder="Ex: Maria Clara Silva" class="w-full px-4 py-3.5 rounded-xl bg-[#090314] border border-purple-500/30 text-white placeholder-slate-500 focus:outline-none focus:border-tarot-gold transition text-sm" />
+            </div>
+            <div>
+              <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-2">Seu WhatsApp *</label>
+              <input type="tel" id="userPhone" required placeholder="(00) 90000-0000" class="w-full px-4 py-3.5 rounded-xl bg-[#090314] border border-purple-500/30 text-white placeholder-slate-500 focus:outline-none focus:border-tarot-gold transition text-sm" />
+            </div>
+          </div>
+          <div class="space-y-5">
+            <div><label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-2">Dia *</label><input type="hidden" id="bookingDay" value="" /><div id="dayPicker" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3"></div></div>
+            <div><label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-2">Horário *</label><input type="hidden" id="bookingTime" value="" /><div id="timePicker" class="grid grid-cols-2 sm:grid-cols-4 gap-3"></div></div>
+          </div>
+          <div class="p-4 rounded-2xl bg-purple-950/40 border border-purple-500/30">
+            <div class="flex items-center justify-between mb-2"><span class="text-xs font-bold uppercase text-tarot-gold tracking-wider flex items-center gap-1.5"><i data-lucide="layers" class="w-4 h-4"></i> Serviços:</span></div>
+            <div id="formServicesSummary" class="text-xs text-slate-300 space-y-1"></div>
+          </div>
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-2">Dúvida ou Objetivo:</label>
+            <textarea id="bookingNotes" rows="3" placeholder="Ex: Quero saber sobre a volta do meu ex-parceiro..." class="w-full px-4 py-3.5 rounded-xl bg-[#090314] border border-purple-500/30 text-white placeholder-slate-500 focus:outline-none focus:border-tarot-gold transition text-sm"></textarea>
+          </div>
+          <button type="submit" class="w-full py-4 rounded-2xl bg-gradient-to-r from-amber-500 via-tarot-gold to-amber-300 text-tarot-night font-black text-base uppercase tracking-wider transition-all flex items-center justify-center gap-2 hover:scale-[1.01]"><i data-lucide="message-circle" class="w-5 h-5"></i><span>Confirmar no WhatsApp</span></button>
+        </form>
+      </div>
+    </section>
+
+    <!-- FEEDBACKS -->
+    <section id="feedbacks" class="max-w-6xl mx-auto px-4 sm:px-6 py-16 scroll-reveal">
+      <div class="text-center max-w-3xl mx-auto mb-12">
+        <h2 class="text-3xl sm:text-5xl font-cinzel font-black text-white mt-1">Depoimentos</h2>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12" id="feedbacksList"></div>
+
+      <div class="glass-panel p-6 sm:p-8 rounded-3xl purple-gold-border max-w-2xl mx-auto">
+        <div class="text-center mb-6"><h3 class="font-cinzel text-xl font-bold text-white flex items-center justify-center gap-2"><i data-lucide="star" class="w-5 h-5 text-tarot-gold"></i> Deixe Seu Depoimento</h3></div>
+        <form id="feedbackForm" onsubmit="handleFeedbackSubmit(event)" class="space-y-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div><label class="block text-xs font-bold uppercase text-slate-300 mb-1">Seu Nome *</label><input type="text" id="feedbackName" required placeholder="Ex: Camila R." class="w-full px-3.5 py-2.5 rounded-xl bg-tarot-night border border-purple-500/30 text-white placeholder-slate-500 focus:outline-none text-xs focus:border-tarot-gold" /></div>
+            <div><label class="block text-xs font-bold uppercase text-slate-300 mb-1">Serviço *</label><select id="feedbackService" class="w-full px-3.5 py-2.5 rounded-xl bg-tarot-night border border-purple-500/30 text-white focus:outline-none text-xs focus:border-tarot-gold"></select></div>
+          </div>
+          <div><label class="block text-xs font-bold uppercase text-slate-300 mb-1">Avaliação:</label><div class="flex items-center gap-2" id="starRatingSelect"><button type="button" onclick="setFeedbackRating(1)" class="star-btn text-tarot-gold text-lg">★</button><button type="button" onclick="setFeedbackRating(2)" class="star-btn text-tarot-gold text-lg">★</button><button type="button" onclick="setFeedbackRating(3)" class="star-btn text-tarot-gold text-lg">★</button><button type="button" onclick="setFeedbackRating(4)" class="star-btn text-tarot-gold text-lg">★</button><button type="button" onclick="setFeedbackRating(5)" class="star-btn text-tarot-gold text-lg">★</button><span id="starRatingLabel" class="text-xs text-tarot-gold font-bold ml-2">5 Estrelas</span></div></div>
+          <div><label class="block text-xs font-bold uppercase text-slate-300 mb-1">Sua Mensagem *</label><textarea id="feedbackText" required rows="3" placeholder="Conte como a leitura ou magia te auxiliou..." class="w-full px-3.5 py-2.5 rounded-xl bg-tarot-night border border-purple-500/30 text-white placeholder-slate-500 focus:outline-none text-xs focus:border-tarot-gold"></textarea></div>
+          <button type="submit" id="btnSubmitDepoimento" class="w-full py-3 rounded-xl bg-tarot-gold text-tarot-night font-bold text-xs uppercase tracking-wider transition">Publicar</button>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <!-- MODALS & SIDEBARS -->
+  <div id="cartDrawer" class="fixed inset-y-0 right-0 w-full sm:w-[420px] bg-[#0c0517] border-l border-tarot-gold/40 z-50 transform translate-x-full transition-transform duration-300 shadow-2xl flex flex-col">
+    <div class="p-5 border-b border-purple-500/20 flex items-center justify-between bg-tarot-card">
+      <h3 class="font-cinzel font-bold text-white text-base">Carrinho de Pedidos</h3>
+      <button onclick="toggleCartDrawer()" class="text-slate-400 hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button>
+    </div>
+    <div id="drawerItemsList" class="flex-1 overflow-y-auto p-5 space-y-3"></div>
+    <div class="p-5 border-t border-purple-500/20 bg-tarot-surface space-y-3">
+      <div class="flex items-center justify-between text-xs text-emerald-400 font-bold border-t border-purple-500/20 pt-2"><span>Pagamento (PIX):</span><span class="text-base text-tarot-gold font-cinzel">R$ <span id="drawerDepositPrice">0,00</span></span></div>
+      <div class="grid grid-cols-2 gap-2 pt-2"><button onclick="clearCart()" class="py-2.5 px-3 rounded-xl border border-rose-500/30 text-rose-300 text-xs font-semibold hover:bg-rose-950/40 transition">Esvaziar</button><a href="#agendamento" onclick="toggleCartDrawer()" class="py-2.5 px-3 rounded-xl bg-tarot-gold text-tarot-night text-xs font-black text-center transition">Finalizar</a></div>
+    </div>
+  </div>
+
+  <div id="editFeedbackBackdrop" class="cart-alert-backdrop" hidden>
+    <div class="glass-panel p-6 sm:p-8 rounded-3xl purple-gold-border max-w-lg w-full relative shadow-2xl bg-tarot-surface">
+      <div class="flex items-center justify-between mb-5"><h3 class="font-cinzel text-lg font-bold text-white flex items-center gap-2">Editar Depoimento</h3><button type="button" onclick="fecharModalEdicaoDepoimento()" class="text-slate-400 hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button></div>
+      <form id="editFeedbackForm" onsubmit="handleEditFeedbackSubmit(event)" class="space-y-4">
+        <div><input type="text" id="editFeedbackName" required class="w-full px-3.5 py-2.5 rounded-xl bg-tarot-night border border-purple-500/30 text-white text-xs focus:border-tarot-gold" /></div>
+        <div><select id="editFeedbackService" class="w-full px-3.5 py-2.5 rounded-xl bg-tarot-night border border-purple-500/30 text-white text-xs focus:border-tarot-gold"></select></div>
+        <div class="flex items-center gap-2" id="editStarRatingSelect"><button type="button" onclick="setEditFeedbackRating(1)" class="edit-star-btn text-tarot-gold text-lg">★</button><button type="button" onclick="setEditFeedbackRating(2)" class="edit-star-btn text-tarot-gold text-lg">★</button><button type="button" onclick="setEditFeedbackRating(3)" class="edit-star-btn text-tarot-gold text-lg">★</button><button type="button" onclick="setEditFeedbackRating(4)" class="edit-star-btn text-tarot-gold text-lg">★</button><button type="button" onclick="setEditFeedbackRating(5)" class="edit-star-btn text-tarot-gold text-lg">★</button><span id="editStarRatingLabel" class="text-xs text-tarot-gold font-bold ml-2">5 Estrelas</span></div>
+        <div><textarea id="editFeedbackText" required rows="3" class="w-full px-3.5 py-2.5 rounded-xl bg-tarot-night border border-purple-500/30 text-white text-xs focus:border-tarot-gold"></textarea></div>
+        <div class="flex gap-2 pt-2"><button type="submit" class="flex-1 py-3 rounded-xl bg-tarot-gold text-tarot-night font-bold text-xs">Salvar</button><button type="button" onclick="fecharModalEdicaoDepoimento()" class="px-4 py-3 rounded-xl border border-rose-500/40 bg-rose-950/40 text-rose-300 font-bold text-xs">Cancelar</button></div>
+      </form>
+    </div>
+  </div>
+
+  <div id="cartAlertBackdrop" class="cart-alert-backdrop" hidden><section class="cart-alert alert alert-danger"><div class="cart-alert-header"><div class="cart-alert-icon">!</div><h2 id="cartAlertTitle">Alerta do carrinho</h2></div><p>Deseja remover <strong id="cartAlertItem">este item</strong>?</p><div class="cart-alert-actions"><button type="button" class="cart-alert-cancel" onclick="closeCartAlert()">Cancelar</button><button type="button" class="cart-alert-confirm" onclick="confirmRemoveFromCart()">Remover</button></div></section></div>
+  <div id="feedbackAlertBackdrop" class="cart-alert-backdrop" hidden><section class="cart-alert alert alert-danger"><div class="cart-alert-header"><div class="cart-alert-icon">!</div><h2 id="feedbackAlertTitle">Alerta de exclusão</h2></div><p>Deseja excluir o depoimento de <strong id="feedbackAlertName">este consulente</strong>?</p><div class="cart-alert-actions"><button type="button" class="cart-alert-cancel" onclick="closeFeedbackAlert()">Cancelar</button><button type="button" class="cart-alert-confirm" onclick="confirmDeleteFeedback()">Excluir</button></div></section></div>
+
+  <!-- FLOATING BUTTONS -->
+  <div class="floating-buttons-container">
+    <button id="backToTopBtn" class="back-to-top-btn" type="button" onclick="scrollToTop()"><i data-lucide="arrow-up" class="w-5 h-5"></i></button>
+    <button id="helpPopupLauncher" class="help-popup-launcher" type="button"><i data-lucide="message-circle-question" class="w-6 h-6"></i></button>
+  </div>
+  
+  <div id="helpPopupBackdrop" class="help-popup-backdrop" hidden><section class="help-popup"><button id="helpPopupClose" class="help-popup-close" type="button"><i data-lucide="x" class="w-5 h-5"></i></button><div class="help-popup-icon"><i data-lucide="messages-square" class="w-6 h-6"></i></div><h2 id="helpPopupTitle">Dúvidas?</h2><p id="helpPopupDescription">Nos mande uma mensagem!</p><span id="helpPopupNumber" class="help-popup-number"></span><a id="helpPopupWhatsApp" class="help-popup-cta" href="#" target="_blank"><i data-lucide="message-circle" class="w-4 h-4"></i> WhatsApp</a></section></div>
+
+  <div id="toastNotification" class="fixed top-20 right-4 z-50 transform translate-x-96 transition-transform duration-300 max-w-sm w-full pointer-events-none"><div class="glass-panel border-l-4 border-tarot-gold p-4 rounded-xl shadow-2xl text-white pointer-events-auto flex items-start gap-3"><div class="w-8 h-8 rounded-full bg-tarot-gold/20 flex items-center justify-center text-tarot-gold shrink-0"><i data-lucide="bell" class="w-4 h-4"></i></div><div class="flex-1"><h4 class="font-bold text-xs uppercase tracking-wide text-tarot-gold" id="toastTitle">Mensagem</h4><p class="text-xs text-slate-200 mt-0.5" id="toastMessage"></p></div><button onclick="hideToast()" class="text-slate-400 hover:text-white text-xs">✕</button></div></div>
+
+  <!-- INCLUDES -->
+  <script src="shared.js"></script>
+  <script src="app.js"></script>
+
+  <footer class="text-center py-5 text-xs text-slate-400 border-t border-purple-500/20 bg-[#090314]">
+    &copy; 2026 leydev. Todos os direitos reservados.
+  </footer>
+</body>
+</html>

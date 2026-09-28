@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cartomante | Visões do Tarot</title>
+  <link rel="icon" type="image/svg+xml" href="favicon-cartomante.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;800&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- CSS Externo -->
+  <link rel="stylesheet" href="cartomante.css" />
+  
+  <!-- Firebase SDK (Adicionado agora) -->
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore-compat.js"></script>
+
+  <!-- CSS Externo -->
+  <link rel="stylesheet" href="cartomante.css" />
+</head>
+<body>
+
+  <!-- TELA DE LOGIN DE PROTEÇÃO DA PÁGINA -->
+  <div id="loginOverlay" class="login-wrapper">
+    <div class="login-box">
+      <h1>Área Restrita</h1>
+      <p>Insira a palavra-passe para aceder ao painel da cartomante.</p>
+      <div id="loginError" class="login-error" hidden>Palavra-passe incorreta.</div>
+      <form onsubmit="handleLoginPassword(event)">
+        <input type="password" id="adminPasswordInput" placeholder="Palavra-passe secreta" required autofocus />
+        <button type="submit" class="button" style="width: 100%;">Entrar no Painel</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- CONTEÚDO COMPLETO PROTEGIDO -->
+  <div id="protectedContent" class="container">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-icon">✦</div>
+        <div>
+          <strong>VISÕES DO TAROT</strong>
+          <span>Cartomante</span>
+        </div>
+      </div>
+
+      <div class="nav-actions">
+        <button id="adminSoundToggle" class="sound-toggle" type="button" onclick="toggleAdminSoundPreference()" aria-pressed="false" aria-label="Desativar efeitos sonoros" title="Desativar efeitos sonoros">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M11 5 6 9H3v6h3l5 4V5Z"></path>
+            <path class="sound-wave" d="M15.5 8.5a5 5 0 0 1 0 7"></path>
+            <path class="sound-wave" d="M19 5a10 10 0 0 1 0 14"></path>
+            <path class="sound-muted-mark" d="m16 9 5 6m0-6-5 6"></path>
+          </svg>
+          <span id="adminSoundToggleLabel">Som ligado</span>
+        </button>
+        <button id="activityButton" class="notification-button" type="button" onclick="openActivityModal()" aria-label="Abrir notificações">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"></path><path d="M10 21h4"></path></svg>
+          <span>Notificações</span>
+          <span id="activityUnreadCount" class="notification-count" hidden>0</span>
+        </button>
+        <button class="button" type="button" onclick="requestClearAllBookings()">Apagar histórico</button>
+        <button class="button-ghost" type="button" onclick="handleLogout()" style="border-color: rgba(248,113,113,.4); color: #fca5a5;">Sair</button>
+      </div>
+    </header>
+
+    <main class="panel">
+      <div class="header-card">
+        <div>
+          <span class="eyebrow">Gestão sagrada dos atendimentos</span>
+          <h1>Gestão de Agendamentos</h1>
+          <p>Pedidos do cliente, sinal e envio do PIX para a confirmação do atendimento.</p>
+        </div>
+      </div>
+
+      <div class="settings">
+        <input id="adminPhoneInput" type="tel" inputmode="numeric" maxlength="13" placeholder="5585984217895" aria-describedby="phoneValidation" />
+        <button class="button" type="button" onclick="saveAdminPhone()">Salvar WhatsApp</button>
+        <span id="phoneSaveNotice" class="phone-save-notice" role="status" aria-live="polite" hidden>✓ WhatsApp salvo</span>
+        <p id="phoneValidation" class="phone-validation" role="status" aria-live="polite">Digite somente números, incluindo código do país (55) e DDD. O telefone precisa ser válido.</p>
+      </div>
+
+      <div class="content">
+        <div class="summary">
+          <div class="stat gold">
+            <label>Total de pedidos</label>
+            <strong id="countTotal">0</strong>
+          </div>
+          <div class="stat green">
+            <label>Pagamento total</label>
+            <strong id="countDeposit">R$ 0,00</strong>
+          </div>
+          <div class="stat purple">
+            <label>WhatsApp</label>
+            <strong id="phoneLabel">-</strong>
+          </div>
+        </div>
+
+        <div id="bookingsList" class="list"></div>
+      </div>
+    </main>
+
+    <footer class="watermark">
+      &copy; 2026 leydev. Todos os direitos reservados.
+    </footer>
+  </div>
+
+  <div id="successToast" class="toast" role="status" aria-live="polite">
+    <div class="toast-icon">✓</div>
+    <div>
+      <strong id="toastTitle">Excluído com sucesso</strong>
+      <span id="toastMessage">O agendamento foi removido do histórico.</span>
+    </div>
+  </div>
+
+  <div id="newBookingToast" class="toast new-booking-toast" role="status" aria-live="assertive">
+    <div class="toast-icon">✦</div>
+    <div>
+      <strong>Novo cliente chegou</strong>
+      <span id="newBookingMessage">Um novo agendamento foi recebido.</span>
+    </div>
+  </div>
+
+  <div id="deleteAlertBackdrop" class="delete-alert-backdrop" hidden>
+    <section class="delete-alert alert alert-danger" role="alertdialog" aria-modal="true" aria-labelledby="deleteAlertTitle">
+      <div class="delete-alert-header">
+        <div class="delete-alert-icon">!</div>
+        <h2 id="deleteAlertTitle">Alerta de exclusão</h2>
+      </div>
+      <p>Tem certeza que deseja excluir o agendamento de <strong id="deleteAlertName">este cliente</strong>? Essa ação não poderá ser desfeita.</p>
+      <div class="delete-alert-actions">
+        <button type="button" class="alert-cancel" onclick="closeDeleteAlert()">Cancelar</button>
+        <button type="button" class="alert-confirm" onclick="confirmDeleteBooking()">Excluir agendamento</button>
+      </div>
+    </section>
+  </div>
+
+  <div id="activityModalBackdrop" class="activity-modal-backdrop" hidden>
+    <section class="activity-modal" role="dialog" aria-modal="true" aria-labelledby="activityModalTitle">
+      <div class="activity-modal-header">
+        <div>
+          <h2 id="activityModalTitle">Notificações</h2>
+          <p>Chegadas na fila de atendimento, seleções do catálogo e dúvidas no WhatsApp.</p>
+        </div>
+        <div class="activity-header-controls">
+          <button id="activityClearBtn" class="activity-clear-btn" type="button" onclick="clearAllNotifications()">Limpar tudo</button>
+          <button id="activityModalClose" class="activity-close" type="button" aria-label="Fechar notificações">×</button>
+        </div>
+      </div>
+      <div id="activityFeed" class="activity-feed" aria-live="polite"></div>
+    </section>
+  </div>
+
+  <!-- Lógica JavaScript -->
+  <script src="cartomante.js"></script>
+
+</body>
+</html>
