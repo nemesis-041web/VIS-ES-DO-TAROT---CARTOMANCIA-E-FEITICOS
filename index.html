@@ -8,6 +8,13 @@
 
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Estilos Externos -->
+  <link rel="stylesheet" href="style.css" />
+  
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore-compat.js"></script>
 
   <!-- Google Fonts: Cinzel & Montserrat -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -28,16 +35,9 @@
           },
           colors: {
             tarot: {
-              night: '#07030e',
-              surface: '#0f061e',
-              card: '#180a2f',
-              cardHover: '#230f42',
-              border: '#3c1d68',
-              gold: '#e0b973',
-              goldLight: '#ffd885',
-              goldDark: '#9e782e',
-              purpleGlow: '#9333ea',
-              wine: '#2c0c28',
+              night: '#07030e', surface: '#0f061e', card: '#180a2f', cardHover: '#230f42',
+              border: '#3c1d68', gold: '#e0b973', goldLight: '#ffd885', goldDark: '#9e782e',
+              purpleGlow: '#9333ea', wine: '#2c0c28',
             }
           },
           animation: {
@@ -46,10 +46,7 @@
             'pulse-glow': 'pulse-glow 3s infinite',
           },
           keyframes: {
-            'spin-reverse': {
-              '0%': { transform: 'rotate(0deg)' },
-              '100%': { transform: 'rotate(-360deg)' }
-            },
+            'spin-reverse': { '0%': { transform: 'rotate(0deg)' }, '100%': { transform: 'rotate(-360deg)' } },
             'pulse-glow': {
               '0%, 100%': { opacity: '0.4', filter: 'drop-shadow(0 0 12px rgba(224, 185, 115, 0.4))' },
               '50%': { opacity: '0.9', filter: 'drop-shadow(0 0 25px rgba(224, 185, 115, 0.8))' }
@@ -59,172 +56,12 @@
       }
     }
   </script>
-
-  <style>
-    ::selection { background: #e0b973; color: #090314; text-shadow: none; }
-    ::-moz-selection { background: #e0b973; color: #090314; text-shadow: none; }
-    /* Custom Scrollbar */
-    ::-webkit-scrollbar { width: 8px; }
-    ::-webkit-scrollbar-track { background: #07030e; }
-    ::-webkit-scrollbar-thumb { background: #3c1d68; border-radius: 999px; }
-    ::-webkit-scrollbar-thumb:hover { background: #e0b973; }
-
-    /* Visual Glass & Gold Utilities */
-    .gold-gradient-text {
-      background: linear-gradient(135deg, #fff2cf 0%, #e0b973 45%, #b2822a 100%);
-      background-clip: text;
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      color: transparent;
-    }
-    .purple-gold-border {
-      border: 1px solid rgba(224, 185, 115, 0.28);
-      box-shadow: 0 0 25px -5px rgba(147, 51, 234, 0.18);
-    }
-    .glass-panel {
-      background: rgba(17, 8, 33, 0.78);
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
-    }
-    .tilt-card {
-      transform-style: preserve-3d;
-      transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.25s ease;
-    }
-    .scroll-reveal, .scroll-item {
-      opacity: 0;
-      transform: translateY(28px);
-      transition: opacity 0.75s cubic-bezier(0.16, 1, 0.3, 1), transform 0.75s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-    .scroll-reveal.revealed, .scroll-item.revealed {
-      opacity: 1;
-      transform: translateY(0);
-    }
-    .scroll-item.revealed:hover { transform: translateY(-4px); }
-    .cart-alert-backdrop { position: fixed; inset: 0; z-index: 60; display: grid; place-items: center; padding: 20px; background: rgba(4,1,9,.78); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
-    .cart-alert-backdrop[hidden] { display: none; }
-    .cart-alert { width: min(440px, 100%); padding: 22px; border: 1px solid rgba(248,113,113,.62); border-left: 5px solid #f87171; border-radius: 16px; background: rgba(34,7,22,.97); box-shadow: 0 18px 55px rgba(0,0,0,.5), 0 0 30px rgba(244,63,94,.16); color: #ffe4e6; }
-    .cart-alert-header { display: flex; align-items: center; gap: 12px; }
-    .cart-alert-icon { width: 38px; height: 38px; display: grid; place-items: center; flex: 0 0 38px; border-radius: 50%; background: rgba(248,113,113,.16); color: #fda4af; font-size: 20px; font-weight: 800; }
-    .cart-alert h2 { margin: 0; color: #fda4af; font-family: 'Montserrat', sans-serif; font-size: 16px; font-weight: 700; letter-spacing: .04em; }
-    .cart-alert p { margin: 16px 0 20px; color: #fecdd3; font-size: 13px; line-height: 1.6; }
-    .cart-alert strong { color: #fff; }
-    .cart-alert-actions { display: flex; justify-content: flex-end; gap: 10px; }
-    .cart-alert-cancel, .cart-alert-confirm { border-radius: 10px; padding: 10px 15px; font: inherit; font-size: 11px; font-weight: 700; cursor: pointer; }
-    .cart-alert-cancel { border: 1px solid rgba(255,255,255,.2); background: rgba(255,255,255,.06); color: #fce7f3; }
-    .cart-alert-confirm { border: 1px solid #fb7185; background: #be123c; color: #fff; box-shadow: 0 0 16px rgba(225,29,72,.25); }
-    .help-popup-backdrop { position: fixed; inset: 0; z-index: 70; display: grid; place-items: center; padding: 20px; background: rgba(4,1,9,.78); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
-    .help-popup-backdrop[hidden] { display: none; }
-    .help-popup { position: relative; width: min(420px, 100%); padding: 28px 24px 24px; border: 1px solid rgba(224,185,115,.56); border-radius: 18px; background: linear-gradient(145deg, rgba(31,13,51,.98), rgba(10,5,19,.98)); box-shadow: 0 20px 60px rgba(0,0,0,.56), 0 0 34px rgba(224,185,115,.15); color: #f8fafc; text-align: center; animation: helpPopupEnter .35s cubic-bezier(.2,.8,.2,1) both; }
-    .help-popup-close { position: absolute; top: 10px; right: 10px; display: grid; place-items: center; width: 36px; height: 36px; border: 1px solid rgba(255,255,255,.14); border-radius: 50%; background: rgba(255,255,255,.05); color: #d6d3d1; cursor: pointer; }
-    .help-popup-icon { display: grid; place-items: center; width: 52px; height: 52px; margin: 0 auto 14px; border: 1px solid rgba(224,185,115,.45); border-radius: 16px; background: rgba(224,185,115,.1); color: #f5d18a; }
-    .help-popup h2 { margin: 0; color: #f5d18a; font-family: 'Cinzel', serif; font-size: 21px; font-weight: 700; line-height: 1.35; }
-    .help-popup p { margin: 10px 0 18px; color: #d6d3d1; font-size: 13px; line-height: 1.6; }
-    .help-popup-number { display: block; margin-bottom: 18px; color: #fff; font-size: 16px; font-weight: 700; }
-    .help-popup-cta { display: inline-flex; align-items: center; justify-content: center; gap: 9px; min-height: 46px; width: 100%; padding: 11px 16px; border: 1px solid rgba(74,222,128,.55); border-radius: 11px; background: #166534; color: white; font-size: 13px; font-weight: 700; text-decoration: none; transition: background .2s ease, transform .2s ease; }
-    .help-popup-cta:hover { transform: translateY(-2px); background: #15803d; }
-    
-    /* Botões flutuantes no canto inferior direito (WhatsApp + Voltar ao Topo) */
-    .floating-buttons-container { position: fixed; right: 18px; bottom: 18px; z-index: 45; display: flex; flex-direction: column; gap: 10px; align-items: center; }
-    .help-popup-launcher { display: grid; place-items: center; width: 54px; height: 54px; border: 1px solid rgba(74,222,128,.7); border-radius: 50%; background: #166534; color: white; box-shadow: 0 8px 24px rgba(0,0,0,.4); cursor: pointer; transition: transform .2s ease, background .2s ease; }
-    .help-popup-launcher:hover { transform: translateY(-3px); background: #15803d; }
-    
-    .back-to-top-btn { display: grid; place-items: center; width: 46px; height: 46px; border: 1px solid rgba(224,185,115,.7); border-radius: 50%; background: linear-gradient(135deg, #180a2f, #3c1d68); color: #e0b973; box-shadow: 0 8px 22px rgba(0,0,0,.45), 0 0 15px rgba(224,185,115,.25); cursor: pointer; transition: transform .25s ease, background .25s ease, color .25s ease, opacity .3s ease; opacity: 0; pointer-events: none; transform: translateY(10px); }
-    .back-to-top-btn.visible { opacity: 1; pointer-events: auto; transform: translateY(0); }
-    .back-to-top-btn:hover { transform: translateY(-3px) scale(1.08); background: #e0b973; color: #07030e; box-shadow: 0 12px 28px rgba(0,0,0,.5), 0 0 22px rgba(224,185,115,.6); }
-
-    @keyframes helpPopupEnter { from { opacity: 0; transform: translateY(12px) scale(.97); } to { opacity: 1; transform: translateY(0) scale(1); } }
-    @media (prefers-reduced-motion: reduce) { .help-popup { animation: none; } }
-    .social-space { min-height: 132px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; border: 1px dashed rgba(224,185,115,.34); border-radius: 18px; background: linear-gradient(145deg, rgba(24,10,47,.7), rgba(9,3,20,.62)); color: #c9c0d4; text-decoration: none; transition: transform .25s ease, border-color .25s ease, box-shadow .25s ease; }
-    .social-space:hover { transform: translateY(-4px); border-color: rgba(224,185,115,.72); box-shadow: 0 12px 25px rgba(0,0,0,.22), 0 0 20px rgba(147,51,234,.14); }
-    .social-space-icon { width: 42px; height: 42px; display: grid; place-items: center; border: 1px solid rgba(224,185,115,.36); border-radius: 13px; color: #e0b973; background: rgba(224,185,115,.08); }
-    .social-brand-icon { display: block; width: 22px; height: 22px; }
-    .social-space-title { color: #f5d18a; font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
-    .social-space-line { width: 90px; height: 1px; background: rgba(201,192,212,.28); }
-    .social-space-note { color: #8f849d; font-size: 10px; }
-    .top-social-strip { border-bottom: 1px solid rgba(224,185,115,.14); background: rgba(9,3,20,.48); }
-    .top-social-slot { display: inline-flex; align-items: center; gap: 7px; min-height: 32px; padding: 6px 10px; border: 1px dashed rgba(224,185,115,.3); border-radius: 999px; color: #a99caf; font-size: 10px; text-decoration: none; white-space: nowrap; }
-    .top-social-slot i { color: #e0b973; }
-    .top-social-icon { display: block; width: 14px; height: 14px; }
-    #soundToggle .sound-muted-mark { display: none; }
-    #soundToggle[aria-pressed="true"] .sound-wave { display: none; }
-    #soundToggle[aria-pressed="true"] .sound-muted-mark { display: block; }
-    .highlight-banner { position: relative; isolation: isolate; overflow: hidden; }
-    .highlight-banner::before { content: ''; position: absolute; inset: -80% -20%; z-index: -1; background: linear-gradient(105deg, transparent 42%, rgba(255,234,178,.18) 50%, transparent 58%); transform: translateX(-70%) rotate(8deg); animation: bannerSweep 8s ease-in-out infinite; pointer-events: none; }
-    .highlight-banner::after { content: ''; position: absolute; width: 190px; height: 190px; right: 8%; top: -145px; z-index: -1; border: 1px solid rgba(224,185,115,.16); border-radius: 50%; box-shadow: 0 0 0 22px rgba(147,51,234,.04), 0 0 0 44px rgba(224,185,115,.03); animation: haloTurn 14s linear infinite; pointer-events: none; }
-    .highlight-item { position: relative; z-index: 1; animation: highlightFloat 4.8s ease-in-out infinite; }
-    .highlight-item:nth-of-type(3) { animation-delay: -1.6s; }
-    .highlight-item:nth-of-type(5) { animation-delay: -3.2s; }
-    .highlight-item i { animation: iconPulse 3.2s ease-in-out infinite; }
-    .highlight-divider { position: relative; z-index: 1; animation: dividerGlow 2.8s ease-in-out infinite; }
-    .highlight-spark { position: absolute; z-index: 0; width: 4px; height: 4px; border-radius: 50%; background: #ffe5a8; box-shadow: 0 0 10px 2px rgba(224,185,115,.7); pointer-events: none; }
-    .highlight-spark-one { left: 13%; bottom: 16%; animation: sparkDrift 5s ease-in-out infinite; }
-    .highlight-spark-two { left: 56%; top: 18%; animation: sparkDrift 6s ease-in-out -2s infinite; }
-    .highlight-spark-three { right: 12%; bottom: 22%; animation: sparkDrift 4.5s ease-in-out -1s infinite; }
-    @keyframes bannerSweep { 0%, 20% { transform: translateX(-70%) rotate(8deg); } 60%, 100% { transform: translateX(70%) rotate(8deg); } }
-    @keyframes haloTurn { to { transform: rotate(360deg); } }
-    @keyframes highlightFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
-    @keyframes iconPulse { 0%, 100% { transform: scale(1) rotate(0); filter: drop-shadow(0 0 0 transparent); } 50% { transform: scale(1.12) rotate(5deg); filter: drop-shadow(0 0 7px currentColor); } }
-    @keyframes dividerGlow { 0%, 100% { opacity: .35; } 50% { opacity: .85; } }
-    @keyframes sparkDrift { 0%, 100% { opacity: .25; transform: translate(0, 0) scale(.7); } 50% { opacity: 1; transform: translate(8px, -8px) scale(1.2); } }
-    .booking-magic-panel { overflow: hidden; }
-    .magic-float { position: absolute; z-index: 0; color: rgba(224,185,115,.65); filter: drop-shadow(0 0 8px rgba(224,185,115,.45)); pointer-events: none; animation: magicFloat 5.5s ease-in-out infinite; }
-    .magic-float-one { top: 12%; left: 6%; width: 24px; animation-delay: -1s; }
-    .magic-float-two { top: 18%; right: 7%; width: 20px; color: rgba(196,181,253,.7); animation-delay: -3s; }
-    .magic-float-three { bottom: 16%; left: 8%; width: 22px; color: rgba(244,114,182,.6); animation-delay: -4.2s; }
-    .magic-float-four { right: 9%; bottom: 12%; width: 18px; animation-delay: -2.2s; }
-    .magic-ring { position: absolute; z-index: 0; top: 32px; left: 50%; width: 280px; height: 280px; border: 1px solid rgba(224,185,115,.1); border-radius: 50%; transform: translateX(-50%); box-shadow: 0 0 0 18px rgba(147,51,234,.025), 0 0 0 42px rgba(224,185,115,.018); animation: magicRing 18s linear infinite; pointer-events: none; }
-    .magic-ring::after { content: ''; position: absolute; top: 20px; left: 50%; width: 7px; height: 7px; border-radius: 50%; background: #e0b973; box-shadow: 0 0 12px 3px rgba(224,185,115,.7); }
-    .booking-magic-panel > :not(.magic-float):not(.magic-ring) { position: relative; z-index: 1; }
-    .hero-magic-float { position: absolute; z-index: 0; width: 24px; color: rgba(224,185,115,.58); filter: drop-shadow(0 0 8px rgba(224,185,115,.5)); pointer-events: none; animation: magicFloat 6s ease-in-out infinite; }
-    .hero-magic-one { top: 27%; left: 7%; animation-delay: -1.4s; }
-    .hero-magic-two { top: 42%; right: 8%; width: 20px; color: rgba(196,181,253,.65); animation-delay: -3.8s; }
-    .hero-magic-three { bottom: 20%; left: 17%; width: 18px; color: rgba(244,114,182,.58); animation-delay: -4.8s; }
-    .hero-magic-four { bottom: 17%; right: 18%; width: 22px; animation-delay: -2.5s; }
-    .ritual-danger-card { position: relative; isolation: isolate; overflow: hidden; border-color: rgba(225,29,72,.72) !important; box-shadow: 0 0 26px rgba(159,18,57,.16), inset 0 0 30px rgba(127,29,29,.08); }
-    .ritual-danger-card::before { content: ''; position: absolute; inset: 0; z-index: 0; background: linear-gradient(135deg, rgba(12,2,9,.94), rgba(127,29,29,.72), rgba(3,2,6,.96)); opacity: .12; animation: dangerWash 7s ease-in-out infinite; pointer-events: none; }
-    .ritual-danger-card::after { content: ''; position: absolute; inset: 10px; z-index: 1; border: 1px solid rgba(244,63,94,.16); border-radius: 14px; animation: ritualPulse 3.8s ease-in-out infinite; pointer-events: none; }
-    .ritual-danger-card > div:not(.ritual-decoration), .ritual-danger-card > button { position: relative; z-index: 3; }
-    .ritual-decoration { position: absolute; inset: 0; z-index: 2; pointer-events: none; }
-    .ritual-decoration svg { position: absolute; color: rgba(251,113,133,.72); filter: drop-shadow(0 0 8px rgba(244,63,94,.7)); animation: ritualFloat 4.5s ease-in-out infinite; }
-    .ritual-decoration svg:first-child { top: 18%; right: 5%; width: 22px; }
-    .ritual-decoration svg:nth-child(2) { bottom: 18%; left: 4%; width: 18px; color: rgba(248,113,113,.62); animation-delay: -1.7s; }
-    .ritual-decoration svg:nth-child(3) { top: 48%; left: 48%; width: 12px; color: rgba(251,191,36,.72); animation-delay: -3s; }
-    .ritual-emoji { position: absolute; color: #fb7185; font-size: 15px; line-height: 1; text-shadow: 0 0 9px rgba(244,63,94,.9); animation: ritualFloat 5s ease-in-out infinite; }
-    .ritual-emoji-one { top: 10%; left: 35%; animation-delay: -2s; }
-    .ritual-emoji-two { right: 22%; bottom: 10%; color: #fda4af; font-size: 12px; animation-delay: -3.2s; }
-    .ritual-emoji-three { left: 16%; bottom: 28%; color: #f43f5e; font-size: 11px; animation-delay: -1.1s; }
-    .ritual-ember { position: absolute; width: 4px; height: 4px; border-radius: 50%; background: #fb7185; box-shadow: 0 0 10px 3px rgba(244,63,94,.75); animation: emberRise 4s ease-in infinite; }
-    .ritual-ember-one { left: 25%; bottom: 8%; animation-delay: -1s; }
-    .ritual-ember-two { left: 70%; bottom: 4%; animation-delay: -2.5s; }
-    .ritual-ember-three { left: 87%; bottom: 15%; animation-delay: -3.4s; }
-    .ritual-section { position: relative; isolation: isolate; margin: 0 -1rem; padding: 2rem 1rem 3rem; }
-    .ritual-section::before { content: ''; position: absolute; top: -12rem; bottom: -12rem; left: 50%; z-index: -2; width: 100vw; transform: translateX(-50%); background: radial-gradient(ellipse at 50% 50%, rgba(88,7,30,.62) 0%, rgba(24,3,18,.72) 38%, rgba(4,2,8,.82) 72%, transparent 100%); opacity: 0; transition: opacity 1.8s ease; -webkit-mask-image: linear-gradient(180deg, transparent 0%, #000 16%, #000 84%, transparent 100%); mask-image: linear-gradient(180deg, transparent 0%, #000 16%, #000 84%, transparent 100%); pointer-events: none; }
-    .ritual-section::after { content: ''; position: absolute; top: -12rem; bottom: -12rem; left: 50%; z-index: -1; width: 100vw; transform: translateX(-50%); background: linear-gradient(180deg, transparent 0%, rgba(0,0,0,.18) 18%, rgba(0,0,0,.5) 50%, rgba(0,0,0,.18) 82%, transparent 100%); opacity: 0; transition: opacity 1.8s ease; -webkit-mask-image: linear-gradient(180deg, transparent 0%, #000 18%, #000 82%, transparent 100%); mask-image: linear-gradient(180deg, transparent 0%, #000 18%, #000 82%, transparent 100%); pointer-events: none; }
-    .ritual-section > * { position: relative; z-index: 1; }
-    .ritual-section.ritual-section-active::before { opacity: 1; animation: ritualAtmosphere 8s ease-in-out infinite; }
-    .ritual-section.ritual-section-active::after { opacity: 1; }
-    @keyframes ritualAtmosphere { 0%, 100% { filter: saturate(.9) brightness(.9); } 50% { filter: saturate(1.35) brightness(.68); } }
-    @keyframes dangerWash { 0%, 100% { opacity: .08; } 50% { opacity: .68; } }
-    @keyframes ritualPulse { 0%, 100% { opacity: .35; box-shadow: inset 0 0 12px rgba(244,63,94,.04); } 50% { opacity: 1; box-shadow: inset 0 0 22px rgba(244,63,94,.14); } }
-    @keyframes ritualFloat { 0%, 100% { transform: translate(0, 0) rotate(-8deg); opacity: .35; } 50% { transform: translate(4px, -9px) rotate(12deg); opacity: .9; } }
-    @keyframes emberRise { 0% { opacity: 0; transform: translate(0, 8px) scale(.5); } 25% { opacity: 1; } 100% { opacity: 0; transform: translate(10px, -65px) scale(1.2); } }
-    @keyframes magicFloat { 0%, 100% { transform: translate3d(0, 0, 0) rotate(-8deg); opacity: .45; } 50% { transform: translate3d(5px, -13px, 0) rotate(10deg); opacity: 1; } }
-    @keyframes magicRing { from { transform: translateX(-50%) rotate(0); } to { transform: translateX(-50%) rotate(360deg); } }
-    @media (prefers-reduced-motion: reduce) {
-      .scroll-reveal, .scroll-item { opacity: 1; transform: none; transition: none; }
-      .highlight-banner::before, .highlight-banner::after, .highlight-item, .highlight-item i, .highlight-divider, .highlight-spark, .magic-float, .magic-ring, .hero-magic-float, .ritual-danger-card::before, .ritual-danger-card::after, .ritual-decoration svg, .ritual-emoji, .ritual-ember, .ritual-section::before { animation: none; }
-    }
-  </style>
 </head>
 <body class="bg-tarot-night text-slate-100 font-sans min-h-screen selection:bg-tarot-gold selection:text-tarot-night relative overflow-x-hidden">
 
   <!-- Interactive Parallax Background Canvas -->
   <canvas id="starsCanvas" class="fixed inset-0 pointer-events-none z-0 opacity-70"></canvas>
-
-  <!-- Cosmic Scroll Progress Bar -->
   <div class="fixed top-0 left-0 h-1 bg-gradient-to-r from-purple-600 via-tarot-gold to-amber-300 z-50 transition-all duration-75 shadow-[0_0_12px_#e0b973]" id="scrollProgressBar" style="width: 0%;"></div>
-
-  <!-- Ambient Light Orbs -->
   <div class="fixed inset-0 pointer-events-none z-0 overflow-hidden">
     <div id="glowOrb1" class="absolute -top-32 left-1/4 w-[550px] h-[550px] bg-purple-900/25 rounded-full blur-[140px] transition-transform duration-700"></div>
     <div id="glowOrb2" class="absolute top-1/2 -right-24 w-[500px] h-[500px] bg-tarot-gold/15 rounded-full blur-[150px] transition-transform duration-700"></div>
@@ -233,8 +70,6 @@
   <!-- HEADER -->
   <header class="sticky top-0 z-40 glass-panel border-b border-purple-500/20 shadow-xl transition-all duration-300">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3.5 flex items-center justify-between">
-      
-      <!-- Brand Logo -->
       <a href="#" class="flex items-center gap-3 group">
         <div class="relative w-10 h-10 rounded-full border border-tarot-gold/60 flex items-center justify-center bg-tarot-night shadow-[0_0_15px_rgba(224,185,115,0.3)] group-hover:scale-105 transition-transform duration-300">
           <i data-lucide="sparkles" class="w-5 h-5 text-tarot-gold animate-pulse"></i>
@@ -245,8 +80,6 @@
           <span class="text-[9px] uppercase tracking-[0.25em] text-purple-300/80 font-medium block mt-1">Tarot • Atendimento • Orientação</span>
         </div>
       </a>
-
-      <!-- Navigation Links -->
       <nav class="hidden lg:flex items-center gap-6 text-xs uppercase tracking-wider font-semibold text-slate-300">
         <a href="#horarios" class="hover:text-tarot-gold transition">Horários</a>
         <a href="#servicos" class="hover:text-tarot-gold transition">Serviços</a>
@@ -255,19 +88,16 @@
         <a href="#feedbacks" class="hover:text-tarot-gold transition">Avaliações</a>
         <a href="#agendamento" class="hover:text-tarot-gold transition">Agendar</a>
       </nav>
-
-      <!-- Cart Trigger -->
       <div class="flex items-center gap-2 sm:gap-3">
-        <button id="soundToggle" type="button" onclick="toggleSoundPreference()" aria-pressed="false" aria-label="Desativar efeitos sonoros" title="Desativar efeitos sonoros" class="relative w-10 h-10 rounded-xl bg-purple-950/70 border border-tarot-gold/40 text-tarot-gold hover:bg-tarot-gold hover:text-tarot-night transition-all flex items-center justify-center">
+        <button id="soundToggle" type="button" onclick="toggleSoundPreference()" aria-pressed="false" class="relative w-10 h-10 rounded-xl bg-purple-950/70 border border-tarot-gold/40 text-tarot-gold hover:bg-tarot-gold hover:text-tarot-night transition-all flex items-center justify-center">
           <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <path d="M11 5 6 9H3v6h3l5 4V5Z"></path>
             <path class="sound-wave" d="M15.5 8.5a5 5 0 0 1 0 7"></path>
             <path class="sound-wave" d="M19 5a10 10 0 0 1 0 14"></path>
             <path class="sound-muted-mark" d="m16 9 5 6m0-6-5 6"></path>
           </svg>
-          <span id="soundToggleLabel" class="sr-only">Som ligado</span>
         </button>
-        <button onclick="toggleCartDrawer()" class="relative px-3.5 py-2 rounded-xl bg-purple-950/70 border border-tarot-gold/50 text-tarot-gold hover:bg-tarot-gold hover:text-tarot-night transition-all flex items-center gap-2 group shadow-md" title="Ver Carrinho de Pedidos">
+        <button onclick="toggleCartDrawer()" class="relative px-3.5 py-2 rounded-xl bg-purple-950/70 border border-tarot-gold/50 text-tarot-gold hover:bg-tarot-gold hover:text-tarot-night transition-all flex items-center gap-2 group shadow-md">
           <i data-lucide="shopping-bag" class="w-4 h-4 transition-transform group-hover:rotate-12"></i>
           <span class="text-xs font-bold hidden sm:inline">Carrinho</span>
           <span id="headerCartCount" class="w-5 h-5 rounded-full bg-tarot-gold text-tarot-night text-[11px] font-black flex items-center justify-center shadow-md">0</span>
@@ -278,1757 +108,198 @@
 
   <!-- MAIN CONTAINER -->
   <main class="relative z-10">
-
-    <!-- TOP SOCIAL TRUST STRIP -->
     <div class="top-social-strip">
       <div class="max-w-6xl mx-auto px-4 sm:px-6 py-2.5 flex items-center justify-center gap-2 sm:gap-3 overflow-x-auto">
         <span class="text-[10px] uppercase tracking-widest text-tarot-gold font-bold shrink-0">Canais oficiais</span>
-        <a class="top-social-slot" href="https://www.instagram.com/visoesdotarot/" target="_blank" rel="noopener noreferrer"><img class="top-social-icon" src="https://cdn.simpleicons.org/instagram/e0b973" alt="" aria-hidden="true"> Instagram</a>
-        <a class="top-social-slot" href="https://api.whatsapp.com/message/UQQYBS4GVFVKF1?autoload=1&amp;app_absent=0&amp;utm_source=ig" target="_blank" rel="noopener noreferrer"><img class="top-social-icon" src="https://cdn.simpleicons.org/whatsapp/e0b973" alt="" aria-hidden="true"> WhatsApp</a>
-        <span class="top-social-slot"><img class="top-social-icon" src="https://cdn.simpleicons.org/tiktok/e0b973" alt="" aria-hidden="true"> TikTok</span>
+        <a class="top-social-slot" href="https://www.instagram.com/visoesdotarot/" target="_blank"><img class="top-social-icon" src="https://cdn.simpleicons.org/instagram/e0b973" alt=""> Instagram</a>
+        <a class="top-social-slot" href="https://api.whatsapp.com/message/UQQYBS4GVFVKF1" target="_blank"><img class="top-social-icon" src="https://cdn.simpleicons.org/whatsapp/e0b973" alt=""> WhatsApp</a>
+        <span class="top-social-slot"><img class="top-social-icon" src="https://cdn.simpleicons.org/tiktok/e0b973" alt=""> TikTok</span>
       </div>
     </div>
 
     <!-- HERO SECTION -->
     <section class="max-w-6xl mx-auto px-4 sm:px-6 pt-12 pb-16 text-center relative">
-      <i data-lucide="sparkles" class="hero-magic-float hero-magic-one" aria-hidden="true"></i>
-      <i data-lucide="moon-star" class="hero-magic-float hero-magic-two" aria-hidden="true"></i>
-      <i data-lucide="wand-2" class="hero-magic-float hero-magic-three" aria-hidden="true"></i>
-      <i data-lucide="stars" class="hero-magic-float hero-magic-four" aria-hidden="true"></i>
-      <!-- Decorative Compass -->
+      <i data-lucide="sparkles" class="hero-magic-float hero-magic-one"></i><i data-lucide="moon-star" class="hero-magic-float hero-magic-two"></i>
+      <i data-lucide="wand-2" class="hero-magic-float hero-magic-three"></i><i data-lucide="stars" class="hero-magic-float hero-magic-four"></i>
       <div class="absolute left-1/2 -top-12 -translate-x-1/2 w-80 h-80 sm:w-[520px] sm:h-[520px] border border-purple-500/10 rounded-full pointer-events-none animate-spin-slow">
         <div class="absolute inset-4 border border-tarot-gold/10 rounded-full"></div>
         <div class="absolute inset-16 border border-dashed border-purple-400/20 rounded-full animate-spin-reverse"></div>
       </div>
-
-      <!-- Badge -->
       <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-tarot-gold/30 glass-panel text-tarot-gold text-xs font-semibold tracking-widest uppercase mb-6 shadow-[0_0_15px_rgba(224,185,115,0.2)] scroll-reveal">
-        <i data-lucide="moon-star" class="w-3.5 h-3.5"></i>
-        <span>Leituras • Orientação • Atendimento</span>
-        <i data-lucide="sun-medium" class="w-3.5 h-3.5"></i>
+        <i data-lucide="moon-star" class="w-3.5 h-3.5"></i><span>Leituras • Orientação • Atendimento</span><i data-lucide="sun-medium" class="w-3.5 h-3.5"></i>
       </div>
-
-      <!-- Main Headline -->
       <h1 class="text-4xl sm:text-6xl md:text-7xl font-cinzel font-black tracking-tight text-white mb-6 leading-[1.1] scroll-reveal">
         Mais clareza para <br class="hidden sm:inline" />
         <span class="gold-gradient-text drop-shadow-[0_0_35px_rgba(224,185,115,0.35)]">o seu amor</span>
       </h1>
-
       <p class="text-slate-300 max-w-2xl mx-auto text-sm sm:text-base mb-8 leading-relaxed font-normal scroll-reveal">
-        Consultas de Tarot, orientação pessoal e serviços para amor, carreira e bem-estar. Para garantir o horário com segurança, o pagamento é feito <strong>integralmente via PIX</strong> antes da confirmação.
+        Consultas de Tarot, orientação pessoal e serviços para amor, carreira e bem-estar. O pagamento é feito <strong>integralmente via PIX</strong> antes da confirmação.
       </p>
-
-      <!-- Highlights Banner -->
       <div class="highlight-banner max-w-3xl mx-auto p-4 rounded-2xl bg-gradient-to-r from-amber-950/40 via-purple-950/60 to-amber-950/40 border border-tarot-gold/40 text-xs sm:text-sm text-slate-200 mb-10 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-6 scroll-reveal shadow-lg">
-        <span class="highlight-spark highlight-spark-one" aria-hidden="true"></span>
-        <span class="highlight-spark highlight-spark-two" aria-hidden="true"></span>
-        <span class="highlight-spark highlight-spark-three" aria-hidden="true"></span>
-        <div class="highlight-item flex items-center gap-2">
-          <i data-lucide="calendar" class="w-4 h-4 text-tarot-gold shrink-0"></i>
-          <span><strong>Qua a Dom:</strong> atendimento com horários especiais</span>
-        </div>
+        <span class="highlight-spark highlight-spark-one"></span><span class="highlight-spark highlight-spark-two"></span><span class="highlight-spark highlight-spark-three"></span>
+        <div class="highlight-item flex items-center gap-2"><i data-lucide="calendar" class="w-4 h-4 text-tarot-gold shrink-0"></i><span><strong>Qua a Dom:</strong> atendimento</span></div>
         <div class="highlight-divider hidden sm:block text-tarot-gold/40">•</div>
-        <div class="highlight-item flex items-center gap-2">
-          <i data-lucide="badge-dollar-sign" class="w-4 h-4 text-emerald-400 shrink-0"></i>
-          <span><strong>Pagamento total:</strong> segurança via PIX</span>
-        </div>
+        <div class="highlight-item flex items-center gap-2"><i data-lucide="badge-dollar-sign" class="w-4 h-4 text-emerald-400 shrink-0"></i><span><strong>Pagamento total:</strong> PIX</span></div>
         <div class="highlight-divider hidden sm:block text-tarot-gold/40">•</div>
-        <div class="highlight-item flex items-center gap-2">
-          <i data-lucide="flame" class="w-4 h-4 text-purple-400 shrink-0"></i>
-          <span><strong>Trabalhos específicos:</strong> consulta prévia</span>
-        </div>
+        <div class="highlight-item flex items-center gap-2"><i data-lucide="flame" class="w-4 h-4 text-purple-400 shrink-0"></i><span><strong>Trabalhos:</strong> consulta prévia</span></div>
       </div>
-
-      <!-- Quick Action Buttons -->
       <div class="flex flex-col sm:flex-row items-center justify-center gap-4 scroll-reveal">
-        <a id="viewServicesButton" href="#servicos" class="w-full sm:w-auto px-8 py-4 rounded-xl bg-gradient-to-r from-amber-500 via-tarot-gold to-amber-300 text-tarot-night font-bold text-sm tracking-wide uppercase shadow-[0_0_25px_rgba(224,185,115,0.45)] hover:shadow-[0_0_40px_rgba(224,185,115,0.7)] transition transform hover:-translate-y-0.5 active:translate-y-0 flex items-center justify-center gap-2">
-          <i data-lucide="sparkle" class="w-4 h-4"></i>
-          Ver serviços
-        </a>
-        <a href="catalogo.html" class="w-full sm:w-auto px-8 py-4 rounded-xl border border-tarot-gold/45 bg-purple-950/65 text-tarot-goldLight font-bold text-sm tracking-wide uppercase hover:border-tarot-gold hover:bg-purple-900/70 transition transform hover:-translate-y-0.5 active:translate-y-0 flex items-center justify-center gap-2">
-          <i data-lucide="book-open" class="w-4 h-4" aria-hidden="true"></i>
-          Catálogo
-        </a>
+        <a href="#servicos" class="w-full sm:w-auto px-8 py-4 rounded-xl bg-gradient-to-r from-amber-500 via-tarot-gold to-amber-300 text-tarot-night font-bold text-sm tracking-wide uppercase shadow-[0_0_25px_rgba(224,185,115,0.45)] hover:shadow-[0_0_40px_rgba(224,185,115,0.7)] transition flex items-center justify-center gap-2"><i data-lucide="sparkle" class="w-4 h-4"></i> Ver serviços</a>
+        <a href="catalogo.html" class="w-full sm:w-auto px-8 py-4 rounded-xl border border-tarot-gold/45 bg-purple-950/65 text-tarot-goldLight font-bold text-sm tracking-wide uppercase hover:border-tarot-gold hover:bg-purple-900/70 transition flex items-center justify-center gap-2"><i data-lucide="book-open" class="w-4 h-4"></i> Catálogo</a>
       </div>
     </section>
 
-    <!-- SECTION: HORÁRIOS & POLÍTICA DO SINAL (50%) -->
+    <!-- HORÁRIOS -->
     <section id="horarios" class="py-16 bg-tarot-surface/70 border-y border-purple-900/40 relative">
       <div class="max-w-6xl mx-auto px-4 sm:px-6">
-        
         <div class="glass-panel p-8 sm:p-12 rounded-3xl purple-gold-border relative overflow-hidden scroll-reveal">
           <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-            
             <div class="lg:col-span-7 space-y-4">
-              <div class="inline-flex items-center gap-2 text-tarot-gold text-xs font-bold tracking-widest uppercase">
-                <i data-lucide="hourglass" class="w-4 h-4"></i>
-                <span>Disponibilidade & Compromisso Sagrado</span>
-              </div>
+              <div class="inline-flex items-center gap-2 text-tarot-gold text-xs font-bold tracking-widest uppercase"><i data-lucide="hourglass" class="w-4 h-4"></i><span>Disponibilidade</span></div>
               <h2 class="text-3xl sm:text-4xl font-cinzel font-bold text-white">Horários e reserva</h2>
-              <p class="text-slate-300 text-sm leading-relaxed">
-                Cada atendimento precisa de organização e atenção. Por isso, <strong>o valor total é enviado via PIX antes da confirmação do horário</strong>, para que você tenha tranquilidade e siga com segurança.
-              </p>
-              
-              <!-- Key Points -->
+              <p class="text-slate-300 text-sm leading-relaxed"><strong>O valor total é enviado via PIX antes da confirmação do horário</strong>, para que você tenha tranquilidade.</p>
               <div class="pt-2 grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-                <div class="p-3 rounded-xl bg-purple-950/80 border border-purple-500/30 flex items-start gap-2.5">
-                  <i data-lucide="check-circle" class="w-4 h-4 text-emerald-400 shrink-0 mt-0.5"></i>
-                  <span><strong>Reserva feita:</strong> sua vaga fica reservada para você.</span>
-                </div>
-                <div class="p-3 rounded-xl bg-purple-950/80 border border-purple-500/30 flex items-start gap-2.5">
-                  <i data-lucide="clock" class="w-4 h-4 text-tarot-gold shrink-0 mt-0.5"></i>
-                  <span><strong>Janela Aberta:</strong> Qua a Dom (Qui/Sáb com horários diferenciados).</span>
-                </div>
+                <div class="p-3 rounded-xl bg-purple-950/80 border border-purple-500/30 flex items-start gap-2.5"><i data-lucide="check-circle" class="w-4 h-4 text-emerald-400"></i><span><strong>Reserva feita:</strong> vaga garantida.</span></div>
+                <div class="p-3 rounded-xl bg-purple-950/80 border border-purple-500/30 flex items-start gap-2.5"><i data-lucide="clock" class="w-4 h-4 text-tarot-gold"></i><span><strong>Janela:</strong> Qua a Dom.</span></div>
               </div>
             </div>
-
-            <!-- Operating Box Cards -->
             <div class="lg:col-span-5 space-y-3.5">
               <div class="p-5 rounded-2xl bg-emerald-950/30 border border-emerald-500/40 shadow-lg flex items-center justify-between">
-                <div class="flex items-center gap-3">
-                  <div class="w-11 h-11 rounded-xl bg-emerald-900/60 flex items-center justify-center text-emerald-300">
-                    <i data-lucide="calendar-check" class="w-5 h-5"></i>
-                  </div>
-                  <div>
-                    <h4 class="font-bold text-sm text-white">Quarta a Domingo</h4>
-                    <p class="text-xs text-emerald-300">Consultas Online & Presenciais</p>
-                  </div>
-                </div>
+                <div class="flex items-center gap-3"><div class="w-11 h-11 rounded-xl bg-emerald-900/60 flex items-center justify-center text-emerald-300"><i data-lucide="calendar-check" class="w-5 h-5"></i></div><div><h4 class="font-bold text-sm text-white">Quarta a Domingo</h4><p class="text-xs text-emerald-300">Consultas</p></div></div>
                 <span class="text-xs font-semibold text-emerald-300">Aberto</span>
               </div>
-
               <div class="p-4 rounded-2xl bg-rose-950/20 border border-rose-500/20 flex items-center justify-between opacity-85">
-                <div class="flex items-center gap-3">
-                  <div class="w-10 h-10 rounded-xl bg-rose-900/40 flex items-center justify-center text-rose-300">
-                    <i data-lucide="shield-alert" class="w-5 h-5"></i>
-                  </div>
-                  <div>
-                    <h4 class="font-bold text-sm text-slate-300">Segunda & Terça</h4>
-                    <p class="text-xs text-rose-300/80">Folga / Recolhimento</p>
-                  </div>
-                </div>
+                <div class="flex items-center gap-3"><div class="w-10 h-10 rounded-xl bg-rose-900/40 flex items-center justify-center text-rose-300"><i data-lucide="shield-alert" class="w-5 h-5"></i></div><div><h4 class="font-bold text-sm text-slate-300">Segunda & Terça</h4><p class="text-xs text-rose-300/80">Folga</p></div></div>
                 <span class="text-xs font-semibold text-rose-300">Fechado</span>
               </div>
-
-              <!-- PIX Deposit Reminder Callout -->
-              <div class="p-4 rounded-2xl bg-amber-950/30 border border-tarot-gold/30 flex items-center gap-3 text-xs text-amber-200">
-                <i data-lucide="credit-card" class="w-5 h-5 text-tarot-gold shrink-0"></i>
-                <span>O valor total é acertado diretamente pelo WhatsApp, com envio do comprovante para sua segurança.</span>
-              </div>
             </div>
-
           </div>
         </div>
-
       </div>
     </section>
 
-    <!-- SECTION: SERVIÇOS & CATÁLOGO MÍSTICO -->
+    <!-- SERVIÇOS -->
     <section id="servicos" class="max-w-7xl mx-auto px-4 sm:px-6 py-16 relative">
       <div class="text-center max-w-3xl mx-auto mb-14 scroll-reveal">
-        <span class="text-xs uppercase tracking-widest text-tarot-gold font-bold">Atendimento simples e direto</span>
+        <span class="text-xs uppercase tracking-widest text-tarot-gold font-bold">Atendimento direto</span>
         <h2 class="text-3xl sm:text-5xl font-cinzel font-black text-white mt-2">Nossos Serviços</h2>
-        <p class="text-slate-300 text-sm mt-3">
-          Escolha os serviços que você deseja e monte seu pedido. O valor da entrada é calculado automaticamente para facilitar o agendamento.
-        </p>
       </div>
 
-      <!-- CATEGORY 1: CONSULTAS ORACULARES -->
       <div class="mb-16">
-        <div class="flex items-center gap-3 mb-6">
-          <div class="h-[1px] bg-gradient-to-r from-transparent via-tarot-gold/50 to-transparent flex-1"></div>
-          <span class="font-cinzel text-lg sm:text-xl font-bold text-tarot-gold flex items-center gap-2">
-            <i data-lucide="cards" class="w-5 h-5"></i>
-            Consultas Oraculares Gerais
-          </span>
-          <div class="h-[1px] bg-gradient-to-r from-transparent via-tarot-gold/50 to-transparent flex-1"></div>
-        </div>
-
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto" id="tarotCardsList">
-          <!-- Populated by JavaScript -->
-        </div>
+        <div class="flex items-center gap-3 mb-6"><div class="h-[1px] bg-gradient-to-r from-transparent via-tarot-gold/50 to-transparent flex-1"></div><span class="font-cinzel text-lg sm:text-xl font-bold text-tarot-gold flex items-center gap-2"><i data-lucide="cards" class="w-5 h-5"></i> Consultas Gerais</span><div class="h-[1px] bg-gradient-to-r from-transparent via-tarot-gold/50 to-transparent flex-1"></div></div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto" id="tarotCardsList"></div>
       </div>
 
-      <!-- CATEGORY 2: OUTROS SERVIÇOS SOB CONSULTA -->
       <div class="mb-16">
-        <div class="flex items-center gap-3 mb-6">
-          <div class="h-[1px] bg-gradient-to-r from-transparent via-purple-500/50 to-transparent flex-1"></div>
-          <span class="font-cinzel text-lg sm:text-xl font-bold text-purple-300 flex items-center gap-2">
-            <i data-lucide="sparkles" class="w-5 h-5 text-tarot-gold"></i>
-            Outros Serviços Sob Consulta
-          </span>
-          <div class="h-[1px] bg-gradient-to-r from-transparent via-purple-500/50 to-transparent flex-1"></div>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8" id="fixedRitualsList">
-          <!-- Populated by JavaScript -->
-        </div>
-
-        <!-- Banner persuasivo posicionado abaixo dos cubos de Outros Serviços -->
-        <div class="scroll-reveal max-w-5xl mx-auto p-5 sm:p-6 rounded-2xl border border-tarot-gold/45 bg-gradient-to-r from-[#200f36]/90 via-[#2d1246]/95 to-[#1c0c30]/90 shadow-[0_12px_36px_rgba(0,0,0,0.35),0_0_24px_rgba(224,185,115,0.12)] relative overflow-hidden">
-          <div class="absolute -right-8 -top-8 w-32 h-32 rounded-full border border-tarot-gold/15 bg-tarot-gold/5 blur-xl pointer-events-none"></div>
-          <div class="relative z-10 flex flex-col md:flex-row items-center justify-between gap-5 text-center md:text-left">
-            <div class="max-w-2xl space-y-1.5">
-              <div class="inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-tarot-gold">
-                <i data-lucide="sparkles" class="w-3.5 h-3.5 text-tarot-gold animate-pulse"></i>
-                <span>Busca uma resposta para uma situação específica?</span>
-              </div>
-              <h3 class="font-cinzel text-lg sm:text-xl font-bold text-white">
-                Explore nosso Catálogo Temático de Leituras
-              </h3>
-              <p class="text-xs sm:text-sm text-slate-300 leading-relaxed font-normal">
-                Enquanto as opções acima atendem demandas gerais, nosso catálogo exclusivo oferece leituras direcionadas para entender a fundo sentimentos e intenções no Amor, destravar fluxos em Finanças e orientar sua Carreira passo a passo.
-              </p>
-            </div>
-            <a 
-              href="catalogo.html" 
-              class="shrink-0 inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-gradient-to-r from-amber-500 via-tarot-gold to-amber-300 text-tarot-night font-bold text-xs uppercase tracking-wider shadow-[0_0_22px_rgba(224,185,115,0.35)] hover:shadow-[0_0_32px_rgba(224,185,115,0.6)] transition transform hover:-translate-y-0.5 active:translate-y-0"
-            >
-              <i data-lucide="book-open" class="w-4 h-4"></i>
-              <span>Ver Catálogo Específico</span>
-              <span aria-hidden="true">→</span>
-            </a>
-          </div>
-        </div>
+        <div class="flex items-center gap-3 mb-6"><div class="h-[1px] bg-gradient-to-r from-transparent via-purple-500/50 to-transparent flex-1"></div><span class="font-cinzel text-lg sm:text-xl font-bold text-purple-300 flex items-center gap-2"><i data-lucide="sparkles" class="w-5 h-5"></i> Outros Serviços</span><div class="h-[1px] bg-gradient-to-r from-transparent via-purple-500/50 to-transparent flex-1"></div></div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8" id="fixedRitualsList"></div>
       </div>
 
-      <!-- CATEGORY 3: RITUAIS E TRABALHOS ESPECIAIS -->
       <div class="ritual-section">
-        <div class="flex items-center gap-3 mb-6">
-          <div class="h-[1px] bg-gradient-to-r from-transparent via-rose-500/50 to-transparent flex-1"></div>
-          <span class="font-cinzel text-lg sm:text-xl font-bold text-rose-300 flex items-center gap-2">
-            <i data-lucide="flame" class="w-5 h-5 text-rose-400"></i>
-            Rituais e Trabalhos Especiais (Valor definido pela bruxa parceira)
-          </span>
-          <div class="h-[1px] bg-gradient-to-r from-transparent via-rose-500/50 to-transparent flex-1"></div>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6" id="customRitualsList">
-          <!-- Populated by JavaScript -->
-        </div>
+        <div class="flex items-center gap-3 mb-6"><div class="h-[1px] bg-gradient-to-r from-transparent via-rose-500/50 to-transparent flex-1"></div><span class="font-cinzel text-lg sm:text-xl font-bold text-rose-300 flex items-center gap-2"><i data-lucide="flame" class="w-5 h-5"></i> Rituais e Trabalhos</span><div class="h-[1px] bg-gradient-to-r from-transparent via-rose-500/50 to-transparent flex-1"></div></div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6" id="customRitualsList"></div>
       </div>
-
     </section>
 
-    <!-- SECTION: FORMULÁRIO DE AGENDAMENTO -->
+    <!-- AGENDAMENTO -->
     <section id="agendamento" class="max-w-4xl mx-auto px-4 sm:px-6 py-16">
       <div class="glass-panel booking-magic-panel p-6 sm:p-10 rounded-3xl purple-gold-border relative shadow-2xl scroll-reveal">
-        <i data-lucide="sparkles" class="magic-float magic-float-one" aria-hidden="true"></i>
-        <i data-lucide="moon-star" class="magic-float magic-float-two" aria-hidden="true"></i>
-        <i data-lucide="wand-2" class="magic-float magic-float-three" aria-hidden="true"></i>
-        <i data-lucide="stars" class="magic-float magic-float-four" aria-hidden="true"></i>
-        <div class="magic-ring" aria-hidden="true"></div>
-        
         <div class="text-center mb-8">
-          <div class="inline-flex p-3 rounded-2xl bg-tarot-gold/10 text-tarot-gold border border-tarot-gold/30 mb-3">
-            <i data-lucide="calendar-clock" class="w-7 h-7"></i>
-          </div>
+          <div class="inline-flex p-3 rounded-2xl bg-tarot-gold/10 text-tarot-gold border border-tarot-gold/30 mb-3"><i data-lucide="calendar-clock" class="w-7 h-7"></i></div>
           <h2 class="text-2xl sm:text-4xl font-cinzel font-bold text-white">Agendar Horário</h2>
-          <p class="text-slate-300 text-xs sm:text-sm mt-1 max-w-lg mx-auto">
-            Atendimento disponível de <strong>Quarta a Domingo</strong>. Enviaremos o pedido estruturado com o valor total para o WhatsApp oficial.
-          </p>
         </div>
-
         <form id="bookingForm" novalidate onsubmit="handleBookingSubmit(event)" class="space-y-6">
-          
-          <!-- Name & WhatsApp -->
           <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
             <div>
               <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-2">Seu Nome Completo *</label>
-              <input
-                type="text"
-                id="userName"
-                required
-                placeholder="Ex: Maria Clara Silva"
-                class="w-full px-4 py-3.5 rounded-xl bg-[#090314] border border-purple-500/30 text-white placeholder-slate-500 focus:outline-none focus:border-tarot-gold transition text-sm shadow-inner"
-              />
+              <input type="text" id="userName" required class="w-full px-4 py-3.5 rounded-xl bg-[#090314] border border-purple-500/30 text-white focus:border-tarot-gold transition text-sm" />
             </div>
-
             <div>
-              <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-2">Seu WhatsApp (com DDD) *</label>
-              <input
-                type="tel"
-                id="userPhone"
-                required
-                placeholder="(00) 90000-0000"
-                class="w-full px-4 py-3.5 rounded-xl bg-[#090314] border border-purple-500/30 text-white placeholder-slate-500 focus:outline-none focus:border-tarot-gold transition text-sm shadow-inner"
-              />
+              <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-2">Seu WhatsApp *</label>
+              <input type="tel" id="userPhone" required class="w-full px-4 py-3.5 rounded-xl bg-[#090314] border border-purple-500/30 text-white focus:border-tarot-gold transition text-sm" />
             </div>
           </div>
-
-          <!-- Day & Time Selectors -->
           <div class="space-y-5">
-            <div>
-              <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-2 flex items-center justify-between">
-                <span>Selecione o dia disponível *</span>
-              </label>
-              <input type="hidden" id="bookingDay" value="" />
-              <div id="dayPicker" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3"></div>
-            </div>
-
-            <div>
-              <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-2 flex items-center justify-between">
-                <span>Selecione o horário *</span>
-              </label>
-              <input type="hidden" id="bookingTime" value="" />
-              <div id="timePicker" class="grid grid-cols-2 sm:grid-cols-4 gap-3"></div>
-            </div>
+            <div><label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-2">Dia *</label><input type="hidden" id="bookingDay" value="" /><div id="dayPicker" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3"></div></div>
+            <div><label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-2">Horário *</label><input type="hidden" id="bookingTime" value="" /><div id="timePicker" class="grid grid-cols-2 sm:grid-cols-4 gap-3"></div></div>
           </div>
-
-          <!-- Services preview included inside the form -->
           <div class="p-4 rounded-2xl bg-purple-950/40 border border-purple-500/30">
-            <div class="flex items-center justify-between mb-2">
-              <span class="text-xs font-bold uppercase text-tarot-gold tracking-wider flex items-center gap-1.5">
-                <i data-lucide="layers" class="w-4 h-4"></i> Serviços Inclusos Neste Agendamento:
-              </span>
-              <a href="#servicos" class="text-[11px] text-purple-300 hover:text-white underline">+ Adicionar ou Trocar</a>
-            </div>
-            <div id="formServicesSummary" class="text-xs text-slate-300 space-y-1">
-              <!-- Summary populated by script -->
-            </div>
+            <div class="flex items-center justify-between mb-2"><span class="text-xs font-bold uppercase text-tarot-gold tracking-wider flex items-center gap-1.5"><i data-lucide="layers" class="w-4 h-4"></i> Serviços:</span></div>
+            <div id="formServicesSummary" class="text-xs text-slate-300 space-y-1"></div>
           </div>
-
-          <!-- Questions / Intentions -->
-          <div>
-            <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-2">
-              Sua Dúvida Principal, Nomes Envolvidos ou Objetivo da Magia:
-            </label>
-            <textarea
-              id="bookingNotes"
-              rows="3"
-              placeholder="Ex: Quero saber sobre a volta do meu ex-parceiro, entender por que as coisas esfriaram e saber se o adoçamento é indicado..."
-              class="w-full px-4 py-3.5 rounded-xl bg-[#090314] border border-purple-500/30 text-white placeholder-slate-500 focus:outline-none focus:border-tarot-gold transition text-sm"
-            ></textarea>
-          </div>
-
-          <!-- PIX Payment Reminder -->
-          <div class="p-4 rounded-xl bg-amber-950/40 border border-tarot-gold/40 text-xs text-amber-200 flex items-start gap-3">
-            <i data-lucide="shield-check" class="w-5 h-5 text-tarot-gold shrink-0 mt-0.5"></i>
-            <div>
-              <strong>Pagamento total via PIX:</strong> o cliente envia o valor integral do atendimento para confirmação do horário. Assim, o processo fica claro, seguro e tranquilo para você.
-            </div>
-          </div>
-
-          <!-- Submit Button -->
-          <button
-            type="submit"
-            class="w-full py-4 rounded-2xl bg-gradient-to-r from-amber-500 via-tarot-gold to-amber-300 text-tarot-night font-black text-base uppercase tracking-wider shadow-[0_0_25px_rgba(224,185,115,0.4)] hover:shadow-[0_0_40px_rgba(224,185,115,0.7)] transition-all flex items-center justify-center gap-2 transform hover:scale-[1.01] active:scale-95"
-          >
-            <i data-lucide="message-circle" class="w-5 h-5"></i>
-            <span>Confirmar Agendamento com Pagamento Total via WhatsApp</span>
-          </button>
+          <div><label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-2">Dúvida ou Objetivo:</label><textarea id="bookingNotes" rows="3" class="w-full px-4 py-3.5 rounded-xl bg-[#090314] border border-purple-500/30 text-white focus:border-tarot-gold transition text-sm"></textarea></div>
+          <button type="submit" class="w-full py-4 rounded-2xl bg-gradient-to-r from-amber-500 via-tarot-gold to-amber-300 text-tarot-night font-black text-base uppercase tracking-wider transition-all flex items-center justify-center gap-2 hover:scale-[1.01]"><i data-lucide="message-circle" class="w-5 h-5"></i><span>Confirmar no WhatsApp</span></button>
         </form>
-
       </div>
     </section>
 
-    <!-- SECTION: ESPAÇOS PARA REDES SOCIAIS -->
-    <section id="redes-sociais" class="max-w-6xl mx-auto px-4 sm:px-6 py-16 scroll-reveal">
-      <div class="text-center max-w-3xl mx-auto mb-10">
-        <span class="text-xs uppercase tracking-widest text-tarot-gold font-bold">Presença digital</span>
-        <h2 class="text-3xl sm:text-5xl font-cinzel font-black text-white mt-2">Nossas Redes</h2>
-        <p class="text-slate-300 text-xs sm:text-sm mt-3">
-          Encontre nossos canais oficiais no Instagram, TikTok e WhatsApp.
-        </p>
-      </div>
-
-      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 max-w-4xl mx-auto">
-        <a class="social-space scroll-item" href="https://www.instagram.com/visoesdotarot/" target="_blank" rel="noopener noreferrer" aria-label="Visitar Instagram Visões do Tarot">
-          <div class="social-space-icon"><img class="social-brand-icon" src="https://cdn.simpleicons.org/instagram/e0b973" alt="" aria-hidden="true"></div>
-          <span class="social-space-title">Instagram</span>
-          <span class="social-space-line"></span>
-          <span class="social-space-note">Canal oficial</span>
-        </a>
-        <a class="social-space scroll-item" href="https://api.whatsapp.com/message/UQQYBS4GVFVKF1?autoload=1&amp;app_absent=0&amp;utm_source=ig" target="_blank" rel="noopener noreferrer" aria-label="Conversar pelo WhatsApp">
-          <div class="social-space-icon"><img class="social-brand-icon" src="https://cdn.simpleicons.org/whatsapp/e0b973" alt="" aria-hidden="true"></div>
-          <span class="social-space-title">WhatsApp</span>
-          <span class="social-space-line"></span>
-          <span class="social-space-note">Atendimento direto</span>
-        </a>
-        <div class="social-space scroll-item">
-          <div class="social-space-icon"><img class="social-brand-icon" src="https://cdn.simpleicons.org/tiktok/e0b973" alt="" aria-hidden="true"></div>
-          <span class="social-space-title">TikTok</span>
-          <span class="social-space-line"></span>
-          <span class="social-space-note">Canal oficial</span>
-        </div>
-      </div>
-    </section>
-
-    <!-- SECTION: FEEDBACKS E DEPOIMENTOS DE CONSULENTES -->
+    <!-- FEEDBACKS -->
     <section id="feedbacks" class="max-w-6xl mx-auto px-4 sm:px-6 py-16 scroll-reveal">
       <div class="text-center max-w-3xl mx-auto mb-12">
-        <span class="text-xs uppercase tracking-widest text-tarot-gold font-bold">Experiências reais</span>
-        <h2 class="text-3xl sm:text-5xl font-cinzel font-black text-white mt-1">Depoimentos dos Consulentes</h2>
-        <p class="text-slate-300 text-xs sm:text-sm mt-2">
-          Veja como outras pessoas descreveram a experiência e compartilhe também a sua opinião sobre o atendimento.
-        </p>
+        <h2 class="text-3xl sm:text-5xl font-cinzel font-black text-white mt-1">Depoimentos</h2>
       </div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12" id="feedbacksList"></div>
 
-      <!-- Feedbacks Grid -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12" id="feedbacksList">
-        <!-- Rendered by JS -->
-      </div>
-
-      <!-- Form for Consulente to Submit Feedback -->
-      <div class="glass-panel p-6 sm:p-8 rounded-3xl purple-gold-border max-w-2xl mx-auto" id="formularioDepoimentoContainer">
-        <div class="text-center mb-6">
-          <h3 id="formDepoimentoTitulo" class="font-cinzel text-xl font-bold text-white flex items-center justify-center gap-2">
-            <i data-lucide="star" class="w-5 h-5 text-tarot-gold"></i> Deixe Seu Depoimento
-          </h3>
-          <p class="text-xs text-slate-300 mt-1">Como foi a sua experiência com as cartas e rituais?</p>
-        </div>
-
+      <div class="glass-panel p-6 sm:p-8 rounded-3xl purple-gold-border max-w-2xl mx-auto">
+        <div class="text-center mb-6"><h3 class="font-cinzel text-xl font-bold text-white flex items-center justify-center gap-2"><i data-lucide="star" class="w-5 h-5 text-tarot-gold"></i> Deixe Seu Depoimento</h3></div>
         <form id="feedbackForm" onsubmit="handleFeedbackSubmit(event)" class="space-y-4">
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label class="block text-xs font-bold uppercase text-slate-300 mb-1">Seu Nome ou Inicial *</label>
-              <input type="text" id="feedbackName" required placeholder="Ex: Camila R." class="w-full px-3.5 py-2.5 rounded-xl bg-tarot-night border border-purple-500/30 text-white text-xs focus:outline-none focus:border-tarot-gold" />
-            </div>
-            <div>
-              <label class="block text-xs font-bold uppercase text-slate-300 mb-1">Serviço Realizado *</label>
-              <select id="feedbackService" class="w-full px-3.5 py-2.5 rounded-xl bg-tarot-night border border-purple-500/30 text-white text-xs focus:outline-none focus:border-tarot-gold">
-                <!-- Preenchido dinamicamente com todos os itens do catálogo e serviços -->
-              </select>
-            </div>
+            <div><label class="block text-xs font-bold uppercase text-slate-300 mb-1">Seu Nome *</label><input type="text" id="feedbackName" required class="w-full px-3.5 py-2.5 rounded-xl bg-tarot-night border border-purple-500/30 text-white text-xs focus:border-tarot-gold" /></div>
+            <div><label class="block text-xs font-bold uppercase text-slate-300 mb-1">Serviço *</label><select id="feedbackService" class="w-full px-3.5 py-2.5 rounded-xl bg-tarot-night border border-purple-500/30 text-white text-xs focus:border-tarot-gold"></select></div>
           </div>
-
-          <div>
-            <label class="block text-xs font-bold uppercase text-slate-300 mb-1">Sua Avaliação (Estrelas):</label>
-            <div class="flex items-center gap-2" id="starRatingSelect">
-              <button type="button" onclick="setFeedbackRating(1)" class="star-btn text-tarot-gold text-lg">★</button>
-              <button type="button" onclick="setFeedbackRating(2)" class="star-btn text-tarot-gold text-lg">★</button>
-              <button type="button" onclick="setFeedbackRating(3)" class="star-btn text-tarot-gold text-lg">★</button>
-              <button type="button" onclick="setFeedbackRating(4)" class="star-btn text-tarot-gold text-lg">★</button>
-              <button type="button" onclick="setFeedbackRating(5)" class="star-btn text-tarot-gold text-lg">★</button>
-              <span id="starRatingLabel" class="text-xs text-tarot-gold font-bold ml-2">5 Estrelas (Excelente)</span>
-            </div>
-          </div>
-
-          <div>
-            <label class="block text-xs font-bold uppercase text-slate-300 mb-1">Seu Relato / Mensagem *</label>
-            <textarea id="feedbackText" required rows="3" placeholder="Conte como a leitura ou magia te auxiliou..." class="w-full px-3.5 py-2.5 rounded-xl bg-tarot-night border border-purple-500/30 text-white text-xs focus:outline-none focus:border-tarot-gold"></textarea>
-          </div>
-
-          <div class="flex gap-2">
-            <button type="submit" id="btnSubmitDepoimento" class="flex-1 py-3 rounded-xl bg-tarot-gold hover:bg-tarot-goldLight text-tarot-night font-bold text-xs uppercase tracking-wider transition">
-              Publicar Meu Depoimento
-            </button>
-          </div>
+          <div><label class="block text-xs font-bold uppercase text-slate-300 mb-1">Avaliação:</label><div class="flex items-center gap-2" id="starRatingSelect"><button type="button" onclick="setFeedbackRating(1)" class="star-btn text-tarot-gold text-lg">★</button><button type="button" onclick="setFeedbackRating(2)" class="star-btn text-tarot-gold text-lg">★</button><button type="button" onclick="setFeedbackRating(3)" class="star-btn text-tarot-gold text-lg">★</button><button type="button" onclick="setFeedbackRating(4)" class="star-btn text-tarot-gold text-lg">★</button><button type="button" onclick="setFeedbackRating(5)" class="star-btn text-tarot-gold text-lg">★</button><span id="starRatingLabel" class="text-xs text-tarot-gold font-bold ml-2">5 Estrelas</span></div></div>
+          <div><label class="block text-xs font-bold uppercase text-slate-300 mb-1">Sua Mensagem *</label><textarea id="feedbackText" required rows="3" class="w-full px-3.5 py-2.5 rounded-xl bg-tarot-night border border-purple-500/30 text-white text-xs focus:border-tarot-gold"></textarea></div>
+          <button type="submit" id="btnSubmitDepoimento" class="w-full py-3 rounded-xl bg-tarot-gold text-tarot-night font-bold text-xs uppercase tracking-wider transition">Publicar</button>
         </form>
       </div>
     </section>
-
   </main>
 
-  <!-- SIDE CART DRAWER -->
+  <!-- MODALS & SIDEBARS -->
   <div id="cartDrawer" class="fixed inset-y-0 right-0 w-full sm:w-[420px] bg-[#0c0517] border-l border-tarot-gold/40 z-50 transform translate-x-full transition-transform duration-300 shadow-2xl flex flex-col">
-    <!-- Header -->
     <div class="p-5 border-b border-purple-500/20 flex items-center justify-between bg-tarot-card">
-      <div class="flex items-center gap-3">
-        <div class="w-8 h-8 rounded-lg bg-tarot-gold/20 flex items-center justify-center text-tarot-gold">
-          <i data-lucide="sparkles" class="w-4 h-4"></i>
-        </div>
-        <div>
-          <h3 class="font-cinzel font-bold text-white text-base">Carrinho de Pedidos</h3>
-          <p class="text-[10px] text-purple-300">Pagamento total via PIX</p>
-        </div>
-      </div>
-      <button onclick="toggleCartDrawer()" class="w-8 h-8 rounded-lg hover:bg-white/10 flex items-center justify-center text-slate-400 hover:text-white transition">
-        <i data-lucide="x" class="w-5 h-5"></i>
-      </button>
+      <h3 class="font-cinzel font-bold text-white text-base">Carrinho de Pedidos</h3>
+      <button onclick="toggleCartDrawer()" class="text-slate-400 hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button>
     </div>
-
-    <!-- Items -->
     <div id="drawerItemsList" class="flex-1 overflow-y-auto p-5 space-y-3"></div>
-
-    <!-- Drawer Summary Footer -->
     <div class="p-5 border-t border-purple-500/20 bg-tarot-surface space-y-3">
-      <div class="flex items-center justify-between text-xs text-slate-300">
-        <span>Total:</span>
-        <span class="font-bold text-white text-sm">R$ <span id="drawerTotalPrice">0,00</span></span>
-      </div>
-      <div class="flex items-center justify-between text-xs text-emerald-400 font-bold border-t border-purple-500/20 pt-2">
-        <span>Pagamento total (PIX):</span>
-        <span class="text-base text-tarot-gold font-cinzel">R$ <span id="drawerDepositPrice">0,00</span></span>
-      </div>
-
-      <div class="grid grid-cols-2 gap-2 pt-2">
-        <button onclick="clearCart()" class="py-2.5 px-3 rounded-xl border border-rose-500/30 text-rose-300 text-xs font-semibold hover:bg-rose-950/40 transition">
-          Esvaziar
-        </button>
-        <a href="#agendamento" onclick="toggleCartDrawer()" class="py-2.5 px-3 rounded-xl bg-tarot-gold text-tarot-night text-xs font-black text-center hover:brightness-110 transition">
-          Finalizar
-        </a>
-      </div>
+      <div class="flex items-center justify-between text-xs text-emerald-400 font-bold border-t border-purple-500/20 pt-2"><span>Pagamento (PIX):</span><span class="text-base text-tarot-gold font-cinzel">R$ <span id="drawerDepositPrice">0,00</span></span></div>
+      <div class="grid grid-cols-2 gap-2 pt-2"><button onclick="clearCart()" class="py-2.5 px-3 rounded-xl border border-rose-500/30 text-rose-300 text-xs font-semibold hover:bg-rose-950/40 transition">Esvaziar</button><a href="#agendamento" onclick="toggleCartDrawer()" class="py-2.5 px-3 rounded-xl bg-tarot-gold text-tarot-night text-xs font-black text-center transition">Finalizar</a></div>
     </div>
   </div>
 
-  <!-- ADMIN MODAL -->
-  <div id="adminModal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md hidden flex items-center justify-center p-4">
-    <div class="glass-panel border purple-gold-border rounded-3xl w-full max-w-2xl max-h-[90vh] flex flex-col shadow-2xl overflow-hidden">
-      
-      <!-- Header -->
-      <div class="p-5 border-b border-purple-500/20 flex items-center justify-between bg-tarot-card">
-        <div class="flex items-center gap-3">
-          <div class="w-9 h-9 rounded-xl bg-tarot-gold/20 flex items-center justify-center text-tarot-gold">
-            <i data-lucide="shield" class="w-5 h-5"></i>
-          </div>
-          <div>
-            <h3 class="font-cinzel font-bold text-white text-base">Gestão de Agendamentos & Feedbacks</h3>
-            <p class="text-[11px] text-slate-400">Controle de clientes, pagamento total e depoimentos</p>
-          </div>
-        </div>
-        <button onclick="closeAdminModal()" class="w-8 h-8 rounded-lg hover:bg-white/10 flex items-center justify-center text-slate-400 hover:text-white transition">
-          <i data-lucide="x" class="w-5 h-5"></i>
-        </button>
-      </div>
-
-      <!-- Settings / Phone config -->
-      <div class="px-5 py-3 bg-[#0d0619] border-b border-purple-900/40 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
-        <span class="text-slate-300">WhatsApp que recebe notificações:</span>
-        <div class="flex items-center gap-2 w-full sm:w-auto">
-          <input
-            type="text"
-            id="adminPhoneInput"
-            placeholder="5585984217895"
-            class="px-3 py-1.5 rounded-lg bg-tarot-night border border-purple-500/40 text-white text-xs w-full sm:w-44 focus:outline-none focus:border-tarot-gold"
-          />
-          <button onclick="saveAdminPhone()" class="px-3 py-1.5 rounded-lg bg-tarot-gold text-tarot-night font-bold hover:brightness-110 whitespace-nowrap">
-            Salvar
-          </button>
-        </div>
-      </div>
-
-      <!-- Bookings List -->
-      <div class="p-5 overflow-y-auto flex-1 space-y-3" id="adminBookingsList">
-        <!-- Rendered by JS -->
-      </div>
-
-      <!-- Modal Footer -->
-      <div class="p-4 border-t border-purple-500/20 bg-tarot-card/80 flex items-center justify-between text-xs">
-        <span class="text-slate-400" id="adminCountText">0 agendamento(s)</span>
-        <button onclick="clearAllBookings()" class="text-rose-400 hover:text-rose-300 flex items-center gap-1">
-          <i data-lucide="trash-2" class="w-3.5 h-3.5"></i> Apagar Histórico
-        </button>
-      </div>
-
-    </div>
-  </div>
-
-  <!-- FLOATING TOAST -->
-  <div id="toastNotification" class="fixed top-20 right-4 z-50 transform translate-x-96 transition-transform duration-300 max-w-sm w-full pointer-events-none">
-    <div class="glass-panel border-l-4 border-tarot-gold p-4 rounded-xl shadow-2xl text-white pointer-events-auto flex items-start gap-3">
-      <div class="w-8 h-8 rounded-full bg-tarot-gold/20 flex items-center justify-center text-tarot-gold shrink-0">
-        <i data-lucide="bell" class="w-4 h-4"></i>
-      </div>
-      <div class="flex-1">
-        <h4 class="font-bold text-xs uppercase tracking-wide text-tarot-gold" id="toastTitle">Mensagem</h4>
-        <p class="text-xs text-slate-200 mt-0.5" id="toastMessage">Notificação do sistema.</p>
-      </div>
-      <button onclick="hideToast()" class="text-slate-400 hover:text-white text-xs">✕</button>
-    </div>
-  </div>
-
-  <!-- MODAL DE EDIÇÃO FLUTUANTE DE DEPOIMENTO COM FUNDO EMBAÇADO -->
   <div id="editFeedbackBackdrop" class="cart-alert-backdrop" hidden>
     <div class="glass-panel p-6 sm:p-8 rounded-3xl purple-gold-border max-w-lg w-full relative shadow-2xl bg-tarot-surface">
-      <div class="flex items-center justify-between mb-5">
-        <h3 class="font-cinzel text-lg font-bold text-white flex items-center gap-2">
-          <i data-lucide="edit-3" class="w-5 h-5 text-tarot-gold"></i> Editar Seu Depoimento
-        </h3>
-        <button type="button" onclick="fecharModalEdicaoDepoimento()" class="w-8 h-8 rounded-lg hover:bg-white/10 flex items-center justify-center text-slate-400 hover:text-white transition">
-          <i data-lucide="x" class="w-5 h-5"></i>
-        </button>
-      </div>
-
+      <div class="flex items-center justify-between mb-5"><h3 class="font-cinzel text-lg font-bold text-white flex items-center gap-2">Editar Depoimento</h3><button type="button" onclick="fecharModalEdicaoDepoimento()" class="text-slate-400 hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button></div>
       <form id="editFeedbackForm" onsubmit="handleEditFeedbackSubmit(event)" class="space-y-4">
-        <div>
-          <label class="block text-xs font-bold uppercase text-slate-300 mb-1">Seu Nome ou Inicial *</label>
-          <input type="text" id="editFeedbackName" required class="w-full px-3.5 py-2.5 rounded-xl bg-tarot-night border border-purple-500/30 text-white text-xs focus:outline-none focus:border-tarot-gold" />
-        </div>
-        <div>
-          <label class="block text-xs font-bold uppercase text-slate-300 mb-1">Serviço Realizado *</label>
-          <select id="editFeedbackService" class="w-full px-3.5 py-2.5 rounded-xl bg-tarot-night border border-purple-500/30 text-white text-xs focus:outline-none focus:border-tarot-gold">
-            <!-- Preenchido dinamicamente com todos os itens do catálogo e serviços -->
-          </select>
-        </div>
-        <div>
-          <label class="block text-xs font-bold uppercase text-slate-300 mb-1">Sua Avaliação (Estrelas):</label>
-          <div class="flex items-center gap-2" id="editStarRatingSelect">
-            <button type="button" onclick="setEditFeedbackRating(1)" class="edit-star-btn text-tarot-gold text-lg">★</button>
-            <button type="button" onclick="setEditFeedbackRating(2)" class="edit-star-btn text-tarot-gold text-lg">★</button>
-            <button type="button" onclick="setEditFeedbackRating(3)" class="edit-star-btn text-tarot-gold text-lg">★</button>
-            <button type="button" onclick="setEditFeedbackRating(4)" class="edit-star-btn text-tarot-gold text-lg">★</button>
-            <button type="button" onclick="setEditFeedbackRating(5)" class="edit-star-btn text-tarot-gold text-lg">★</button>
-            <span id="editStarRatingLabel" class="text-xs text-tarot-gold font-bold ml-2">5 Estrelas (Excelente)</span>
-          </div>
-        </div>
-        <div>
-          <label class="block text-xs font-bold uppercase text-slate-300 mb-1">Seu Relato / Mensagem *</label>
-          <textarea id="editFeedbackText" required rows="3" class="w-full px-3.5 py-2.5 rounded-xl bg-tarot-night border border-purple-500/30 text-white text-xs focus:outline-none focus:border-tarot-gold"></textarea>
-        </div>
-        <div class="flex gap-2 pt-2">
-          <button type="submit" class="flex-1 py-3 rounded-xl bg-tarot-gold hover:bg-tarot-goldLight text-tarot-night font-bold text-xs uppercase tracking-wider transition">
-            Salvar Alterações
-          </button>
-          <button type="button" onclick="fecharModalEdicaoDepoimento()" class="px-4 py-3 rounded-xl border border-rose-500/40 bg-rose-950/40 text-rose-300 font-bold text-xs uppercase tracking-wider transition">
-            Cancelar
-          </button>
-        </div>
+        <div><input type="text" id="editFeedbackName" required class="w-full px-3.5 py-2.5 rounded-xl bg-tarot-night border border-purple-500/30 text-white text-xs focus:border-tarot-gold" /></div>
+        <div><select id="editFeedbackService" class="w-full px-3.5 py-2.5 rounded-xl bg-tarot-night border border-purple-500/30 text-white text-xs focus:border-tarot-gold"></select></div>
+        <div class="flex items-center gap-2" id="editStarRatingSelect"><button type="button" onclick="setEditFeedbackRating(1)" class="edit-star-btn text-tarot-gold text-lg">★</button><button type="button" onclick="setEditFeedbackRating(2)" class="edit-star-btn text-tarot-gold text-lg">★</button><button type="button" onclick="setEditFeedbackRating(3)" class="edit-star-btn text-tarot-gold text-lg">★</button><button type="button" onclick="setEditFeedbackRating(4)" class="edit-star-btn text-tarot-gold text-lg">★</button><button type="button" onclick="setEditFeedbackRating(5)" class="edit-star-btn text-tarot-gold text-lg">★</button><span id="editStarRatingLabel" class="text-xs text-tarot-gold font-bold ml-2">5 Estrelas</span></div>
+        <div><textarea id="editFeedbackText" required rows="3" class="w-full px-3.5 py-2.5 rounded-xl bg-tarot-night border border-purple-500/30 text-white text-xs focus:border-tarot-gold"></textarea></div>
+        <div class="flex gap-2 pt-2"><button type="submit" class="flex-1 py-3 rounded-xl bg-tarot-gold text-tarot-night font-bold text-xs">Salvar</button><button type="button" onclick="fecharModalEdicaoDepoimento()" class="px-4 py-3 rounded-xl border border-rose-500/40 bg-rose-950/40 text-rose-300 font-bold text-xs">Cancelar</button></div>
       </form>
     </div>
   </div>
 
-  <div id="cartAlertBackdrop" class="cart-alert-backdrop" hidden>
-    <section class="cart-alert alert alert-danger" role="alertdialog" aria-modal="true" aria-labelledby="cartAlertTitle">
-      <div class="cart-alert-header">
-        <div class="cart-alert-icon">!</div>
-        <h2 id="cartAlertTitle">Alerta do carrinho</h2>
-      </div>
-      <p>Tem certeza que deseja remover <strong id="cartAlertItem">este item</strong> do seu carrinho?</p>
-      <div class="cart-alert-actions">
-        <button type="button" class="cart-alert-cancel" onclick="closeCartAlert()">Cancelar</button>
-        <button type="button" class="cart-alert-confirm" onclick="confirmRemoveFromCart()">Remover item</button>
-      </div>
-    </section>
-  </div>
+  <div id="cartAlertBackdrop" class="cart-alert-backdrop" hidden><section class="cart-alert alert alert-danger"><div class="cart-alert-header"><div class="cart-alert-icon">!</div><h2 id="cartAlertTitle">Alerta do carrinho</h2></div><p>Deseja remover <strong id="cartAlertItem">este item</strong>?</p><div class="cart-alert-actions"><button type="button" class="cart-alert-cancel" onclick="closeCartAlert()">Cancelar</button><button type="button" class="cart-alert-confirm" onclick="confirmRemoveFromCart()">Remover</button></div></section></div>
+  <div id="feedbackAlertBackdrop" class="cart-alert-backdrop" hidden><section class="cart-alert alert alert-danger"><div class="cart-alert-header"><div class="cart-alert-icon">!</div><h2 id="feedbackAlertTitle">Alerta de exclusão</h2></div><p>Deseja excluir o depoimento de <strong id="feedbackAlertName">este consulente</strong>?</p><div class="cart-alert-actions"><button type="button" class="cart-alert-cancel" onclick="closeFeedbackAlert()">Cancelar</button><button type="button" class="cart-alert-confirm" onclick="confirmDeleteFeedback()">Excluir</button></div></section></div>
 
-  <!-- CONTAINER DE BOTÕES FLUTUANTES (WHATSAPP + VOLTAR AO TOPO) -->
+  <!-- FLOATING BUTTONS -->
   <div class="floating-buttons-container">
-    <!-- BOTÃO MÁGICO DE VOLTAR AO TOPO -->
-    <button id="backToTopBtn" class="back-to-top-btn" type="button" onclick="scrollToTop()" aria-label="Voltar ao topo da página" title="Voltar ao topo">
-      <i data-lucide="arrow-up" class="w-5 h-5" aria-hidden="true"></i>
-    </button>
-
-    <!-- BOTÃO FLUTUANTE DE DÚVIDA / WHATSAPP -->
-    <button id="helpPopupLauncher" class="help-popup-launcher" type="button" aria-label="Abrir ajuda pelo WhatsApp" title="Ficou com dúvida? Fale conosco">
-      <i data-lucide="message-circle-question" class="w-6 h-6" aria-hidden="true"></i>
-    </button>
+    <button id="backToTopBtn" class="back-to-top-btn" type="button" onclick="scrollToTop()"><i data-lucide="arrow-up" class="w-5 h-5"></i></button>
+    <button id="helpPopupLauncher" class="help-popup-launcher" type="button"><i data-lucide="message-circle-question" class="w-6 h-6"></i></button>
   </div>
+  
+  <div id="helpPopupBackdrop" class="help-popup-backdrop" hidden><section class="help-popup"><button id="helpPopupClose" class="help-popup-close" type="button"><i data-lucide="x" class="w-5 h-5"></i></button><div class="help-popup-icon"><i data-lucide="messages-square" class="w-6 h-6"></i></div><h2 id="helpPopupTitle">Dúvidas?</h2><p id="helpPopupDescription">Nos mande uma mensagem!</p><span id="helpPopupNumber" class="help-popup-number"></span><a id="helpPopupWhatsApp" class="help-popup-cta" href="#" target="_blank"><i data-lucide="message-circle" class="w-4 h-4"></i> WhatsApp</a></section></div>
 
-  <!-- MODAL FLUTUANTE DE AJUDA -->
-  <div id="helpPopupBackdrop" class="help-popup-backdrop" hidden>
-    <section class="help-popup" role="dialog" aria-modal="true" aria-labelledby="helpPopupTitle" aria-describedby="helpPopupDescription">
-      <button id="helpPopupClose" class="help-popup-close" type="button" aria-label="Fechar pop-up">
-        <i data-lucide="x" class="w-5 h-5" aria-hidden="true"></i>
-      </button>
-      <div class="help-popup-icon"><i data-lucide="messages-square" class="w-6 h-6" aria-hidden="true"></i></div>
-      <h2 id="helpPopupTitle">Ficou alguma dúvida?</h2>
-      <p id="helpPopupDescription">Nos mande uma mensagem! Estamos aqui para ajudar você a entender o site e escolher seu atendimento.</p>
-      <span id="helpPopupNumber" class="help-popup-number"></span>
-      <a id="helpPopupWhatsApp" class="help-popup-cta" href="#" target="_blank" rel="noopener noreferrer">
-        <i data-lucide="message-circle" class="w-4 h-4" aria-hidden="true"></i>
-        <span>Chamar no WhatsApp</span>
-      </a>
-    </section>
-  </div>
+  <div id="toastNotification" class="fixed top-20 right-4 z-50 transform translate-x-96 transition-transform duration-300 max-w-sm w-full pointer-events-none"><div class="glass-panel border-l-4 border-tarot-gold p-4 rounded-xl shadow-2xl text-white pointer-events-auto flex items-start gap-3"><div class="w-8 h-8 rounded-full bg-tarot-gold/20 flex items-center justify-center text-tarot-gold shrink-0"><i data-lucide="bell" class="w-4 h-4"></i></div><div class="flex-1"><h4 class="font-bold text-xs uppercase tracking-wide text-tarot-gold" id="toastTitle">Mensagem</h4><p class="text-xs text-slate-200 mt-0.5" id="toastMessage"></p></div><button onclick="hideToast()" class="text-slate-400 hover:text-white text-xs">✕</button></div></div>
 
+  <!-- INCLUDES -->
   <script src="shared.js"></script>
-  <script>
-    const SERVICES_CATALOG = window.VISOES_SERVICES;
-
-    /* -------------------------------------------------------------
-       2. CAROUSEL DATA (PHOTOS, VIDEOS, PROMOTIONS)
-       ------------------------------------------------------------- */
-    const MEDIA_DATA = {
-      photos: [
-        {
-          title: 'Ambiente Consagrado & Cristais de Quartzo',
-          desc: 'Ambiente purificado com ervas aromáticas e pedras ativadas para as leituras diárias.',
-          tag: 'Registro do Espaço',
-          icon: 'sparkles',
-          accent: 'from-purple-900 to-indigo-950',
-          visual: 'cristais'
-        },
-        {
-          title: 'Lâminas do Tarot de Marselha & Rider Waite',
-          desc: 'Baralhos tradicionais energizados sob a influência da Lua Cheia para máxima precisão oracular.',
-          tag: 'Instrumentos Sagrados',
-          icon: 'layers',
-          accent: 'from-amber-950 to-purple-950',
-          visual: 'cartas'
-        },
-        {
-          title: 'Velas do Rito de Adoçamento',
-          desc: 'Firmezas com favos de mel e essências naturais para restabelecer a paz em relações machucadas.',
-          tag: 'Rituais',
-          icon: 'flame',
-          accent: 'from-pink-950 to-purple-950',
-          visual: 'velas'
-        }
-      ],
-      videos: [
-        {
-          title: 'Demonstração: Como Funciona a Tiragem do Amor',
-          desc: 'Veja o método de abertura das cartas e a resposta direta para o coração.',
-          tag: 'Vídeo Demonstrativo',
-          icon: 'video',
-          accent: 'from-violet-950 to-slate-900',
-          videoInfo: 'Tiragem em tempo real gravada em HD'
-        },
-        {
-          title: 'Rito de Abertura de Caminhos Financeiros',
-          desc: 'Momento de consagração e imantação das velas douradas na mesa de alta magia.',
-          tag: 'Vídeo do Rito',
-          icon: 'play-circle',
-          accent: 'from-emerald-950 to-purple-950',
-          videoInfo: 'Registro exclusivo de firmeza'
-        }
-      ],
-      promos: [
-        {
-          title: 'Lua Cheia: Noite Especial de Adoçamento',
-          desc: 'Condição especial para inclusão de nomes no caldeirão de amor da próxima Lua Cheia. Reserve sua vaga!',
-          tag: 'Aviso Astrológico',
-          icon: 'moon',
-          accent: 'from-purple-950 via-rose-950 to-tarot-night',
-          highlight: 'Vagas Limitadas'
-        },
-        {
-          title: 'Consultas para diferentes áreas da vida',
-          desc: 'Escolha uma consulta para sua questão amorosa, financeira, profissional ou espiritual.',
-          tag: 'Propaganda Especial',
-          icon: 'sparkle',
-          accent: 'from-amber-950 via-purple-950 to-slate-950',
-          highlight: 'Promoção Ativa'
-        }
-      ]
-    };
-
-    let currentMediaTab = 'photos';
-    let currentSlideIndex = 0;
-
-    /* -------------------------------------------------------------
-       3. FEEDBACKS INITIAL DATA, USER ID & STORAGE
-       ------------------------------------------------------------- */
-    const STORAGE_KEY_FEEDBACKS = 'visoes_tarot_feedbacks';
-    const STORAGE_KEY_USER_ID = 'visoes_tarot_user_id';
-    let feedbacks = [];
-    let editandoFeedbackId = null;
-
-    function getUserId() {
-      let userId = localStorage.getItem(STORAGE_KEY_USER_ID);
-      if (!userId) {
-        userId = 'user_' + Math.random().toString(36).substring(2) + Date.now();
-        localStorage.setItem(STORAGE_KEY_USER_ID, userId);
-      }
-      return userId;
-    }
-
-    const INITIAL_FEEDBACKS = [
-      {
-        id: 'init_1',
-        userId: 'admin_demo_1',
-        name: 'Juliana Mendes',
-        service: 'Clareza do Coração',
-        rating: 5,
-        date: 'Há 2 dias',
-        comment: 'Fiquei impressionada! O cartomante falou coisas que ninguém sabia sobre meu ex. Seguindo os conselhos das cartas consegui finalmente ter uma conversa lúcida com ele.'
-      },
-      {
-        id: 'init_2',
-        userId: 'admin_demo_2',
-        name: 'Rodrigo S.',
-        service: 'Adoçamento Amoroso',
-        rating: 5,
-        date: 'Semana passada',
-        comment: 'Fiz o adoçamento com muito receio, mas em menos de 10 dias o clima pesado em casa sumiu por completo. A clareza e a atenção do atendimento me deixaram muito segura.'
-      },
-      {
-        id: 'init_3',
-        userId: 'admin_demo_3',
-        name: 'Renata Albuquerque',
-        service: 'Fluxo de Abundância',
-        rating: 5,
-        date: 'Há 1 semana',
-        comment: 'Acertou em cheio a proposta de emprego que eu receberia na quinta-feira. Valeu cada centavo!'
-      }
-    ];
-
-    try {
-      const savedFeedbacks = localStorage.getItem(STORAGE_KEY_FEEDBACKS);
-      feedbacks = savedFeedbacks ? JSON.parse(savedFeedbacks) : INITIAL_FEEDBACKS;
-    } catch(e) {
-      feedbacks = INITIAL_FEEDBACKS;
-    }
-
-    let selectedRating = 5;
-    let editSelectedRating = 5;
-
-    /* -------------------------------------------------------------
-       4. POPULAR SELECTS DE SERVIÇOS DINAMICAMENTE
-       ------------------------------------------------------------- */
-    function popularSelectsDeServicos() {
-      const selects = [
-        document.getElementById('feedbackService'),
-        document.getElementById('editFeedbackService')
-      ];
-
-      if (!window.VISOES_SERVICES || window.VISOES_SERVICES.length === 0) return;
-
-      const opcoesHtml = window.VISOES_SERVICES.map(service => 
-        `<option value="${escapeHTML(service.title)}">${escapeHTML(service.title)} (${service.priceLabel || 'R$ ' + service.price.toFixed(2)})</option>`
-      ).join('');
-
-      selects.forEach(selectEl => {
-        if (selectEl) {
-          selectEl.innerHTML = opcoesHtml;
-        }
-      });
-    }
-
-    /* -------------------------------------------------------------
-       5. CART & BOOKING STORAGE
-       ------------------------------------------------------------- */
-    const STORAGE_KEY_CART = window.VISOES_STORAGE_KEYS.cart;
-    const STORAGE_KEY_BOOKINGS = 'visoes_tarot_bookings';
-    const STORAGE_KEY_PHONE = 'visoes_tarot_phone';
-    const STORAGE_KEY_ACTIVITY = 'visoes_tarot_activity';
-
-    let cart = window.readSharedCart();
-    let bookings = [];
-    const savedCartomantePhone = localStorage.getItem(STORAGE_KEY_PHONE);
-    const previousCartomantePhones = ['5511999999999', '5585998342443'];
-    let cartomantePhone = savedCartomantePhone && !previousCartomantePhones.includes(savedCartomantePhone)
-      ? savedCartomantePhone
-      : '5585984217895';
-    if (previousCartomantePhones.includes(savedCartomantePhone)) {
-      localStorage.setItem(STORAGE_KEY_PHONE, cartomantePhone);
-    }
-
-    try {
-      const savedBookings = localStorage.getItem(STORAGE_KEY_BOOKINGS);
-      bookings = savedBookings ? JSON.parse(savedBookings) : [];
-    } catch(e) {
-      bookings = [];
-    }
-
-    /* -------------------------------------------------------------
-       6. CART LOGIC (WITH 50% DEPOSIT CALCULATION)
-       ------------------------------------------------------------- */
-    function saveCart() {
-      window.writeSharedCart(cart);
-      updateCartUI();
-    }
-
-    window.addEventListener('storage', event => {
-      if (event.key !== STORAGE_KEY_CART && event.key !== null) return;
-      cart = window.readSharedCart();
-      updateCartUI();
-    });
-
-    function addToCart(serviceId) {
-      const service = SERVICES_CATALOG.find(s => s.id === serviceId);
-      if (!service) return;
-
-      if (!cart.includes(serviceId)) {
-        cart.push(serviceId);
-        saveCart();
-        playMagicSound('add');
-        showToast('Adicionado ao Carrinho!', `"${service.title}" foi incluído no seu pedido.`);
-      } else {
-        showToast('Já Selecionado', `"${service.title}" já consta no seu carrinho.`);
-      }
-    }
-
-    let pendingCartRemovalId = null;
-
-    function requestRemoveFromCart(serviceId) {
-      const item = SERVICES_CATALOG.find(service => service.id === serviceId);
-      if (!item) return;
-
-      pendingCartRemovalId = serviceId;
-      document.getElementById('cartAlertItem').textContent = item.title;
-      document.getElementById('cartAlertBackdrop').hidden = false;
-    }
-
-    function closeCartAlert() {
-      pendingCartRemovalId = null;
-      document.getElementById('cartAlertBackdrop').hidden = true;
-    }
-
-    function confirmRemoveFromCart() {
-      if (!pendingCartRemovalId) return;
-      const serviceId = pendingCartRemovalId;
-      closeCartAlert();
-      playMagicSound('remove');
-      removeFromCart(serviceId);
-    }
-
-    function removeFromCart(serviceId) {
-      cart = cart.filter(id => id !== serviceId);
-      saveCart();
-      showToast('Item Retirado', 'Serviço removido do seu carrinho.');
-    }
-
-    function clearCart() {
-      if (cart.length === 0) return;
-      cart = [];
-      saveCart();
-      playMagicSound('remove');
-      showToast('Carrinho Limpo', 'Todos os itens foram retirados.');
-    }
-
-    function getCartTotal() {
-      return cart.reduce((total, id) => {
-        const item = SERVICES_CATALOG.find(s => s.id === id);
-        return total + (item ? item.price : 0);
-      }, 0);
-    }
-
-    function getDepositTotal() {
-      return getCartTotal();
-    }
-
-    function hasCustomPriceItem() {
-      return cart.some(id => {
-        const item = SERVICES_CATALOG.find(s => s.id === id);
-        return item && item.isCustomPrice;
-      });
-    }
-
-    function updateCartUI() {
-      const count = cart.length;
-      const headerCart = document.getElementById('headerCartCount');
-      if (headerCart) headerCart.textContent = count;
-
-      const cartBadgeInline = document.getElementById('cartBadgeInline');
-      if (cartBadgeInline) {
-        cartBadgeInline.textContent = `${count} ${count === 1 ? 'item' : 'itens'}`;
-      }
-
-      const total = getCartTotal();
-      const deposit = getDepositTotal();
-      const hasCustom = hasCustomPriceItem();
-
-      const totalFormatted = total.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + (hasCustom ? ' + Valor definido pela bruxa parceira' : '');
-      const depositFormatted = deposit.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + (hasCustom ? ' + Valor definido pela bruxa parceira' : '');
-
-      const totalPriceEl = document.getElementById('cartTotalPrice');
-      const depositPriceEl = document.getElementById('cartDepositPrice');
-      const drawerTotalEl = document.getElementById('drawerTotalPrice');
-      const drawerDepositEl = document.getElementById('drawerDepositPrice');
-
-      if (totalPriceEl) totalPriceEl.textContent = totalFormatted;
-      if (depositPriceEl) depositPriceEl.textContent = depositFormatted;
-      if (drawerTotalEl) drawerTotalEl.textContent = totalFormatted;
-      if (drawerDepositEl) drawerDepositEl.textContent = depositFormatted;
-
-      const cartContainer = document.getElementById('cartItemsContainer');
-      const drawerContainer = document.getElementById('drawerItemsList');
-      const formSummary = document.getElementById('formServicesSummary');
-
-      if (cart.length === 0) {
-        if (cartContainer) {
-          cartContainer.innerHTML = `
-            <div class="text-center py-8 text-slate-400">
-              <i data-lucide="sparkles" class="w-8 h-8 mx-auto text-tarot-gold/50 mb-2"></i>
-              <p class="text-sm font-semibold">Seu carrinho de pedidos está vazio.</p>
-              <p class="text-xs text-slate-500">Escolha os serviços acima para calcular o valor total e confirmar o agendamento.</p>
-            </div>
-          `;
-        }
-
-        if (drawerContainer) {
-          drawerContainer.innerHTML = `
-            <div class="text-center py-10 text-slate-400 text-xs">
-              Nenhum serviço no carrinho no momento.
-            </div>
-          `;
-        }
-
-        if (formSummary) {
-          formSummary.innerHTML = `
-            <p class="text-rose-400 italic">Por favor, adicione ao menos um serviço no catálogo acima!</p>
-          `;
-        }
-      } else {
-        let itemsHtml = '';
-        let drawerHtml = '';
-        let summaryHtml = '';
-
-        cart.forEach(id => {
-          const item = SERVICES_CATALOG.find(s => s.id === id);
-          if (!item) return;
-
-          const priceStr = item.isCustomPrice ? 'Valor definido pela bruxa parceira' : `R$ ${item.price.toFixed(2)}`;
-          const depositStr = item.isCustomPrice ? 'Valor a definir' : `Valor total: R$ ${item.price.toFixed(2)}`;
-
-          itemsHtml += `
-            <div class="flex items-center justify-between p-3.5 rounded-xl bg-purple-950/40 border border-purple-500/30 hover:border-tarot-gold/50 transition">
-              <div class="flex items-center gap-3">
-                <div class="w-9 h-9 rounded-lg bg-tarot-night border border-tarot-gold/40 flex items-center justify-center text-tarot-gold">
-                  <i data-lucide="${item.icon}" class="w-4 h-4"></i>
-                </div>
-                <div>
-                  <h4 class="font-bold text-sm text-white">${item.title}</h4>
-                  <span class="text-[11px] text-purple-300">${item.subtitle}</span>
-                </div>
-              </div>
-              <div class="flex items-center gap-4">
-                <div class="text-right">
-                  <span class="font-bold text-sm text-tarot-gold block">${priceStr}</span>
-                  <span class="text-[10px] text-emerald-400 font-medium block">${depositStr}</span>
-                </div>
-                <button onclick="requestRemoveFromCart('${item.id}')" class="p-1.5 rounded-lg text-slate-400 hover:text-rose-400 hover:bg-rose-950/30 transition">
-                  <i data-lucide="x" class="w-4 h-4"></i>
-                </button>
-              </div>
-            </div>
-          `;
-
-          drawerHtml += `
-            <div class="p-3 rounded-xl bg-purple-950/50 border border-purple-500/20 flex items-center justify-between">
-              <div>
-                <div class="text-xs font-bold text-white">${item.title}</div>
-                <div class="text-[10px] text-tarot-gold">${priceStr}</div>
-              </div>
-              <button onclick="requestRemoveFromCart('${item.id}')" class="text-slate-500 hover:text-rose-400 p-1">
-                <i data-lucide="trash" class="w-3.5 h-3.5"></i>
-              </button>
-            </div>
-          `;
-
-          summaryHtml += `
-            <div class="flex items-center justify-between">
-              <span>• ${item.title}</span>
-              <span class="font-bold text-tarot-gold">${priceStr}</span>
-            </div>
-          `;
-        });
-
-        if (cartContainer) cartContainer.innerHTML = itemsHtml;
-        if (drawerContainer) drawerContainer.innerHTML = drawerHtml;
-        if (formSummary) {
-          formSummary.innerHTML = `
-            ${summaryHtml}
-            <div class="pt-2 border-t border-purple-500/20 flex justify-between font-bold text-white text-xs">
-              <span>Total dos Trabalhos:</span>
-              <span class="text-tarot-gold">R$ ${totalFormatted}</span>
-            </div>
-            <div class="flex justify-between font-bold text-emerald-400 text-xs">
-              <span>Pagamento total via PIX:</span>
-              <span>R$ ${depositFormatted}</span>
-            </div>
-          `;
-        }
-      }
-
-      renderCatalog();
-      observeScrollItems();
-      lucide.createIcons();
-    }
-
-    function toggleCartDrawer() {
-      const drawer = document.getElementById('cartDrawer');
-      drawer.classList.toggle('translate-x-full');
-    }
-
-    /* -------------------------------------------------------------
-       7. CATALOG RENDERING
-       ------------------------------------------------------------- */
-    function renderCatalog() {
-      const tarotList = document.getElementById('tarotCardsList');
-      const fixedRitualsList = document.getElementById('fixedRitualsList');
-      const customRitualsList = document.getElementById('customRitualsList');
-
-      if (!tarotList || !fixedRitualsList || !customRitualsList) return;
-
-      tarotList.innerHTML = SERVICES_CATALOG.filter(s => s.category === 'tiragem').map(item => {
-        const inCart = cart.includes(item.id);
-        return `
-          <div class="scroll-item glass-panel p-5 rounded-2xl border ${inCart ? 'border-tarot-gold shadow-[0_0_20px_rgba(224,185,115,0.25)]' : 'border-purple-500/20'} flex flex-col justify-between hover:-translate-y-1 transition duration-300">
-            <div>
-              <div class="flex items-center justify-between mb-3">
-                <div class="w-10 h-10 rounded-xl bg-purple-950 border border-purple-500/40 flex items-center justify-center text-tarot-gold">
-                  <i data-lucide="${item.icon}" class="w-5 h-5"></i>
-                </div>
-                <div class="text-right">
-                  <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-tarot-night border border-tarot-gold/50 text-tarot-gold block">
-                    ${item.priceLabel}
-                  </span>
-                </div>
-              </div>
-              <h3 class="font-cinzel text-base font-bold text-white mb-1">${item.title}</h3>
-              <p class="text-xs text-slate-300 mb-4 leading-relaxed">${item.description}</p>
-            </div>
-            <button
-              onclick="${inCart ? `requestRemoveFromCart('${item.id}')` : `addToCart('${item.id}')`}" 
-              class="w-full py-2 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 ${
-                inCart 
-                  ? 'bg-rose-950/60 border border-rose-500/40 text-rose-300 hover:bg-rose-900' 
-                  : 'bg-gradient-to-r from-purple-900 to-indigo-950 border border-tarot-gold/40 text-white hover:bg-tarot-gold hover:text-tarot-night'
-              }"
-            >
-              <i data-lucide="${inCart ? 'check' : 'plus'}" class="w-3.5 h-3.5"></i>
-              ${inCart ? 'No Carrinho (Remover)' : 'Adicionar ao Carrinho'}
-            </button>
-          </div>
-        `;
-      }).join('');
-
-      fixedRitualsList.innerHTML = SERVICES_CATALOG.filter(s => s.category === 'magia_fixa').map(item => {
-        const inCart = cart.includes(item.id);
-        return `
-          <div class="scroll-item glass-panel p-6 rounded-2xl border ${inCart ? 'border-tarot-gold shadow-[0_0_25px_rgba(224,185,115,0.3)]' : 'border-purple-500/30'} flex flex-col justify-between hover:-translate-y-1 transition duration-300">
-            <div>
-              <div class="flex items-center justify-between mb-4">
-                <div class="w-12 h-12 rounded-xl bg-purple-950 border border-tarot-gold/50 flex items-center justify-center text-tarot-gold">
-                  <i data-lucide="${item.icon}" class="w-6 h-6"></i>
-                </div>
-                <div class="text-right">
-                  <span class="px-3 py-1 rounded-full text-xs font-black tracking-wide bg-tarot-gold text-tarot-night block">
-                    ${item.priceLabel}
-                  </span>
-                </div>
-              </div>
-              <h3 class="font-cinzel text-lg font-bold text-white mb-1">${item.title}</h3>
-              <p class="text-[11px] text-purple-300 font-semibold mb-2">${item.subtitle}</p>
-              <p class="text-xs text-slate-300 mb-6 leading-relaxed">${item.description}</p>
-            </div>
-            <button
-              onclick="${inCart ? `requestRemoveFromCart('${item.id}')` : `addToCart('${item.id}')`}" 
-              class="w-full py-3 px-4 rounded-xl text-xs font-bold transition flex items-center justify-center gap-2 ${
-                inCart 
-                  ? 'bg-rose-950/70 border border-rose-500/50 text-rose-300 hover:bg-rose-900' 
-                  : 'bg-tarot-surface hover:bg-tarot-gold hover:text-tarot-night border border-tarot-gold/60 text-tarot-gold'
-              }"
-            >
-              <i data-lucide="${inCart ? 'check-check' : 'sparkles'}" class="w-4 h-4"></i>
-              ${inCart ? 'Selecionado (Remover)' : 'Adicionar ao Carrinho'}
-            </button>
-          </div>
-        `;
-      }).join('');
-
-      customRitualsList.innerHTML = SERVICES_CATALOG.filter(s => s.category === 'magia_custom').map(item => {
-        const inCart = cart.includes(item.id);
-        return `
-          <div class="scroll-item glass-panel ritual-danger-card p-6 rounded-2xl border-2 ${inCart ? 'border-tarot-gold shadow-[0_0_30px_rgba(224,185,115,0.4)]' : 'border-rose-500/30'} flex flex-col justify-between hover:-translate-y-1 transition duration-300 bg-gradient-to-b from-[#260817] to-[#12051d]">
-            <div class="ritual-decoration" aria-hidden="true">
-              <i data-lucide="flame"></i>
-              <i data-lucide="zap"></i>
-              <i data-lucide="skull"></i>
-              <span class="ritual-emoji ritual-emoji-one" aria-hidden="true">✦</span>
-              <span class="ritual-emoji ritual-emoji-two" aria-hidden="true">⚠</span>
-              <span class="ritual-emoji ritual-emoji-three" aria-hidden="true">✶</span>
-              <span class="ritual-ember ritual-ember-one"></span>
-              <span class="ritual-ember ritual-ember-two"></span>
-              <span class="ritual-ember ritual-ember-three"></span>
-            </div>
-            <div>
-              <div class="flex items-center justify-between mb-4">
-                <div class="w-12 h-12 rounded-xl bg-rose-950/80 border border-rose-500/40 flex items-center justify-center text-rose-400">
-                  <i data-lucide="${item.icon}" class="w-6 h-6"></i>
-                </div>
-                <span class="px-3 py-1 rounded-full text-xs font-black tracking-wide bg-gradient-to-r from-rose-700 to-amber-600 text-white uppercase shadow-md">
-                  Valor definido pela bruxa parceira
-                </span>
-              </div>
-              <h3 class="font-cinzel text-xl font-bold text-white mb-1">${item.title}</h3>
-              <p class="text-[11px] text-rose-300 font-semibold mb-2">${item.subtitle}</p>
-              <p class="text-xs text-slate-300 mb-6 leading-relaxed">${item.description}</p>
-              
-              <div class="p-3 rounded-xl bg-rose-950/30 border border-rose-500/20 text-[11px] text-slate-300 mb-6 flex items-start gap-2">
-                <i data-lucide="shield" class="w-4 h-4 text-rose-400 shrink-0 mt-0.5"></i>
-                <span>Avaliação obrigatória: a bruxa parceira analisa o caso e define o valor total do rito.</span>
-              </div>
-            </div>
-            <button
-              onclick="${inCart ? `requestRemoveFromCart('${item.id}')` : `addToCart('${item.id}')`}" 
-              class="w-full py-3 px-4 rounded-xl text-xs font-bold transition flex items-center justify-center gap-2 ${
-                inCart 
-                  ? 'bg-rose-950 border border-rose-500 text-rose-300' 
-                  : 'bg-rose-900/60 hover:bg-rose-700 border border-rose-500/40 text-white'
-              }"
-            >
-              <i data-lucide="${inCart ? 'check-check' : 'wand-2'}" class="w-4 h-4"></i>
-              ${inCart ? 'Adicionado ao Pedido (Remover)' : 'Incluir no Meu Agendamento'}
-            </button>
-          </div>
-        `;
-      }).join('');
-    }
-
-    /* -------------------------------------------------------------
-       8. MULTIMEDIA CAROUSEL
-       ------------------------------------------------------------- */
-    function switchMediaTab(tab) {
-      currentMediaTab = tab;
-      currentSlideIndex = 0;
-      const tabs = ['photos', 'videos', 'promos'];
-      tabs.forEach(t => {
-        const btn = document.getElementById(`tabBtn${t.charAt(0).toUpperCase() + t.slice(1)}`);
-        if (btn) {
-          btn.className = t === tab ? 'px-5 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 bg-tarot-gold text-tarot-night shadow-md' : 'px-5 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 text-slate-300 hover:text-white';
-        }
-      });
-      renderCarouselSlide();
-    }
-
-    function renderCarouselSlide() {
-      const container = document.getElementById('mediaCarouselContent');
-      const dotsContainer = document.getElementById('carouselDots');
-      if (!container || !dotsContainer) return;
-      const slides = MEDIA_DATA[currentMediaTab] || [];
-      const current = slides[currentSlideIndex] || slides[0];
-      if (!current) return;
-
-      container.innerHTML = `
-        <div class="scroll-item w-full max-w-3xl mx-auto p-6 sm:p-10 rounded-2xl bg-gradient-to-br ${current.accent} border border-tarot-gold/30 flex flex-col md:flex-row items-center gap-8 shadow-inner animate-fadeIn">
-          <div class="w-36 h-36 sm:w-44 sm:h-44 rounded-2xl bg-tarot-night/80 border border-tarot-gold/50 flex flex-col items-center justify-center text-tarot-gold shrink-0 relative overflow-hidden shadow-2xl">
-            <i data-lucide="${current.icon}" class="w-16 h-16 animate-float-slow"></i>
-            <span class="text-[10px] uppercase font-bold tracking-widest text-slate-300 mt-2">${current.tag}</span>
-          </div>
-          <div class="space-y-3 text-center md:text-left flex-1">
-            <span class="text-xs uppercase tracking-widest text-tarot-gold font-bold px-3 py-1 rounded-full bg-tarot-night border border-tarot-gold/30 inline-block">${current.tag}</span>
-            <h3 class="text-xl sm:text-2xl font-cinzel font-bold text-white leading-snug">${current.title}</h3>
-            <p class="text-xs sm:text-sm text-slate-300 leading-relaxed font-normal">${current.desc}</p>
-          </div>
-        </div>
-      `;
-      dotsContainer.innerHTML = slides.map((_, idx) => `
-        <button onclick="goToMediaSlide(${idx})" class="w-2.5 h-2.5 rounded-full transition-all ${idx === currentSlideIndex ? 'bg-tarot-gold w-6' : 'bg-purple-900/60 hover:bg-purple-700'}"></button>
-      `).join('');
-      lucide.createIcons();
-      observeScrollItems(container);
-    }
-
-    /* -------------------------------------------------------------
-       9. AVAILABILITY LOGIC
-       ------------------------------------------------------------- */
-    const ALL_WEEK_DAYS = ['Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado', 'Domingo'];
-    
-    function getAvailableTimeSlotsForDay(day) {
-      if (day === 'Quinta-feira' || day === 'Sábado') {
-        return ['17:00', '19:00', '21:00'];
-      }
-      return ['16:00', '18:00', '20:00', '22:00'];
-    }
-
-    const DAY_TO_INDEX = { 'Domingo': 0, 'Segunda-feira': 1, 'Terça-feira': 2, 'Quarta-feira': 3, 'Quinta-feira': 4, 'Sexta-feira': 5, 'Sábado': 6 };
-
-    function getNextSlotDate(day, time) {
-      const [hour, minute] = (time || '16:00').split(':').map(Number);
-      const today = new Date();
-      const dayIndex = DAY_TO_INDEX[day] ?? 0;
-      let offset = (dayIndex - today.getDay() + 7) % 7;
-      const candidate = new Date(today);
-      candidate.setHours(hour, minute, 0, 0);
-      candidate.setDate(candidate.getDate() + offset);
-      if (offset === 0 && candidate <= new Date()) candidate.setDate(candidate.getDate() + 7);
-      return candidate;
-    }
-
-    function getReservedSlotsForDay(day) {
-      return bookings.filter(b => b.day === day).map(b => b.time).filter(Boolean);
-    }
-
-    function getAvailableTimeSlots(day) {
-      if (!day) return [];
-      const baseSlots = getAvailableTimeSlotsForDay(day);
-      const reserved = new Set(getReservedSlotsForDay(day));
-      return baseSlots.filter(slot => !reserved.has(slot));
-    }
-
-    function renderAvailabilityPicker() {
-      const dayPicker = document.getElementById('dayPicker');
-      const timePicker = document.getElementById('timePicker');
-      if (!dayPicker || !timePicker) return;
-
-      dayPicker.innerHTML = '';
-      timePicker.innerHTML = '<div class="col-span-full text-xs text-slate-400">Selecione um dia primeiro.</div>';
-
-      ALL_WEEK_DAYS.forEach(day => {
-        const available = getAvailableTimeSlots(day);
-        const selected = document.getElementById('bookingDay').value === day;
-        const button = document.createElement('button');
-        button.type = 'button';
-        button.className = `scroll-item rounded-xl border px-3 py-3 text-left transition ${selected ? 'border-tarot-gold bg-tarot-gold text-tarot-night shadow-[0_0_18px_rgba(224,185,115,0.2)]' : 'border-purple-500/30 bg-[#090314] text-white hover:border-tarot-gold/60'}`;
-        button.innerHTML = `
-          <div class="text-xs font-bold uppercase tracking-wide">${day}</div>
-          <div class="text-[10px] mt-1 ${available.length ? 'text-emerald-300' : 'text-rose-300'}">${available.length ? `${available.length} horários livres` : 'Indisponível'}</div>
-        `;
-        if (available.length === 0) {
-          button.disabled = true;
-          button.className = 'rounded-xl border border-rose-500/30 bg-rose-950/20 text-rose-300 px-3 py-3 text-left opacity-60 cursor-not-allowed';
-        } else {
-          button.onclick = () => {
-            document.getElementById('bookingDay').value = document.getElementById('bookingDay').value === day ? '' : day;
-            document.getElementById('bookingTime').value = '';
-            renderAvailabilityPicker();
-          };
-        }
-        dayPicker.appendChild(button);
-      });
-      observeScrollItems(dayPicker);
-
-      if (document.getElementById('bookingDay').value) {
-        renderAvailableTimeSlots(document.getElementById('bookingDay').value);
-      }
-    }
-
-    function renderAvailableTimeSlots(day) {
-      const timePicker = document.getElementById('timePicker');
-      const availableSlots = getAvailableTimeSlots(day);
-      timePicker.innerHTML = '';
-      if (!day) return;
-
-      availableSlots.forEach(slot => {
-        const selected = document.getElementById('bookingTime').value === slot;
-        const button = document.createElement('button');
-        button.type = 'button';
-        button.className = `scroll-item rounded-xl border px-3 py-2 text-xs font-bold transition ${selected ? 'border-tarot-gold bg-tarot-gold text-tarot-night' : 'border-purple-500/30 bg-[#090314] text-white'}`;
-        button.textContent = slot;
-        button.onclick = () => {
-          document.getElementById('bookingTime').value = slot;
-          renderAvailabilityPicker();
-        };
-        timePicker.appendChild(button);
-      });
-      observeScrollItems(timePicker);
-    }
-
-    /* -------------------------------------------------------------
-       10. DEPOIMENTOS / FEEDBACKS
-       ------------------------------------------------------------- */
-    function renderFeedbacks() {
-      const container = document.getElementById('feedbacksList');
-      if (!container) return;
-      const currentUserId = getUserId();
-
-      container.innerHTML = feedbacks.map(item => {
-        const isAuthor = item.userId === currentUserId;
-        const estrelasHtml = '★'.repeat(item.rating) + '☆'.repeat(5 - item.rating);
-
-        return `
-          <div class="scroll-item glass-panel p-6 rounded-2xl border border-purple-500/30 flex flex-col justify-between hover:border-tarot-gold/40 transition">
-            <div>
-              <div class="flex items-center justify-between mb-3">
-                <div class="flex text-tarot-gold text-sm">${estrelasHtml}</div>
-                <span class="text-[10px] text-slate-400">${item.date}</span>
-              </div>
-              <p class="text-xs text-slate-300 italic mb-4 leading-relaxed">"${escapeHTML(item.comment)}"</p>
-            </div>
-            <div>
-              <div class="pt-3 border-t border-purple-500/20 flex items-center justify-between">
-                <span class="font-bold text-xs text-white">${escapeHTML(item.name)}</span>
-                <span class="text-[10px] text-purple-300">${escapeHTML(item.service)}</span>
-              </div>
-              ${isAuthor ? `
-                <div class="mt-3 pt-2 border-t border-purple-500/15 flex items-center justify-end gap-2">
-                  <button type="button" onclick="abrirModalEdicaoDepoimento('${item.id}')" class="px-2.5 py-1 rounded-lg bg-purple-950/60 border border-purple-500/30 text-purple-200 text-[10px] font-bold hover:bg-purple-900 transition">Editar</button>
-                  <button type="button" onclick="apagarDepoimento('${item.id}')" class="px-2.5 py-1 rounded-lg bg-rose-950/40 border border-rose-500/30 text-rose-300 text-[10px] font-bold hover:bg-rose-900 transition">Excluir</button>
-                </div>
-              ` : ''}
-            </div>
-          </div>
-        `;
-      }).join('');
-      observeScrollItems(container);
-    }
-
-    function setFeedbackRating(stars) {
-      selectedRating = stars;
-      const labels = ['', '1 Estrela', '2 Estrelas', '3 Estrelas', '4 Estrelas', '5 Estrelas (Excelente)'];
-      document.getElementById('starRatingLabel').textContent = labels[stars];
-      document.querySelectorAll('.star-btn').forEach((btn, index) => {
-        btn.textContent = index < stars ? '★' : '☆';
-      });
-    }
-
-    function setEditFeedbackRating(stars) {
-      editSelectedRating = stars;
-      const labels = ['', '1 Estrela', '2 Estrelas', '3 Estrelas', '4 Estrelas', '5 Estrelas (Excelente)'];
-      document.getElementById('editStarRatingLabel').textContent = labels[stars];
-      document.querySelectorAll('.edit-star-btn').forEach((btn, index) => {
-        btn.textContent = index < stars ? '★' : '☆';
-      });
-    }
-
-    function handleFeedbackSubmit(e) {
-      e.preventDefault();
-      const name = document.getElementById('feedbackName').value.trim();
-      const service = document.getElementById('feedbackService').value;
-      const text = document.getElementById('feedbackText').value.trim();
-
-      if (!name || !text) return;
-
-      const newEntry = {
-        id: 'fb_' + Date.now(),
-        userId: getUserId(),
-        name,
-        service,
-        rating: selectedRating,
-        date: 'Agora mesmo',
-        comment: text
-      };
-
-      feedbacks.unshift(newEntry);
-      localStorage.setItem(STORAGE_KEY_FEEDBACKS, JSON.stringify(feedbacks));
-      renderFeedbacks();
-      document.getElementById('feedbackForm').reset();
-      setFeedbackRating(5);
-      playMagicSound('success');
-      showToast('Depoimento Enviado!', 'Agradecemos de coração por compartilhar sua luz!');
-      lucide.createIcons();
-    }
-
-    function abrirModalEdicaoDepoimento(id) {
-      const item = feedbacks.find(f => f.id === id);
-      if (!item) return;
-
-      editandoFeedbackId = id;
-      document.getElementById('editFeedbackName').value = item.name;
-      document.getElementById('editFeedbackService').value = item.service;
-      document.getElementById('editFeedbackText').value = item.comment;
-      setEditFeedbackRating(item.rating || 5);
-
-      document.getElementById('editFeedbackBackdrop').hidden = false;
-      lucide.createIcons();
-    }
-
-    function fecharModalEdicaoDepoimento() {
-      editandoFeedbackId = null;
-      document.getElementById('editFeedbackBackdrop').hidden = true;
-    }
-
-    function handleEditFeedbackSubmit(e) {
-      e.preventDefault();
-      if (editandoFeedbackId === null) return;
-
-      const name = document.getElementById('editFeedbackName').value.trim();
-      const service = document.getElementById('editFeedbackService').value;
-      const text = document.getElementById('editFeedbackText').value.trim();
-
-      if (!name || !text) return;
-
-      feedbacks = feedbacks.map(item => {
-        if (item.id === editandoFeedbackId) {
-          return {
-            ...item,
-            name,
-            service,
-            rating: editSelectedRating,
-            comment: text,
-            date: 'Editado agora'
-          };
-        }
-        return item;
-      });
-
-      localStorage.setItem(STORAGE_KEY_FEEDBACKS, JSON.stringify(feedbacks));
-      renderFeedbacks();
-      fecharModalEdicaoDepoimento();
-      playMagicSound('success');
-      showToast('Depoimento Atualizado!', 'Suas alterações foram salvas com sucesso.');
-      lucide.createIcons();
-    }
-
-    let pendingFeedbackDeleteId = null;
-
-    function apagarDepoimento(id) {
-      const item = feedbacks.find(f => f.id === id);
-      if (!item) return;
-      pendingFeedbackDeleteId = id;
-      document.getElementById('feedbackAlertName').textContent = item.name || 'este consulente';
-      document.getElementById('feedbackAlertBackdrop').hidden = false;
-    }
-
-    function closeFeedbackAlert() {
-      pendingFeedbackDeleteId = null;
-      document.getElementById('feedbackAlertBackdrop').hidden = true;
-    }
-
-    function confirmDeleteFeedback() {
-      if (pendingFeedbackDeleteId === null) return;
-      feedbacks = feedbacks.filter(item => item.id !== pendingFeedbackDeleteId);
-      localStorage.setItem(STORAGE_KEY_FEEDBACKS, JSON.stringify(feedbacks));
-      renderFeedbacks();
-      closeFeedbackAlert();
-      playMagicSound('remove');
-      showToast('Depoimento Removido', 'Seu depoimento foi apagado.');
-    }
-
-    function showBookingValidation(message, input) {
-      playMagicSound('alert');
-      showToast('Campo obrigatório', message);
-      input.focus();
-      input.classList.add('border-rose-400');
-      setTimeout(() => input.classList.remove('border-rose-400'), 1800);
-    }
-
-    /* -------------------------------------------------------------
-       11. BOOKING FORM HANDLER & WHATSAPP OUTPUT
-       ------------------------------------------------------------- */
-    function recordAdminActivity(activity) {
-      let activityLog = [];
-      try {
-        const savedActivity = JSON.parse(localStorage.getItem(STORAGE_KEY_ACTIVITY) || '[]');
-        if (Array.isArray(savedActivity)) activityLog = savedActivity;
-      } catch (error) {}
-      activityLog.unshift(activity);
-      localStorage.setItem(STORAGE_KEY_ACTIVITY, JSON.stringify(activityLog.slice(0, 100)));
-    }
-
-    function handleBookingSubmit(event) {
-      event.preventDefault();
-      const nameInput = document.getElementById('userName');
-      const phoneInput = document.getElementById('userPhone');
-      const name = nameInput.value.trim();
-      const phone = phoneInput.value.trim();
-
-      if (!name) { showBookingValidation('O campo nome não pode ficar vazio.', nameInput); return; }
-      if (!phone) { showBookingValidation('O campo WhatsApp não pode ficar vazio.', phoneInput); return; }
-      if (cart.length === 0) {
-        playMagicSound('alert');
-        showToast('Carrinho vazio', 'Adicione pelo menos uma consulta ou serviço antes de confirmar.');
-        document.getElementById('servicos').scrollIntoView({ behavior: 'smooth' });
-        return;
-      }
-
-      const day = document.getElementById('bookingDay').value;
-      const time = document.getElementById('bookingTime').value;
-      if (!day || !time) {
-        playMagicSound('alert');
-        showToast('Disponibilidade pendente', 'Selecione um dia e um horário disponível antes de confirmar.');
-        return;
-      }
-
-      const notes = document.getElementById('bookingNotes').value.trim();
-      const selectedServices = cart.map(id => SERVICES_CATALOG.find(s => s.id === id)).filter(Boolean);
-      const totalAmount = getCartTotal();
-      const depositAmount = getDepositTotal();
-      const hasCustom = hasCustomPriceItem();
-      const arrivalTime = new Date();
-
-      const newBooking = {
-        id: Date.now(),
-        dateCreated: arrivalTime.toLocaleString('pt-BR'),
-        createdAt: arrivalTime.toISOString(),
-        slotDateTime: getNextSlotDate(day, time).toISOString(),
-        name,
-        phone,
-        day,
-        time,
-        notes: notes || 'Sem observações adicionais.',
-        services: selectedServices.map(s => `${s.title} (${s.isCustomPrice ? 'Valor definido pela bruxa parceira' : 'R$ ' + s.price.toFixed(2)})`),
-        total: totalAmount,
-        deposit: depositAmount,
-        hasCustom
-      };
-
-      bookings.unshift(newBooking);
-      localStorage.setItem(STORAGE_KEY_BOOKINGS, JSON.stringify(bookings));
-      updateAdminBadge();
-      playMagicSound('confirm');
-
-      const servicesListText = selectedServices.map(s => `• ${s.title}: ${s.isCustomPrice ? 'Valor definido pela bruxa parceira' : 'R$ ' + s.price.toFixed(2)}`).join('\n');
-      const whatsappText = `🔮 *SOLICITAÇÃO DE AGENDAMENTO - VISÕES DO TAROT* 🔮\n\n👤 *Consulente:* ${name}\n📱 *WhatsApp:* ${phone}\n📅 *Dia Escolhido:* ${day}\n⏰ *Horário:* ${time}\n\n✨ *SERVIÇOS:* \n${servicesListText}\n\n💰 *VALOR TOTAL:* R$ ${totalAmount.toFixed(2)}\n\n_Estou enviando o pagamento total via PIX para confirmar meu horário com segurança._`;
-
-      setTimeout(() => {
-        window.open(`https://wa.me/${cartomantePhone}?text=${encodeURIComponent(whatsappText)}`, '_blank');
-      }, 1000);
-    }
-
-    /* -------------------------------------------------------------
-       12. SOUND & UTILITIES (RESTORED POPUP SOUND & SCROLL TO TOP)
-       ------------------------------------------------------------- */
-    let helpPopupAudioUnlocked = false;
-    let helpPopupAudioPlayed = false;
-
-    function formatHelpPhone(phone) {
-      const digits = String(phone).replace(/\D/g, '');
-      if (digits.length === 13 && digits.startsWith('55')) return `+55 (${digits.slice(2, 4)}) ${digits.slice(4, 9)}-${digits.slice(9)}`;
-      return digits ? `+${digits}` : 'WhatsApp não configurado';
-    }
-
-    function playHelpPopupSound() {
-      if (helpPopupAudioPlayed) return;
-      playMagicSound('success');
-      helpPopupAudioPlayed = true;
-    }
-
-    function openHelpPopup() {
-      const backdrop = document.getElementById('helpPopupBackdrop');
-      document.getElementById('helpPopupNumber').textContent = formatHelpPhone(cartomantePhone);
-      document.getElementById('helpPopupWhatsApp').href = `https://wa.me/${String(cartomantePhone).replace(/\D/g, '')}?text=${encodeURIComponent('Olá! Fiquei com uma dúvida sobre o site Visões do Tarot.')}`;
-      backdrop.hidden = false;
-      playMagicSound('click');
-      if (helpPopupAudioUnlocked) playHelpPopupSound();
-    }
-
-    function closeHelpPopup() {
-      document.getElementById('helpPopupBackdrop').hidden = true;
-      playMagicSound('remove');
-    }
-
-    function scrollToTop() {
-      playMagicSound('click');
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-
-    function setupHelpPopup() {
-      document.getElementById('helpPopupLauncher').addEventListener('click', openHelpPopup);
-      document.getElementById('helpPopupClose').addEventListener('click', closeHelpPopup);
-      document.getElementById('helpPopupBackdrop').addEventListener('click', e => { if (e.target === e.currentTarget) closeHelpPopup(); });
-      
-      document.addEventListener('pointerdown', () => {
-        helpPopupAudioUnlocked = true;
-        if (!document.getElementById('helpPopupBackdrop').hidden) playHelpPopupSound();
-      }, { once: true });
-
-      if (!sessionStorage.getItem('visoes_tarot_help_popup_seen')) {
-        setTimeout(() => {
-          openHelpPopup();
-          sessionStorage.setItem('visoes_tarot_help_popup_seen', 'true');
-        }, 8000);
-      }
-    }
-
-    /* -------------------------------------------------------------
-       13. ADMIN MODAL & STARFIELD (COM RESTAURAÇÃO DO SCROLL)
-       ------------------------------------------------------------- */
-    function openAdminModal() {
-      document.getElementById('adminPhoneInput').value = cartomantePhone;
-      renderAdminList();
-      document.getElementById('adminModal').classList.remove('hidden');
-    }
-    function closeAdminModal() { document.getElementById('adminModal').classList.add('hidden'); }
-    function saveAdminPhone() {
-      const val = document.getElementById('adminPhoneInput').value.trim().replace(/\D/g, '');
-      if (val.length >= 10) { cartomantePhone = val; localStorage.setItem(STORAGE_KEY_PHONE, val); showToast('Salvo', 'WhatsApp atualizado!'); }
-    }
-    function updateAdminBadge() {
-      const badge = document.getElementById('adminPendingBadge');
-      if (badge) bookings.length > 0 ? badge.classList.remove('hidden') : badge.classList.add('hidden');
-    }
-    function renderAdminList() {
-      const list = document.getElementById('adminBookingsList');
-      document.getElementById('adminCountText').textContent = `${bookings.length} agendamento(s)`;
-      if (bookings.length === 0) { list.innerHTML = '<div class="py-12 text-center text-slate-500 text-xs">Nenhum agendamento gravado.</div>'; return; }
-      list.innerHTML = bookings.map(item => `
-        <div class="p-4 rounded-2xl bg-tarot-card border border-purple-500/30 text-xs text-slate-300 space-y-2">
-          <div class="font-bold text-white">${escapeHTML(item.name)} - R$ ${item.total.toFixed(2)}</div>
-          <div>📅 ${escapeHTML(item.day)} às ${escapeHTML(item.time)} | 📱 ${escapeHTML(item.phone)}</div>
-        </div>
-      `).join('');
-      lucide.createIcons();
-    }
-
-    const canvas = document.getElementById('starsCanvas');
-    const ctx = canvas.getContext('2d');
-    let stars = [];
-    function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; createStars(); }
-    function createStars() {
-      stars = [];
-      const numStars = Math.floor((canvas.width * canvas.height) / 8500);
-      for (let i = 0; i < numStars; i++) {
-        stars.push({ x: Math.random() * canvas.width, y: Math.random() * canvas.height, radius: Math.random() * 1.5 + 0.4, alpha: Math.random() * 0.8 + 0.2, speed: Math.random() * 0.02 + 0.005, twinkleFactor: Math.random() * Math.PI });
-      }
-    }
-    function drawStars() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      const scrollY = window.scrollY || window.pageYOffset;
-      for (let star of stars) {
-        star.twinkleFactor += star.speed;
-        const currentAlpha = star.alpha + Math.sin(star.twinkleFactor) * 0.3;
-        const finalY = (star.y - scrollY * (star.radius * 0.15)) % canvas.height;
-        ctx.beginPath();
-        ctx.arc(star.x, finalY < 0 ? finalY + canvas.height : finalY, star.radius, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(240, 220, 180, ${Math.max(0.1, Math.min(1, currentAlpha))})`;
-        ctx.shadowBlur = star.radius > 1 ? 5 : 0;
-        ctx.shadowColor = '#e0b973';
-        ctx.fill();
-      }
-      requestAnimationFrame(drawStars);
-    }
-    window.addEventListener('resize', resizeCanvas);
-
-    window.addEventListener('scroll', () => {
-      const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
-      const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-      const scrolled = (winScroll / height) * 100;
-      
-      const progressBar = document.getElementById('scrollProgressBar');
-      if (progressBar) progressBar.style.width = scrolled + '%';
-
-      const orb1 = document.getElementById('glowOrb1');
-      const orb2 = document.getElementById('glowOrb2');
-      if (orb1 && orb2) {
-        orb1.style.transform = `translateY(${winScroll * 0.12}px)`;
-        orb2.style.transform = `translateY(${-winScroll * 0.08}px)`;
-      }
-
-      // Exibe ou oculta o botão de voltar ao topo após rolar 300px
-      const backToTopBtn = document.getElementById('backToTopBtn');
-      if (backToTopBtn) {
-        if (winScroll > 300) {
-          backToTopBtn.classList.add('visible');
-        } else {
-          backToTopBtn.classList.remove('visible');
-        }
-      }
-    });
-
-    const observer = new IntersectionObserver(entries => {
-      entries.forEach(entry => {
-        if (entry.target.classList.contains('ritual-section')) { entry.target.classList.toggle('ritual-section-active', entry.isIntersecting); return; }
-        entry.target.classList.toggle('revealed', entry.isIntersecting);
-      });
-    }, { threshold: 0.12 });
-
-    function observeScrollItems(root = document) { root.querySelectorAll('.scroll-item').forEach(el => observer.observe(el)); }
-
-    let toastTimer;
-    function showToast(title, message) {
-      clearTimeout(toastTimer);
-      const toast = document.getElementById('toastNotification');
-      document.getElementById('toastTitle').textContent = title;
-      document.getElementById('toastMessage').textContent = message;
-      toast.classList.remove('translate-x-96');
-      toast.classList.add('translate-x-0');
-      toastTimer = setTimeout(hideToast, 4000);
-    }
-    function hideToast() { document.getElementById('toastNotification').classList.remove('translate-x-0'); document.getElementById('toastNotification').classList.add('translate-x-96'); }
-
-    function escapeHTML(str) {
-      return String(str).replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag));
-    }
-
-    window.addEventListener('DOMContentLoaded', () => {
-      resizeCanvas();
-      drawStars();
-      updateCartUI();
-      popularSelectsDeServicos();
-      if (document.getElementById('mediaCarouselContent')) renderCarouselSlide();
-      renderFeedbacks();
-      renderAvailabilityPicker();
-      updateAdminBadge();
-      setupHelpPopup();
-      document.querySelectorAll('.scroll-reveal, .scroll-item, .ritual-section').forEach(el => observer.observe(el));
-      lucide.createIcons();
-    });
-  </script>
+  <script src="app.js"></script>
 
   <footer class="text-center py-5 text-xs text-slate-400 border-t border-purple-500/20 bg-[#090314]">
     &copy; 2026 leydev. Todos os direitos reservados.
   </footer>
-
-  <!-- Modal de Alerta de Exclusão de Depoimento -->
-  <div id="feedbackAlertBackdrop" class="cart-alert-backdrop" hidden>
-    <section class="cart-alert alert alert-danger" role="alertdialog" aria-modal="true" aria-labelledby="feedbackAlertTitle">
-      <div class="cart-alert-header">
-        <div class="cart-alert-icon">!</div>
-        <h2 id="feedbackAlertTitle">Alerta de exclusão</h2>
-      </div>
-      <p>Tem certeza que deseja excluir o depoimento de <strong id="feedbackAlertName">este consulente</strong>? Essa ação não poderá ser desfeita.</p>
-      <div class="cart-alert-actions">
-        <button type="button" class="cart-alert-cancel" onclick="closeFeedbackAlert()">Cancelar</button>
-        <button type="button" class="cart-alert-confirm" onclick="confirmDeleteFeedback()">Excluir depoimento</button>
-      </div>
-    </section>
-  </div>
-
 </body>
 </html>
