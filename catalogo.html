@@ -1,0 +1,922 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#07030e" />
+  <title>Catálogo | Visões do Tarot</title>
+  <link rel="icon" type="image/svg+xml" href="favicon-tarot.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;800&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { cinzel: ['Cinzel', 'serif'], sans: ['Montserrat', 'sans-serif'] },
+          colors: { tarot: { night: '#07030e', surface: '#0f061e', gold: '#e0b973', goldLight: '#ffd885' } },
+          animation: {
+            'spin-slow': 'spin 38s linear infinite',
+            'spin-reverse': 'spin-reverse 46s linear infinite',
+          },
+          keyframes: {
+            'spin-reverse': {
+              '0%': { transform: 'rotate(0deg)' },
+              '100%': { transform: 'rotate(-360deg)' }
+            }
+          }
+        }
+      }
+    };
+  </script>
+  <script src="shared.js"></script>
+  <style>
+    ::selection { background: #e0b973; color: #090314; }
+
+    /* Barra de progresso cósmica */
+    #scrollProgressBar {
+      box-shadow: 0 0 12px #e0b973;
+    }
+
+    /* Aura dinâmica que muda de cor suavemente de acordo com a categoria em foco */
+    #categoryGlowOrb {
+      transition: background 1.2s cubic-bezier(0.16, 1, 0.3, 1), opacity 1s ease;
+      will-change: transform, background;
+    }
+
+    /* Bússola e órbitas */
+    .catalog-orbit { position: absolute; top: -160px; right: 5%; width: 320px; aspect-ratio: 1; border: 1px solid rgba(224,185,115,.12); border-radius: 50%; box-shadow: 0 0 0 24px rgba(224,185,115,.025), 0 0 0 52px rgba(147,51,234,.035); animation: orbit 48s linear infinite; pointer-events: none; }
+    .catalog-star { animation: twinkle 3.6s ease-in-out infinite; }
+    .catalog-intro { animation: intro-arrive .9s ease-out both; }
+
+    /* Transição bidirecional suave */
+    .catalog-reveal {
+      opacity: 0;
+      transform: translateY(28px);
+      transition: opacity 0.75s cubic-bezier(0.16, 1, 0.3, 1), transform 0.75s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s ease;
+      will-change: opacity, transform;
+    }
+    .catalog-reveal.is-visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Cards nivelados e com botão ancorado na base */
+    .catalog-card {
+      display: flex !important;
+      flex-direction: column !important;
+      height: 100% !important;
+    }
+    .catalog-card:hover {
+      box-shadow: 0 20px 44px rgba(0,0,0,.45), 0 0 26px rgba(224,185,115,.12);
+      transform: translateY(-4px);
+    }
+    .catalog-add-button {
+      margin-top: auto !important;
+      padding-top: 0 !important;
+    }
+
+    #soundToggle .sound-muted-mark { display: none; }
+    #soundToggle[aria-pressed="true"] .sound-wave { display: none; }
+    #soundToggle[aria-pressed="true"] .sound-muted-mark { display: block; }
+
+    .collection-picker { position: relative; width: min(100%, 360px); margin: 0 0 24px; }
+    .collection-picker[open] { z-index: 40; }
+    .collection-picker summary { display: flex; min-height: 48px; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 16px; border: 1px solid rgba(224,185,115,.55); border-radius: 12px; background: linear-gradient(135deg, rgba(43,20,61,.96), rgba(17,8,33,.98)); color: #f5d18a; font-size: 12px; font-weight: 700; cursor: pointer; list-style: none; box-shadow: 0 8px 24px rgba(0,0,0,.2); }
+    .collection-picker summary::-webkit-details-marker { display: none; }
+    .collection-picker summary::after { content: '⌄'; color: #e0b973; font-size: 18px; transition: transform .2s ease; }
+    .collection-picker[open] summary::after { transform: rotate(180deg); }
+    .collection-options { position: absolute; top: calc(100% + 8px); right: 0; left: 0; z-index: 30; overflow: hidden; border: 1px solid rgba(224,185,115,.35); border-radius: 12px; background: rgba(17,8,33,.98); box-shadow: 0 16px 36px rgba(0,0,0,.48); }
+    .collection-options a { display: block; padding: 12px 15px; color: #e7deed; font-size: 12px; text-decoration: none; transition: background .18s ease, color .18s ease; }
+    .collection-options a + a { border-top: 1px solid rgba(224,185,115,.12); }
+    .collection-options a:hover, .collection-options a:focus-visible { background: rgba(224,185,115,.12); color: #ffd885; outline: none; }
+    .collection-anchor { scroll-margin-top: 96px; }
+
+    /* Divisória elegante entre as secções sem cortes */
+    .section-divider {
+      position: relative;
+    }
+    .section-divider::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 10%;
+      right: 10%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent 0%, rgba(224,185,115,0.2) 50%, transparent 100%);
+      pointer-events: none;
+    }
+
+    /* Modal Alerta do Carrinho */
+    .cart-alert-backdrop { position: fixed; inset: 0; z-index: 60; display: grid; place-items: center; padding: 20px; background: rgba(4,1,9,.78); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+    .cart-alert-backdrop[hidden] { display: none; }
+    .cart-alert { width: min(440px, 100%); padding: 22px; border: 1px solid rgba(248,113,113,.62); border-left: 5px solid #f87171; border-radius: 16px; background: rgba(34,7,22,.97); box-shadow: 0 18px 55px rgba(0,0,0,.5), 0 0 30px rgba(244,63,94,.16); color: #ffe4e6; }
+    .cart-alert-header { display: flex; align-items: center; gap: 12px; }
+    .cart-alert-icon { width: 38px; height: 38px; display: grid; place-items: center; flex: 0 0 38px; border-radius: 50%; background: rgba(248,113,113,.16); color: #fda4af; font-size: 20px; font-weight: 800; }
+    .cart-alert h2 { margin: 0; color: #fda4af; font-family: 'Montserrat', sans-serif; font-size: 16px; font-weight: 700; letter-spacing: .04em; }
+    .cart-alert p { margin: 16px 0 20px; color: #fecdd3; font-size: 13px; line-height: 1.6; }
+    .cart-alert strong { color: #fff; }
+    .cart-alert-actions { display: flex; justify-content: flex-end; gap: 10px; }
+    .cart-alert-cancel, .cart-alert-confirm { border-radius: 10px; padding: 10px 15px; font: inherit; font-size: 11px; font-weight: 700; cursor: pointer; }
+    .cart-alert-cancel { border: 1px solid rgba(255,255,255,.2); background: rgba(255,255,255,.06); color: #fce7f3; }
+    .cart-alert-confirm { border: 1px solid #fb7185; background: #be123c; color: #fff; box-shadow: 0 0 16px rgba(225,29,72,.25); }
+
+    @keyframes orbit { to { transform: rotate(360deg); } }
+    @keyframes twinkle { 0%, 100% { opacity: .4; transform: scale(.85); } 50% { opacity: 1; transform: scale(1.15); } }
+    @keyframes intro-arrive { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+    @media (prefers-reduced-motion: reduce) {
+      .catalog-orbit, .catalog-star, .catalog-intro { animation: none !important; }
+      .catalog-reveal { opacity: 1; transform: none; transition: none; }
+      .catalog-card:hover { transform: none; }
+    }
+  </style>
+</head>
+<body class="bg-tarot-night text-slate-100 font-sans min-h-screen relative overflow-x-hidden selection:bg-tarot-gold selection:text-tarot-night">
+
+  <!-- Fundo Cósmico em Profundidade com Paralaxe Interativo (Restaurado) -->
+  <canvas id="starsCanvas" class="fixed inset-0 pointer-events-none z-0 opacity-70"></canvas>
+
+  <!-- Barra de Progresso Cósmica no Topo -->
+  <div class="fixed top-0 left-0 h-1 bg-gradient-to-r from-purple-600 via-tarot-gold to-amber-300 z-50 transition-all duration-75 shadow-[0_0_12px_#e0b973]" id="scrollProgressBar" style="width: 0%;"></div>
+
+  <!-- Esferas de Luz Cósmica com Deslocamento 3D e Transição de Cores por Categoria -->
+  <div class="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+    <div id="categoryGlowOrb" class="absolute top-1/4 left-1/2 -translate-x-1/2 w-[720px] h-[520px] rounded-full blur-[130px] opacity-75 pointer-events-none" style="background: radial-gradient(circle, rgba(225, 29, 72, 0.22) 0%, rgba(147, 51, 234, 0.08) 60%, transparent 80%);"></div>
+    <div id="glowOrb2" class="absolute top-1/2 -right-24 w-[500px] h-[500px] bg-tarot-gold/10 rounded-full blur-[150px] transition-transform duration-700"></div>
+  </div>
+
+  <header class="sticky top-0 z-40 border-b border-purple-500/20 bg-[#10071d]/90 shadow-xl backdrop-blur-xl">
+    <div class="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-4 sm:px-6">
+      
+      <!-- Logótipo com Ícone Animado -->
+      <a href="index.html" class="flex min-w-0 items-center gap-3 group" aria-label="Voltar ao site Visões do Tarot">
+        <div class="relative grid h-10 w-10 shrink-0 place-items-center rounded-full border border-tarot-gold/60 bg-tarot-night text-xl text-tarot-gold shadow-[0_0_18px_rgba(224,185,115,.25)] transition-transform duration-300 group-hover:scale-105">
+          <span class="animate-pulse" aria-hidden="true">✦</span>
+          <div class="absolute inset-0 rounded-full border border-dashed border-tarot-gold/40 animate-spin-slow"></div>
+        </div>
+        <span class="min-w-0">
+          <span class="block truncate font-cinzel text-sm font-bold tracking-[.12em] text-tarot-goldLight sm:text-base">VISÕES DO TAROT</span>
+          <span class="mt-0.5 block text-[9px] uppercase tracking-[.2em] text-purple-200/70">Catálogo</span>
+        </span>
+      </a>
+
+      <div class="flex shrink-0 items-center gap-2">
+        <button id="soundToggle" type="button" onclick="toggleSoundPreference()" aria-pressed="false" aria-label="Desativar efeitos sonoros" title="Desativar efeitos sonoros" class="grid h-10 w-10 place-items-center rounded-xl border border-tarot-gold/40 bg-purple-950/70 text-tarot-gold transition hover:bg-tarot-gold hover:text-tarot-night">
+          <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M11 5 6 9H3v6h3l5 4V5Z"></path>
+            <path class="sound-wave" d="M15.5 8.5a5 5 0 0 1 0 7"></path>
+            <path class="sound-wave" d="M19 5a10 10 0 0 1 0 14"></path>
+            <path class="sound-muted-mark" d="m16 9 5 6m0-6-5 6"></path>
+          </svg>
+          <span id="soundToggleLabel" class="sr-only">Som ligado</span>
+        </button>
+        <a href="#pedido" class="inline-flex min-h-10 items-center gap-2 rounded-xl border border-tarot-gold/50 bg-purple-950/70 px-3 text-[10px] font-bold uppercase tracking-wider text-tarot-goldLight transition hover:bg-tarot-gold hover:text-tarot-night sm:px-4 sm:text-xs" aria-label="Ver meu pedido, 0 itens">
+          <span>Pedido</span><span id="catalogCartCount" class="grid h-5 min-w-5 place-items-center rounded-full bg-tarot-gold px-1 text-[10px] font-black text-tarot-night">0</span>
+        </a>
+        <a href="index.html" class="hidden min-h-10 items-center gap-2 rounded-xl border border-tarot-gold/40 bg-purple-950/60 px-3 text-[10px] font-bold uppercase tracking-wider text-tarot-goldLight transition hover:bg-tarot-gold hover:text-tarot-night sm:inline-flex sm:px-4 sm:text-xs">
+          <span aria-hidden="true">←</span><span>Voltar ao site</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main class="relative z-10 mx-auto max-w-6xl px-4 pb-20 pt-12 sm:px-6 sm:pt-16">
+    <div class="catalog-orbit" aria-hidden="true"></div>
+
+    <details class="collection-picker relative z-10 mb-8">
+      <summary>Selecione a coleção</summary>
+      <nav class="collection-options" aria-label="Coleções do catálogo">
+        <a href="#amor-afeto">Amor &amp; Afeto</a>
+        <a href="#financas-abundancia">Finanças &amp; Abundância</a>
+        <a href="#carreira-negocios">Carreira &amp; Negócios</a>
+        <a href="#energia-espiritualidade">Energia &amp; Espiritualidade</a>
+        <a href="#formatos-especiais">Formatos Especiais &amp; Gerais</a>
+      </nav>
+    </details>
+    
+    <section class="catalog-intro relative z-10 border-b border-tarot-gold/20 pb-10 sm:pb-14">
+      <div class="mb-4 inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-[.22em] text-tarot-gold">
+        <span class="catalog-star text-tarot-gold" aria-hidden="true">✦</span> Catálogo de Leituras <span aria-hidden="true">·</span> Visões do Tarot
+      </div>
+      <h1 class="max-w-3xl font-cinzel text-3xl font-bold leading-tight text-white sm:text-5xl">CATÁLOGO TEMÁTICO DE LEITURAS</h1>
+      <p class="mt-4 max-w-2xl text-sm leading-relaxed text-slate-300 sm:text-base">
+        Leituras para compreender sentimentos, intenções e caminhos no amor.
+      </p>
+    </section>
+
+    <!-- Coleção 01: Amor & Afeto (🌹) -->
+    <section id="amor-afeto" data-category-color="rgba(225, 29, 72, 0.22)" class="collection-anchor relative z-10 py-10 sm:py-14" aria-labelledby="amor-title">
+      <div class="mb-6 flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <p class="text-[10px] font-bold uppercase tracking-[.2em] text-rose-400">Coleção 01</p>
+          <h2 id="amor-title" class="mt-1 font-cinzel text-xl font-semibold text-rose-200 sm:text-2xl"><span class="mr-1 text-rose-400" aria-hidden="true">🌹</span>Amor &amp; Afeto</h2>
+        </div>
+        <span class="text-xs text-slate-400">3 leituras disponíveis</span>
+      </div>
+
+      <div class="grid grid-cols-1 items-stretch gap-5 lg:grid-cols-3">
+        <article data-service-id="catalog_clareza_coracao" class="relative flex h-full flex-col overflow-hidden rounded-2xl border border-rose-500/25 bg-gradient-to-b from-[#1b1530]/80 to-[#0d0618]/90 backdrop-blur-sm p-5 shadow-[0_16px_38px_rgba(0,0,0,.25)] sm:p-6">
+          <div class="absolute -right-10 -top-10 h-36 w-36 rounded-full border border-rose-500/10 shadow-[0_0_0_18px_rgba(244,63,94,.025)]" aria-hidden="true"></div>
+          <div class="relative flex items-start justify-between gap-3">
+            <div class="grid h-11 w-11 place-items-center rounded-xl border border-rose-400/30 bg-rose-500/10 text-rose-300" aria-hidden="true">
+              <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1.1L12 21l7.8-7.5 1.1-1.1a5.5 5.5 0 0 0-.1-7.8Z"/><path d="M7 12h2l1.2-2.2 2.1 4.4 1.2-2.2H17"/></svg>
+            </div>
+            <span class="rounded-full border border-tarot-gold/30 bg-tarot-gold/10 px-3 py-1.5 font-cinzel text-lg font-bold text-tarot-goldLight">R$ 35</span>
+          </div>
+          <h3 class="relative mt-5 font-cinzel text-xl font-bold text-white">Clareza do Coração</h3>
+          <p class="mt-2 text-sm leading-relaxed text-slate-300">Leitura objetiva para entender os sentimentos e intenções da pessoa de forma direta.</p>
+          <div class="mt-5 border-t border-rose-500/20 pt-4">
+            <div class="flex items-center justify-between gap-3">
+              <h4 class="text-[10px] font-bold uppercase tracking-[.16em] text-rose-300">Tiragem</h4>
+              <span class="text-[10px] text-slate-400">5 cartas</span>
+            </div>
+            <ol class="mt-3 space-y-2 text-xs leading-relaxed text-slate-300">
+              <li class="flex gap-2"><span class="text-rose-400">01</span><span>Sentimentos por você</span></li>
+              <li class="flex gap-2"><span class="text-rose-400">02</span><span>Pensamentos</span></li>
+              <li class="flex gap-2"><span class="text-rose-400">03</span><span>Impedimento de aproximação</span></li>
+              <li class="flex gap-2"><span class="text-rose-400">04</span><span>Tendência entre vocês</span></li>
+              <li class="flex gap-2"><span class="text-rose-400">05</span><span>Conselho final</span></li>
+            </ol>
+          </div>
+        </article>
+
+        <article data-service-id="catalog_verdades_coracao" class="relative flex h-full flex-col overflow-hidden rounded-2xl border border-purple-400/25 bg-gradient-to-b from-[#1b1530]/80 to-[#0d0618]/90 backdrop-blur-sm p-5 shadow-[0_16px_38px_rgba(0,0,0,.25)] sm:p-6">
+          <div class="absolute -right-10 -top-10 h-36 w-36 rounded-full border border-purple-300/10 shadow-[0_0_0_18px_rgba(147,51,234,.035)]" aria-hidden="true"></div>
+          <div class="relative flex items-start justify-between gap-3">
+            <div class="grid h-11 w-11 place-items-center rounded-xl border border-purple-300/30 bg-purple-400/10 text-tarot-goldLight" aria-hidden="true">
+              <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-8-4.4-8-11a4.5 4.5 0 0 1 8-2.8A4.5 4.5 0 0 1 20 10c0 6.6-8 11-8 11Z"/><path d="m12 8 .7 1.8 1.8.7-1.8.7-.7 1.8-.7-1.8-1.8-.7 1.8-.7L12 8Z"/></svg>
+            </div>
+            <span class="rounded-full border border-tarot-gold/30 bg-tarot-gold/10 px-3 py-1.5 font-cinzel text-lg font-bold text-tarot-goldLight">R$ 50</span>
+          </div>
+          <h3 class="relative mt-5 font-cinzel text-xl font-bold text-white">Verdades do Coração</h3>
+          <p class="mt-2 text-sm leading-relaxed text-slate-300">Aprofundamento emocional para compreender intenções ocultas e o que há por trás do comportamento.</p>
+          <div class="mt-5 border-t border-purple-400/20 pt-4">
+            <div class="flex items-center justify-between gap-3">
+              <h4 class="text-[10px] font-bold uppercase tracking-[.16em] text-tarot-gold">Tiragem</h4>
+              <span class="text-[10px] text-slate-400">8 cartas</span>
+            </div>
+            <ol class="mt-3 space-y-2 text-xs leading-relaxed text-slate-300">
+              <li class="flex gap-2"><span class="text-tarot-gold">01</span><span>Energia do vínculo</span></li>
+              <li class="flex gap-2"><span class="text-tarot-gold">02</span><span>Sentimentos conscientes</span></li>
+              <li class="flex gap-2"><span class="text-tarot-gold">03</span><span>Sentimentos ocultos</span></li>
+              <li class="flex gap-2"><span class="text-tarot-gold">04</span><span>Pensamentos</span></li>
+              <li class="flex gap-2"><span class="text-tarot-gold">05</span><span>Desejo/atração</span></li>
+              <li class="flex gap-2"><span class="text-tarot-gold">06</span><span>Bloqueio</span></li>
+              <li class="flex gap-2"><span class="text-tarot-gold">07</span><span>Próxima atitude</span></li>
+              <li class="flex gap-2"><span class="text-tarot-gold">08</span><span>Tendência para 30 dias</span></li>
+            </ol>
+          </div>
+        </article>
+
+        <article data-service-id="catalog_universo_dois" class="relative flex h-full flex-col overflow-hidden rounded-2xl border border-rose-400/25 bg-gradient-to-b from-[#1b1530]/80 to-[#0d0618]/90 backdrop-blur-sm p-5 shadow-[0_16px_38px_rgba(0,0,0,.25)] sm:p-6">
+          <div class="absolute -right-10 -top-10 h-36 w-36 rounded-full border border-rose-300/10 shadow-[0_0_0_18px_rgba(244,114,182,.03)]" aria-hidden="true"></div>
+          <div class="relative flex items-start justify-between gap-3">
+            <div class="grid h-11 w-11 place-items-center rounded-xl border border-rose-300/30 bg-rose-400/10 text-rose-200" aria-hidden="true">
+              <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5" width="12" height="16" rx="2" transform="rotate(-8 4 5)"/><rect x="9" y="3" width="12" height="16" rx="2" transform="rotate(8 9 3)"/><path d="m15 7 .6 1.5 1.5.6-1.5.6L15 11l-.6-1.5-1.5-.6 1.5-.6L15 7Z"/></svg>
+            </div>
+            <span class="rounded-full border border-tarot-gold/30 bg-tarot-gold/10 px-3 py-1.5 font-cinzel text-lg font-bold text-tarot-goldLight">R$ 80</span>
+          </div>
+          <h3 class="relative mt-5 font-cinzel text-xl font-bold text-white">Universo a Dois</h3>
+          <p class="mt-2 text-sm leading-relaxed text-slate-300">Análise completa da dinâmica do casal, visão individual de cada um, desafios e futuro do relacionamento.</p>
+          <div class="mt-5 border-t border-rose-400/20 pt-4">
+            <div class="flex items-center justify-between gap-3">
+              <h4 class="text-[10px] font-bold uppercase tracking-[.16em] text-tarot-gold">Tiragem</h4>
+              <span class="text-[10px] text-slate-400">12 cartas</span>
+            </div>
+            <ol class="mt-3 space-y-2 text-xs leading-relaxed text-slate-300">
+              <li class="flex gap-2"><span class="text-tarot-gold">01</span><span>Suas energias/expectativas</span></li>
+              <li class="flex gap-2"><span class="text-tarot-gold">02</span><span>Energias/intenções do outro</span></li>
+              <li class="flex gap-2"><span class="text-tarot-gold">03</span><span>O vínculo/obstáculo</span></li>
+              <li class="flex gap-2"><span class="text-tarot-gold">04</span><span>Movimentação/potencial futuro</span></li>
+              <li class="flex gap-2"><span class="text-tarot-gold">05</span><span>Conselho + Carta de fundo</span></li>
+            </ol>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- Coleção 02: Finanças & Abundância (💸) -->
+    <section id="financas-abundancia" data-category-color="rgba(16, 185, 129, 0.20)" class="collection-anchor section-divider relative z-10 py-10 sm:py-14" aria-labelledby="financas-title">
+      <div class="mb-6 flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <p class="text-[10px] font-bold uppercase tracking-[.2em] text-emerald-400">Coleção 02</p>
+          <h2 id="financas-title" class="mt-1 font-cinzel text-xl font-semibold text-emerald-200 sm:text-2xl"><span class="mr-1 text-emerald-400" aria-hidden="true">💸</span>Finanças &amp; Abundância</h2>
+        </div>
+        <span class="text-xs text-slate-400">3 leituras disponíveis</span>
+      </div>
+
+      <div class="grid grid-cols-1 items-stretch gap-5 lg:grid-cols-3">
+        <article data-service-id="catalog_fluxo_abundancia" class="relative flex h-full flex-col overflow-hidden rounded-2xl border border-emerald-400/25 bg-gradient-to-b from-[#10251f]/80 to-[#0d0618]/90 backdrop-blur-sm p-5 shadow-[0_16px_38px_rgba(0,0,0,.25)] sm:p-6">
+          <div class="absolute -right-10 -top-10 h-36 w-36 rounded-full border border-emerald-400/10 shadow-[0_0_0_18px_rgba(52,211,153,.025)]" aria-hidden="true"></div>
+          <div class="relative flex items-start justify-between gap-3">
+            <div class="grid h-11 w-11 place-items-center rounded-xl border border-emerald-400/30 bg-emerald-400/10 text-emerald-200" aria-hidden="true">
+              <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M15 8.5c-.7-.7-1.7-1-3-1-1.7 0-2.8.8-2.8 2s1.1 1.8 2.8 2.2 2.8 1 2.8 2.3-1.1 2.2-2.9 2.2c-1.3 0-2.5-.5-3.3-1.3M12 5.5v13"/></svg>
+            </div>
+            <span class="rounded-full border border-tarot-gold/30 bg-tarot-gold/10 px-3 py-1.5 font-cinzel text-lg font-bold text-tarot-goldLight">R$ 35</span>
+          </div>
+          <h3 class="relative mt-5 font-cinzel text-xl font-bold text-white">Fluxo de Abundância</h3>
+          <p class="mt-2 text-sm leading-relaxed text-slate-300">Diagnóstico rápido para identificar o que está travando seus recursos e onde existe saída.</p>
+          <div class="mt-5 border-t border-emerald-400/20 pt-4">
+            <div class="flex items-center justify-between gap-3">
+              <h4 class="text-[10px] font-bold uppercase tracking-[.16em] text-emerald-200">Tiragem</h4>
+              <span class="text-[10px] text-slate-400">5 cartas</span>
+            </div>
+            <ol class="mt-3 space-y-2 text-xs leading-relaxed text-slate-300">
+              <li class="flex gap-2"><span class="text-emerald-300">01</span><span>Energia financeira atual</span></li>
+              <li class="flex gap-2"><span class="text-emerald-300">02</span><span>Principal bloqueio</span></li>
+              <li class="flex gap-2"><span class="text-emerald-300">03</span><span>O que drena recursos</span></li>
+              <li class="flex gap-2"><span class="text-emerald-300">04</span><span>Oportunidade de melhora</span></li>
+              <li class="flex gap-2"><span class="text-emerald-300">05</span><span>Conselho</span></li>
+            </ol>
+          </div>
+        </article>
+
+        <article data-service-id="catalog_caminhos_prosperidade" class="relative flex h-full flex-col overflow-hidden rounded-2xl border border-tarot-gold/25 bg-gradient-to-b from-[#10251f]/80 to-[#0d0618]/90 backdrop-blur-sm p-5 shadow-[0_16px_38px_rgba(0,0,0,.25)] sm:p-6">
+          <div class="absolute -right-10 -top-10 h-36 w-36 rounded-full border border-tarot-gold/10 shadow-[0_0_0_18px_rgba(224,185,115,.025)]" aria-hidden="true"></div>
+          <div class="relative flex items-start justify-between gap-3">
+            <div class="grid h-11 w-11 place-items-center rounded-xl border border-tarot-gold/30 bg-tarot-gold/10 text-tarot-goldLight" aria-hidden="true">
+              <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17.5 9 11l4 4 8-9"/><path d="M15 6h6v6"/><path d="M4 21h16"/></svg>
+            </div>
+            <span class="rounded-full border border-tarot-gold/30 bg-tarot-gold/10 px-3 py-1.5 font-cinzel text-lg font-bold text-tarot-goldLight">R$ 50</span>
+          </div>
+          <h3 class="relative mt-5 font-cinzel text-xl font-bold text-white">Caminhos da Prosperidade</h3>
+          <p class="mt-2 text-sm leading-relaxed text-slate-300">Foco em novas fontes de renda, oportunidades ocultas e atitudes para atrair crescimento.</p>
+          <div class="mt-5 border-t border-tarot-gold/20 pt-4">
+            <div class="flex items-center justify-between gap-3">
+              <h4 class="text-[10px] font-bold uppercase tracking-[.16em] text-tarot-gold">Tiragem</h4>
+              <span class="text-[10px] text-slate-400">8 cartas</span>
+            </div>
+            <ol class="mt-3 space-y-2 text-xs leading-relaxed text-slate-300">
+              <li class="flex gap-2"><span class="text-tarot-gold">01</span><span>Situação atual</span></li>
+              <li class="flex gap-2"><span class="text-tarot-gold">02</span><span>Causa da fase</span></li>
+              <li class="flex gap-2"><span class="text-tarot-gold">03</span><span>Oportunidade próxima</span></li>
+              <li class="flex gap-2"><span class="text-tarot-gold">04</span><span>Fonte de renda promissora</span></li>
+              <li class="flex gap-2"><span class="text-tarot-gold">05</span><span>O que evitar</span></li>
+              <li class="flex gap-2"><span class="text-tarot-gold">06</span><span>Oportunidade ignorada</span></li>
+              <li class="flex gap-2"><span class="text-tarot-gold">07</span><span>Tendência para 30 dias</span></li>
+              <li class="flex gap-2"><span class="text-tarot-gold">08</span><span>Conselho</span></li>
+            </ol>
+          </div>
+        </article>
+
+        <article data-service-id="catalog_soberania_financeira" class="relative flex h-full flex-col overflow-hidden rounded-2xl border border-purple-400/25 bg-gradient-to-b from-[#10251f]/80 to-[#0d0618]/90 backdrop-blur-sm p-5 shadow-[0_16px_38px_rgba(0,0,0,.25)] sm:p-6">
+          <div class="absolute -right-10 -top-10 h-36 w-36 rounded-full border border-purple-300/10 shadow-[0_0_0_18px_rgba(147,51,234,.035)]" aria-hidden="true"></div>
+          <div class="relative flex items-start justify-between gap-3">
+            <div class="grid h-11 w-11 place-items-center rounded-xl border border-purple-300/30 bg-purple-400/10 text-tarot-goldLight" aria-hidden="true">
+              <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18M5 7h14M7 7l-4 7h8L7 7Zm10 0-4 7h8l-4-7Z"/><path d="M5 21h14"/></svg>
+            </div>
+            <span class="rounded-full border border-tarot-gold/30 bg-tarot-gold/10 px-3 py-1.5 font-cinzel text-lg font-bold text-tarot-goldLight">R$ 80</span>
+          </div>
+          <h3 class="relative mt-5 font-cinzel text-xl font-bold text-white">Soberania Financeira</h3>
+          <p class="mt-2 text-sm leading-relaxed text-slate-300">Mapeamento estratégico da vida financeira, cobrindo bloqueios, padrões, trabalho e visão de médio prazo.</p>
+          <div class="mt-5 border-t border-purple-400/20 pt-4">
+            <div class="flex items-center justify-between gap-3">
+              <h4 class="text-[10px] font-bold uppercase tracking-[.16em] text-tarot-gold">Tiragem</h4>
+              <span class="text-[10px] text-slate-400">12 cartas</span>
+            </div>
+            <ol class="mt-3 space-y-2 text-xs leading-relaxed text-slate-300">
+              <li class="flex gap-2"><span class="text-tarot-gold">01</span><span>Diagnóstico energético</span></li>
+              <li class="flex gap-2"><span class="text-tarot-gold">02</span><span>Trabalho &amp; dinheiro</span></li>
+              <li class="flex gap-2"><span class="text-tarot-gold">03</span><span>Oportunidades &amp; riscos</span></li>
+              <li class="flex gap-2"><span class="text-tarot-gold">04</span><span>Tendência 30 dias e 3 meses</span></li>
+              <li class="flex gap-2"><span class="text-tarot-gold">05</span><span>Conselho + Carta de fundo</span></li>
+            </ol>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- Coleção 03: Carreira & Negócios (💼) -->
+    <section id="carreira-negocios" data-category-color="rgba(217, 119, 6, 0.20)" class="collection-anchor section-divider relative z-10 py-10 sm:py-14" aria-labelledby="carreira-title">
+      <div class="mb-6 flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <p class="text-[10px] font-bold uppercase tracking-[.2em] text-amber-400">Coleção 03</p>
+          <h2 id="carreira-title" class="mt-1 font-cinzel text-xl font-semibold text-amber-200 sm:text-2xl"><span class="mr-1 text-amber-400" aria-hidden="true">💼</span>Carreira &amp; Negócios</h2>
+        </div>
+        <span class="text-xs text-slate-400">3 leituras disponíveis</span>
+      </div>
+
+      <div class="grid grid-cols-1 items-stretch gap-5 lg:grid-cols-3">
+        <article data-service-id="catalog_direcionamento_carreira" class="relative flex h-full flex-col overflow-hidden rounded-2xl border border-amber-400/25 bg-gradient-to-b from-[#241a13]/80 to-[#0d0618]/90 backdrop-blur-sm p-5 shadow-[0_16px_38px_rgba(0,0,0,.25)] sm:p-6">
+          <div class="absolute -right-10 -top-10 h-36 w-36 rounded-full border border-amber-400/10 shadow-[0_0_0_18px_rgba(245,209,138,.025)]" aria-hidden="true"></div>
+          <div class="relative flex items-start justify-between gap-3">
+            <div class="grid h-11 w-11 place-items-center rounded-xl border border-amber-300/30 bg-amber-400/10 text-amber-200" aria-hidden="true">
+              <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M3 12h18M10 12v2h4v-2"/></svg>
+            </div>
+            <span class="rounded-full border border-tarot-gold/30 bg-tarot-gold/10 px-3 py-1.5 font-cinzel text-lg font-bold text-tarot-goldLight">R$ 35</span>
+          </div>
+          <h3 class="relative mt-5 font-cinzel text-xl font-bold text-white">Direcionamento de Carreira</h3>
+          <p class="mt-2 text-sm leading-relaxed text-slate-300">Clareza imediata sobre o momento profissional e o que precisa ser destravado.</p>
+          <div class="mt-5 border-t border-amber-400/20 pt-4">
+            <div class="flex items-center justify-between gap-3">
+              <h4 class="text-[10px] font-bold uppercase tracking-[.16em] text-amber-200">Tiragem</h4>
+              <span class="text-[10px] text-slate-400">5 cartas</span>
+            </div>
+            <ol class="mt-3 space-y-2 text-xs leading-relaxed text-slate-300">
+              <li class="flex gap-2"><span class="text-amber-300">01</span><span>Momento atual</span></li>
+              <li class="flex gap-2"><span class="text-amber-300">02</span><span>Principal obstáculo</span></li>
+              <li class="flex gap-2"><span class="text-amber-300">03</span><span>O que prejudica o avanço</span></li>
+              <li class="flex gap-2"><span class="text-amber-300">04</span><span>Oportunidade</span></li>
+              <li class="flex gap-2"><span class="text-amber-300">05</span><span>Conselho</span></li>
+            </ol>
+          </div>
+        </article>
+
+        <article data-service-id="catalog_proposito_acao" class="relative flex h-full flex-col overflow-hidden rounded-2xl border border-tarot-gold/25 bg-gradient-to-b from-[#241a13]/80 to-[#0d0618]/90 backdrop-blur-sm p-5 shadow-[0_16px_38px_rgba(0,0,0,.25)] sm:p-6">
+          <div class="absolute -right-10 -top-10 h-36 w-36 rounded-full border border-tarot-gold/10 shadow-[0_0_0_18px_rgba(224,185,115,.025)]" aria-hidden="true"></div>
+          <div class="relative flex items-start justify-between gap-3">
+            <div class="grid h-11 w-11 place-items-center rounded-xl border border-tarot-gold/30 bg-tarot-gold/10 text-tarot-goldLight" aria-hidden="true">
+              <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20V10M18 20V4M6 20v-5"/><path d="M4 20h16M10 10l2-3 2 2 4-5"/></svg>
+            </div>
+            <span class="rounded-full border border-tarot-gold/30 bg-tarot-gold/10 px-3 py-1.5 font-cinzel text-lg font-bold text-tarot-goldLight">R$ 50</span>
+          </div>
+          <h3 class="relative mt-5 font-cinzel text-xl font-bold text-white">Propósito &amp; Ação</h3>
+          <p class="mt-2 text-sm leading-relaxed text-slate-300">Orientação prática para mudança de cargo, novas vagas, entrevistas ou novos projetos.</p>
+          <div class="mt-5 border-t border-tarot-gold/20 pt-4">
+            <div class="flex items-center justify-between gap-3">
+              <h4 class="text-[10px] font-bold uppercase tracking-[.16em] text-tarot-gold">Tiragem</h4>
+              <span class="text-[10px] text-slate-400">8 cartas</span>
+            </div>
+            <ol class="mt-3 space-y-2 text-xs leading-relaxed text-slate-300">
+              <li class="flex gap-2"><span class="text-tarot-gold">01</span><span>Energia atual da carreira</span></li>
+              <li class="flex gap-2"><span class="text-tarot-gold">02</span><span>Talentos</span></li>
+              <li class="flex gap-2"><span class="text-tarot-gold">03</span><span>Impedimentos</span></li>
+              <li class="flex gap-2"><span class="text-tarot-gold">04</span><span>Oportunidade próxima</span></li>
+              <li class="flex gap-2"><span class="text-tarot-gold">05</span><span>Possibilidade de mudança</span></li>
+              <li class="flex gap-2"><span class="text-tarot-gold">06</span><span>Como evoluir</span></li>
+              <li class="flex gap-2"><span class="text-tarot-gold">07</span><span>Tendência 30 dias</span></li>
+              <li class="flex gap-2"><span class="text-tarot-gold">08</span><span>Conselho</span></li>
+            </ol>
+          </div>
+        </article>
+
+        <article data-service-id="catalog_jornada_profissional" class="relative flex h-full flex-col overflow-hidden rounded-2xl border border-purple-400/25 bg-gradient-to-b from-[#241a13]/80 to-[#0d0618]/90 backdrop-blur-sm p-5 shadow-[0_16px_38px_rgba(0,0,0,.25)] sm:p-6">
+          <div class="absolute -right-10 -top-10 h-36 w-36 rounded-full border border-purple-300/10 shadow-[0_0_0_18px_rgba(147,51,234,.035)]" aria-hidden="true"></div>
+          <div class="relative flex items-start justify-between gap-3">
+            <div class="grid h-11 w-11 place-items-center rounded-xl border border-purple-300/30 bg-purple-400/10 text-tarot-goldLight" aria-hidden="true">
+              <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21V7l7-4 7 4v14M9 21v-5h6v5M9 9h.01M15 9h.01M9 12h.01M15 12h.01"/></svg>
+            </div>
+            <span class="rounded-full border border-tarot-gold/30 bg-tarot-gold/10 px-3 py-1.5 font-cinzel text-lg font-bold text-tarot-goldLight">R$ 80</span>
+          </div>
+          <h3 class="relative mt-5 font-cinzel text-xl font-bold text-white">Jornada Profissional</h3>
+          <p class="mt-2 text-sm leading-relaxed text-slate-300">Leitura ampla da sua trajetória de trabalho, potenciais não explorados e tendências para o futuro.</p>
+          <div class="mt-5 border-t border-purple-400/20 pt-4">
+            <div class="flex items-center justify-between gap-3">
+              <h4 class="text-[10px] font-bold uppercase tracking-[.16em] text-tarot-gold">Tiragem</h4>
+              <span class="text-[10px] text-slate-400">12 cartas</span>
+            </div>
+            <ol class="mt-3 space-y-2 text-xs leading-relaxed text-slate-300">
+              <li class="flex gap-2"><span class="text-tarot-gold">01</span><span>Seu momento e talentos</span></li>
+              <li class="flex gap-2"><span class="text-tarot-gold">02</span><span>O que favorece/bloqueia no trabalho</span></li>
+              <li class="flex gap-2"><span class="text-tarot-gold">03</span><span>Novas oportunidades e reconhecimentos</span></li>
+              <li class="flex gap-2"><span class="text-tarot-gold">04</span><span>Tendência 30 dias e 3 meses</span></li>
+              <li class="flex gap-2"><span class="text-tarot-gold">05</span><span>Conselho + Carta de fundo</span></li>
+            </ol>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- Coleção 04: Energia & Espiritualidade (✨) -->
+    <section id="energia-espiritualidade" data-category-color="rgba(139, 92, 246, 0.22)" class="collection-anchor section-divider relative z-10 py-10 sm:py-14" aria-labelledby="energia-title">
+      <div class="mb-6 flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <p class="text-[10px] font-bold uppercase tracking-[.2em] text-violet-400">Coleção 04</p>
+          <h2 id="energia-title" class="mt-1 font-cinzel text-xl font-semibold text-violet-200 sm:text-2xl"><span class="mr-1 text-violet-400" aria-hidden="true">✨</span>Energia &amp; Espiritualidade</h2>
+        </div>
+        <span class="text-xs text-slate-400">3 leituras disponíveis</span>
+      </div>
+
+      <div class="grid grid-cols-1 items-stretch gap-5 lg:grid-cols-3">
+        <article data-service-id="catalog_conexao_energia" class="relative flex h-full flex-col overflow-hidden rounded-2xl border border-violet-400/25 bg-gradient-to-b from-[#201831]/80 to-[#0d0618]/90 backdrop-blur-sm p-5 shadow-[0_16px_38px_rgba(0,0,0,.25)] sm:p-6">
+          <div class="absolute -right-10 -top-10 h-36 w-36 rounded-full border border-violet-400/10 shadow-[0_0_0_18px_rgba(167,139,250,.025)]" aria-hidden="true"></div>
+          <div class="relative flex items-start justify-between gap-3">
+            <div class="grid h-11 w-11 place-items-center rounded-xl border border-violet-400/30 bg-violet-400/10 text-violet-200" aria-hidden="true">
+              <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3 1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8L12 3Z"/><path d="m19 15 .9 2.1L22 18l-2.1.9L19 21l-.9-2.1L16 18l2.1-.9L19 15ZM5 3l.7 1.3L7 5l-1.3.7L5 7l-.7-1.3L3 5l1.3-.7L5 3Z"/></svg>
+            </div>
+            <span class="rounded-full border border-tarot-gold/30 bg-tarot-gold/10 px-3 py-1.5 font-cinzel text-lg font-bold text-tarot-goldLight">R$ 35</span>
+          </div>
+          <h3 class="relative mt-5 font-cinzel text-xl font-bold text-white">Conexão &amp; Energia</h3>
+          <p class="mt-2 text-sm leading-relaxed text-slate-300">Leitura do seu momento energético atual e mensagem de orientação da sua espiritualidade.</p>
+          <div class="mt-5 border-t border-violet-400/20 pt-4">
+            <div class="flex items-center justify-between gap-3">
+              <h4 class="text-[10px] font-bold uppercase tracking-[.16em] text-violet-200">Tiragem</h4>
+              <span class="text-[10px] text-slate-400">5 cartas</span>
+            </div>
+            <ol class="mt-3 space-y-2 text-xs leading-relaxed text-slate-300">
+              <li class="flex gap-2"><span class="text-violet-300">01</span><span>Estado energético atual</span></li>
+              <li class="flex gap-2"><span class="text-violet-300">02</span><span>O que fortalece</span></li>
+              <li class="flex gap-2"><span class="text-violet-300">03</span><span>O que drena</span></li>
+              <li class="flex gap-2"><span class="text-violet-300">04</span><span>Mensagem espiritual</span></li>
+              <li class="flex gap-2"><span class="text-violet-300">05</span><span>Conselho</span></li>
+            </ol>
+          </div>
+        </article>
+
+        <article data-service-id="catalog_desvendar_sombras" class="relative flex h-full flex-col overflow-hidden rounded-2xl border border-violet-400/25 bg-gradient-to-b from-[#201831]/80 to-[#0d0618]/90 backdrop-blur-sm p-5 shadow-[0_16px_38px_rgba(0,0,0,.25)] sm:p-6">
+          <div class="absolute -right-10 -top-10 h-36 w-36 rounded-full border border-violet-400/10 shadow-[0_0_0_18px_rgba(167,139,250,.025)]" aria-hidden="true"></div>
+          <div class="relative flex items-start justify-between gap-3">
+            <div class="grid h-11 w-11 place-items-center rounded-xl border border-violet-400/30 bg-violet-400/10 text-violet-200" aria-hidden="true">
+              <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a7 7 0 0 0-4.2 12.6c.7.5 1.2 1.2 1.2 2.1h6c0-.9.5-1.6 1.2-2.1A7 7 0 0 0 12 3Z"/><path d="M9 21h6M10 18h4M12 6v2M7.8 8.2l1.4 1.4M16.2 8.2l-1.4 1.4"/></svg>
+            </div>
+            <span class="rounded-full border border-tarot-gold/30 bg-tarot-gold/10 px-3 py-1.5 font-cinzel text-lg font-bold text-tarot-goldLight">R$ 50</span>
+          </div>
+          <h3 class="relative mt-5 font-cinzel text-xl font-bold text-white">Desvendar das Sombras</h3>
+          <p class="mt-2 text-sm leading-relaxed text-slate-300">Investigação acolhedora sobre influências externas, bloqueios sutis e padrões a serem transformados.</p>
+          <div class="mt-5 border-t border-violet-400/20 pt-4">
+            <div class="flex items-center justify-between gap-3">
+              <h4 class="text-[10px] font-bold uppercase tracking-[.16em] text-violet-200">Tiragem</h4>
+              <span class="text-[10px] text-slate-400">8 cartas</span>
+            </div>
+            <ol class="mt-3 space-y-2 text-xs leading-relaxed text-slate-300">
+              <li class="flex gap-2"><span class="text-violet-300">01</span><span>Campo energético</span></li>
+              <li class="flex gap-2"><span class="text-violet-300">02</span><span>Bloqueio principal</span></li>
+              <li class="flex gap-2"><span class="text-violet-300">03</span><span>Influência externa</span></li>
+              <li class="flex gap-2"><span class="text-violet-300">04</span><span>O que está oculto</span></li>
+              <li class="flex gap-2"><span class="text-violet-300">05</span><span>Fonte de desgaste</span></li>
+              <li class="flex gap-2"><span class="text-violet-300">06</span><span>O que encerrar</span></li>
+              <li class="flex gap-2"><span class="text-violet-300">07</span><span>Fortalecimento/proteção</span></li>
+              <li class="flex gap-2"><span class="text-violet-300">08</span><span>Orientação final</span></li>
+            </ol>
+          </div>
+        </article>
+
+        <article data-service-id="catalog_jornada_alma" class="relative flex h-full flex-col overflow-hidden rounded-2xl border border-violet-400/25 bg-gradient-to-b from-[#201831]/80 to-[#0d0618]/90 backdrop-blur-sm p-5 shadow-[0_16px_38px_rgba(0,0,0,.25)] sm:p-6">
+          <div class="absolute -right-10 -top-10 h-36 w-36 rounded-full border border-violet-400/10 shadow-[0_0_0_18px_rgba(167,139,250,.025)]" aria-hidden="true"></div>
+          <div class="relative flex items-start justify-between gap-3">
+            <div class="grid h-11 w-11 place-items-center rounded-xl border border-violet-300/30 bg-violet-400/10 text-violet-200" aria-hidden="true">
+              <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18M4 7h16M6 7l-4 7h8L6 7Zm12 0-4 7h8l-4-7ZM5 21h14"/><path d="m12 3 1 2 2 .5-2 .8-1 2-1-.2-.8-2-2-.6 2-.7L12 3Z"/></svg>
+            </div>
+            <span class="rounded-full border border-tarot-gold/30 bg-tarot-gold/10 px-3 py-1.5 font-cinzel text-lg font-bold text-tarot-goldLight">R$ 80</span>
+          </div>
+          <h3 class="relative mt-5 font-cinzel text-xl font-bold text-white">Jornada da Alma</h3>
+          <p class="mt-2 text-sm leading-relaxed text-slate-300">Imersão profunda na sua evolução espiritual, aprendizados de vida, dons e direcionamento.</p>
+          <div class="mt-5 border-t border-violet-400/20 pt-4">
+            <div class="flex items-center justify-between gap-3">
+              <h4 class="text-[10px] font-bold uppercase tracking-[.16em] text-violet-200">Tiragem</h4>
+              <span class="text-[10px] text-slate-400">12 cartas</span>
+            </div>
+            <ol class="mt-3 space-y-2 text-xs leading-relaxed text-slate-300">
+              <li class="flex gap-2"><span class="text-violet-300">01</span><span>Essência e momento espiritual</span></li>
+              <li class="flex gap-2"><span class="text-violet-300">02</span><span>Lições e bloqueios energéticos</span></li>
+              <li class="flex gap-2"><span class="text-violet-300">03</span><span>Direcionamento da intuição</span></li>
+              <li class="flex gap-2"><span class="text-violet-300">04</span><span>Tendência 30 dias e 3 meses</span></li>
+              <li class="flex gap-2"><span class="text-violet-300">05</span><span>Conselho + Carta de fundo</span></li>
+            </ol>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- Coleção 05: Formatos Especiais & Gerais (🔮) -->
+    <section id="formatos-especiais" data-category-color="rgba(99, 102, 241, 0.22)" class="collection-anchor section-divider relative z-10 py-10 sm:py-14" aria-labelledby="formatos-title">
+      <div class="mb-6 flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <p class="text-[10px] font-bold uppercase tracking-[.2em] text-indigo-400">Coleção 05</p>
+          <h2 id="formatos-title" class="mt-1 font-cinzel text-xl font-semibold text-indigo-200 sm:text-2xl"><span class="mr-1 text-indigo-400" aria-hidden="true">🔮</span>Formatos Especiais &amp; Gerais</h2>
+        </div>
+        <span class="text-xs text-slate-400">3 leituras disponíveis</span>
+      </div>
+
+      <div class="grid grid-cols-1 items-stretch gap-5 lg:grid-cols-3">
+        <article data-service-id="catalog_luz_momento" class="relative flex h-full flex-col overflow-hidden rounded-2xl border border-indigo-400/25 bg-gradient-to-b from-[#19172b]/80 to-[#0d0618]/90 backdrop-blur-sm p-5 shadow-[0_16px_38px_rgba(0,0,0,.25)] sm:p-6">
+          <div class="absolute -right-10 -top-10 h-36 w-36 rounded-full border border-indigo-400/10 shadow-[0_0_0_18px_rgba(129,140,248,.025)]" aria-hidden="true"></div>
+          <div class="relative flex items-start justify-between gap-3">
+            <div class="grid h-11 w-11 place-items-center rounded-xl border border-indigo-300/30 bg-indigo-400/10 text-indigo-200" aria-hidden="true">
+              <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v2M12 19v2M5.6 5.6 7 7m10 10 1.4 1.4M3 12h2m14 0h2M5.6 18.4 7 17m10-10 1.4-1.4"/><circle cx="12" cy="12" r="4"/><path d="m16 16 4 4"/></svg>
+            </div>
+            <span class="rounded-full border border-tarot-gold/30 bg-tarot-gold/10 px-3 py-1.5 font-cinzel text-lg font-bold text-tarot-goldLight">R$ 20</span>
+          </div>
+          <h3 class="relative mt-5 font-cinzel text-xl font-bold text-white">Luz do Momento <span class="text-base font-medium text-indigo-200">(Conselho Rápido)</span></h3>
+          <p class="mt-2 text-sm leading-relaxed text-slate-300">1 Pergunta pontual com resposta direta e objetiva para decisões do dia a dia.</p>
+          <div class="mt-5 border-t border-indigo-400/20 pt-4">
+            <div class="flex items-center justify-between gap-3">
+              <h4 class="text-[10px] font-bold uppercase tracking-[.16em] text-indigo-200">Formato</h4>
+              <span class="text-[10px] text-slate-400">1 pergunta</span>
+            </div>
+          </div>
+        </article>
+
+        <article data-service-id="catalog_ventos_mes" class="relative flex h-full flex-col overflow-hidden rounded-2xl border border-indigo-400/25 bg-gradient-to-b from-[#19172b]/80 to-[#0d0618]/90 backdrop-blur-sm p-5 shadow-[0_16px_38px_rgba(0,0,0,.25)] sm:p-6">
+          <div class="absolute -right-10 -top-10 h-36 w-36 rounded-full border border-indigo-400/10 shadow-[0_0_0_18px_rgba(129,140,248,.025)]" aria-hidden="true"></div>
+          <div class="relative flex items-start justify-between gap-3">
+            <div class="grid h-11 w-11 place-items-center rounded-xl border border-indigo-300/30 bg-indigo-400/10 text-indigo-200" aria-hidden="true">
+              <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/><path d="M16 3.5 18 2"/></svg>
+            </div>
+            <span class="rounded-full border border-tarot-gold/30 bg-tarot-gold/10 px-3 py-1.5 font-cinzel text-lg font-bold text-tarot-goldLight">R$ 60</span>
+          </div>
+          <h3 class="relative mt-5 font-cinzel text-xl font-bold text-white">Ventos de <span id="currentMonthName">setembro</span> <span class="text-base font-medium text-indigo-200">(Tiragem Temporal)</span></h3>
+          <p class="mt-2 text-sm leading-relaxed text-slate-300">Previsões, tendências energéticas e orientações práticas para conduzir os seus próximos 30 dias.</p>
+          <div class="mt-5 border-t border-indigo-400/20 pt-4">
+            <div class="flex items-center justify-between gap-3">
+              <h4 class="text-[10px] font-bold uppercase tracking-[.16em] text-indigo-200">Período</h4>
+              <span class="text-[10px] text-slate-400">Próximos 30 dias</span>
+            </div>
+          </div>
+        </article>
+
+        <article data-service-id="catalog_farol_vida" class="relative flex h-full flex-col overflow-hidden rounded-2xl border border-indigo-400/25 bg-gradient-to-b from-[#19172b]/80 to-[#0d0618]/90 backdrop-blur-sm p-5 shadow-[0_16px_38px_rgba(0,0,0,.25)] sm:p-6">
+          <div class="absolute -right-10 -top-10 h-36 w-36 rounded-full border border-indigo-400/10 shadow-[0_0_0_18px_rgba(129,140,248,.025)]" aria-hidden="true"></div>
+          <div class="relative flex items-start justify-between gap-3">
+            <div class="grid h-11 w-11 place-items-center rounded-xl border border-indigo-300/30 bg-indigo-400/10 text-indigo-200" aria-hidden="true">
+              <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 3v18M3 12h18M5.6 5.6l12.8 12.8M18.4 5.6 5.6 18.4"/><circle cx="12" cy="12" r="3"/></svg>
+            </div>
+            <span class="rounded-full border border-tarot-gold/30 bg-tarot-gold/10 px-3 py-1.5 font-cinzel text-lg font-bold text-tarot-goldLight">R$ 100</span>
+          </div>
+          <h3 class="relative mt-5 font-cinzel text-xl font-bold text-white">Farol da Vida <span class="text-base font-medium text-indigo-200">(Tiragem Geral 360°)</span></h3>
+          <p class="mt-2 text-sm leading-relaxed text-slate-300">Panorama completo integrando Amor, Trabalho, Finanças e Saúde/Energia num único atendimento.</p>
+          <div class="mt-5 border-t border-indigo-400/20 pt-4">
+            <div class="flex items-center justify-between gap-3">
+              <h4 class="text-[10px] font-bold uppercase tracking-[.16em] text-indigo-200">Panorama</h4>
+              <span class="text-[10px] text-slate-400">Visão geral 360°</span>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- Resumo do Pedido -->
+    <section id="pedido" class="catalog-anchor section-divider relative z-10 mt-8 scroll-mt-24 rounded-3xl border border-tarot-gold/30 bg-gradient-to-br from-purple-950/60 to-[#0c0517] p-6 shadow-[0_18px_48px_rgba(0,0,0,.3)] sm:p-8" aria-labelledby="catalog-cart-title">
+      <div class="flex flex-wrap items-start justify-between gap-4">
+        <div>
+          <p class="text-[10px] font-bold uppercase tracking-[.2em] text-tarot-gold">Seu próximo passo</p>
+          <h2 id="catalog-cart-title" class="mt-1 font-cinzel text-2xl font-bold text-white">Seu pedido</h2>
+          <p id="catalogCartFeedback" class="mt-2 text-sm text-slate-300" aria-live="polite">As leituras escolhidas aparecem aqui e também no carrinho do agendamento.</p>
+        </div>
+        <span id="catalogCartTotal" class="font-cinzel text-xl font-bold text-tarot-goldLight">R$ 0,00</span>
+      </div>
+      <ul id="catalogCartItems" class="mt-5 space-y-2"></ul>
+      <a href="index.html" class="mt-6 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-amber-500 via-tarot-gold to-amber-300 px-5 text-center text-xs font-black uppercase tracking-wider text-tarot-night shadow-[0_0_22px_rgba(224,185,115,.22)] transition hover:-translate-y-0.5 hover:shadow-[0_0_32px_rgba(224,185,115,.42)] sm:w-auto">
+        <span>Continuar para o agendamento</span><span aria-hidden="true">→</span>
+      </a>
+    </section>
+  </main>
+
+  <!-- Modal Alerta de Confirmação para Remoção -->
+  <div id="cartAlertBackdrop" class="cart-alert-backdrop" hidden>
+    <section class="cart-alert alert alert-danger" role="alertdialog" aria-modal="true" aria-labelledby="cartAlertTitle">
+      <div class="cart-alert-header">
+        <div class="cart-alert-icon">!</div>
+        <h2 id="cartAlertTitle">Alerta do carrinho</h2>
+      </div>
+      <p>Tem certeza que deseja remover <strong id="cartAlertItem">este item</strong> do seu carrinho?</p>
+      <div class="cart-alert-actions">
+        <button type="button" class="cart-alert-cancel" onclick="closeCartAlert()">Cancelar</button>
+        <button type="button" class="cart-alert-confirm" onclick="confirmRemoveFromCart()">Remover item</button>
+      </div>
+    </section>
+  </div>
+
+  <footer class="border-t border-purple-500/20 px-4 py-5 text-center text-xs text-slate-400 relative z-10 bg-[#090314]">
+    &copy; 2026 leydev. Todos os direitos reservados.
+  </footer>
+
+  <script>
+    const STORAGE_KEY_CART = window.VISOES_STORAGE_KEYS.cart;
+    let cart = window.readSharedCart();
+    let pendingCartRemovalId = null;
+
+    const currentMonthName = document.getElementById('currentMonthName');
+    if (currentMonthName) {
+      currentMonthName.textContent = new Intl.DateTimeFormat('pt-BR', { month: 'long' }).format(new Date());
+    }
+
+    document.querySelectorAll('.collection-options a').forEach(link => {
+      link.addEventListener('click', () => {
+        window.playMagicSound('navigate');
+        window.setTimeout(() => {
+          link.closest('.collection-picker').open = false;
+        }, 180);
+      });
+    });
+
+    function formatCatalogPrice(amount) {
+      return amount.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    function requestRemoveFromCart(serviceId) {
+      const item = window.VISOES_SERVICES.find(s => s.id === serviceId);
+      if (!item) return;
+
+      pendingCartRemovalId = serviceId;
+      document.getElementById('cartAlertItem').textContent = item.title;
+      document.getElementById('cartAlertBackdrop').hidden = false;
+    }
+
+    function closeCartAlert() {
+      pendingCartRemovalId = null;
+      document.getElementById('cartAlertBackdrop').hidden = true;
+    }
+
+    function confirmRemoveFromCart() {
+      if (!pendingCartRemovalId) return;
+      const serviceId = pendingCartRemovalId;
+      closeCartAlert();
+
+      cart = cart.filter(id => id !== serviceId);
+      window.writeSharedCart(cart);
+      window.playMagicSound('remove');
+      updateCatalogCart();
+
+      const service = window.VISOES_SERVICES.find(s => s.id === serviceId);
+      document.getElementById('catalogCartFeedback').textContent = `${service ? service.title : 'Item'} foi removido do pedido.`;
+    }
+
+    function updateCatalogCart() {
+      const cartItems = document.getElementById('catalogCartItems');
+      const totalElement = document.getElementById('catalogCartTotal');
+      const cartCount = document.getElementById('catalogCartCount');
+      const feedback = document.getElementById('catalogCartFeedback');
+      const selectedServices = cart.map(id => window.VISOES_SERVICES.find(service => service.id === id)).filter(Boolean);
+      const hasCustomPrice = selectedServices.some(service => service.isCustomPrice);
+      const total = selectedServices.reduce((sum, service) => sum + service.price, 0);
+
+      cartCount.textContent = selectedServices.length;
+      cartCount.parentElement.setAttribute('aria-label', `Ver meu pedido, ${selectedServices.length} ${selectedServices.length === 1 ? 'item' : 'itens'}`);
+      totalElement.textContent = `R$ ${formatCatalogPrice(total)}${hasCustomPrice ? ' + valores sob consulta' : ''}`;
+      cartItems.replaceChildren();
+
+      if (selectedServices.length === 0) {
+        feedback.textContent = 'Seu carrinho está vazio. Adicione uma leitura para iniciar o pedido.';
+      } else {
+        feedback.textContent = `${selectedServices.length} ${selectedServices.length === 1 ? 'leitura selecionada' : 'leituras selecionadas'}; você pode concluir o agendamento no próximo passo.`;
+      }
+
+      selectedServices.forEach(service => {
+        const row = document.createElement('li');
+        row.className = 'flex flex-wrap items-center justify-between gap-3 rounded-xl border border-purple-400/20 bg-purple-950/35 p-3 text-sm';
+        const title = document.createElement('span');
+        title.className = 'font-semibold text-white';
+        title.textContent = service.title;
+        const details = document.createElement('span');
+        details.className = 'text-right text-tarot-goldLight';
+        details.textContent = service.isCustomPrice ? service.priceLabel : `R$ ${formatCatalogPrice(service.price)}`;
+        const removeButton = document.createElement('button');
+        removeButton.type = 'button';
+        removeButton.className = 'rounded-lg border border-rose-300/25 px-3 py-1.5 text-xs font-bold text-rose-200 transition hover:bg-rose-400/10';
+        removeButton.textContent = 'Remover';
+        removeButton.setAttribute('aria-label', `Remover ${service.title} do pedido`);
+        removeButton.addEventListener('click', () => requestRemoveFromCart(service.id));
+        row.append(title, details, removeButton);
+        cartItems.append(row);
+      });
+
+      document.querySelectorAll('[data-service-id]').forEach(article => {
+        const button = article.querySelector('.catalog-add-button');
+        if (!button) return;
+        const inCart = cart.includes(article.dataset.serviceId);
+        button.textContent = inCart ? '✓ No pedido · remover' : 'Adicionar ao pedido';
+        button.setAttribute('aria-pressed', String(inCart));
+        button.classList.toggle('border-rose-300/35', inCart);
+        button.classList.toggle('text-rose-100', inCart);
+        button.classList.toggle('border-tarot-gold/45', !inCart);
+        button.classList.toggle('text-tarot-goldLight', !inCart);
+      });
+    }
+
+    function toggleCatalogCartItem(serviceId) {
+      const service = window.VISOES_SERVICES.find(item => item.id === serviceId);
+      if (!service) {
+        console.error(`Leitura não encontrada no catálogo compartilhado: ${serviceId}`);
+        return;
+      }
+
+      if (cart.includes(serviceId)) {
+        requestRemoveFromCart(serviceId);
+      } else {
+        cart.push(serviceId);
+        window.writeSharedCart(cart);
+        window.playMagicSound('add');
+        updateCatalogCart();
+        document.getElementById('catalogCartFeedback').textContent = `${service.title} foi adicionada ao pedido.`;
+      }
+    }
+
+    document.querySelectorAll('[data-service-id]').forEach(article => {
+      const serviceId = article.dataset.serviceId;
+      const service = window.VISOES_SERVICES.find(item => item.id === serviceId);
+      if (!service) {
+        console.error(`Leitura sem cadastro compartilhado: ${serviceId}`);
+        return;
+      }
+
+      article.classList.add('catalog-card', 'catalog-reveal');
+      const action = document.createElement('button');
+      action.type = 'button';
+      action.className = 'catalog-add-button mt-6 h-10 w-full inline-flex items-center justify-center rounded-xl border border-tarot-gold/45 px-4 text-[11px] font-bold uppercase tracking-wider text-tarot-goldLight transition hover:-translate-y-0.5 hover:bg-tarot-gold/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-tarot-gold';
+      
+      const inCart = cart.includes(serviceId);
+      action.textContent = inCart ? '✓ No pedido · remover' : 'Adicionar ao pedido';
+      
+      action.addEventListener('click', () => toggleCatalogCartItem(serviceId));
+      article.append(action);
+    });
+
+    const revealObserver = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        entry.target.classList.toggle('is-visible', entry.isIntersecting);
+      });
+    }, { threshold: 0.12 });
+
+    document.querySelectorAll('.catalog-reveal').forEach(card => revealObserver.observe(card));
+    document.querySelectorAll('.collection-anchor').forEach(section => {
+      section.classList.add('catalog-reveal');
+      revealObserver.observe(section);
+    });
+
+    /* --- OBSERVER DA LUZ DE FUNDO DINÂMICA (TRANSMUTAÇÃO POR CATEGORIA) --- */
+    const categoryOrb = document.getElementById('categoryGlowOrb');
+    const categoryObserver = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const color = entry.target.dataset.categoryColor || 'rgba(147, 51, 234, 0.18)';
+          categoryOrb.style.background = `radial-gradient(circle, ${color} 0%, rgba(147, 51, 234, 0.06) 65%, transparent 85%)`;
+        }
+      });
+    }, { threshold: 0.28 });
+
+    document.querySelectorAll('[data-category-color]').forEach(section => categoryObserver.observe(section));
+
+    /* --- MOTOR CÓSMICO 3D (CANVAS + PARALAXE RESTAURADO) --- */
+    const canvas = document.getElementById('starsCanvas');
+    const ctx = canvas.getContext('2d');
+    let stars = [];
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      createStars();
+    }
+
+    function createStars() {
+      stars = [];
+      const numStars = Math.floor((canvas.width * canvas.height) / 8500);
+      for (let i = 0; i < numStars; i++) {
+        stars.push({
+          x: Math.random() * canvas.width,
+          y: Math.random() * canvas.height,
+          radius: Math.random() * 1.5 + 0.4,
+          alpha: Math.random() * 0.8 + 0.2,
+          speed: Math.random() * 0.02 + 0.005,
+          twinkleFactor: Math.random() * Math.PI
+        });
+      }
+    }
+
+    function drawStars() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      const scrollY = window.scrollY || window.pageYOffset;
+
+      for (let star of stars) {
+        star.twinkleFactor += star.speed;
+        const currentAlpha = star.alpha + Math.sin(star.twinkleFactor) * 0.3;
+        
+        const parallaxY = (star.y - scrollY * (star.radius * 0.15)) % canvas.height;
+        const finalY = parallaxY < 0 ? parallaxY + canvas.height : parallaxY;
+
+        ctx.beginPath();
+        ctx.arc(star.x, finalY, star.radius, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(240, 220, 180, ${Math.max(0.1, Math.min(1, currentAlpha))})`;
+        ctx.shadowBlur = star.radius > 1 ? 5 : 0;
+        ctx.shadowColor = '#e0b973';
+        ctx.fill();
+      }
+
+      requestAnimationFrame(drawStars);
+    }
+
+    window.addEventListener('resize', resizeCanvas);
+
+    window.addEventListener('scroll', () => {
+      const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+      const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+      const scrolled = (winScroll / height) * 100;
+      
+      const progressBar = document.getElementById('scrollProgressBar');
+      if (progressBar) progressBar.style.width = scrolled + '%';
+
+      const orbDynamic = document.getElementById('categoryGlowOrb');
+      const orb2 = document.getElementById('glowOrb2');
+      if (orbDynamic && orb2) {
+        orbDynamic.style.transform = `translate(-50%, ${winScroll * 0.08}px)`;
+        orb2.style.transform = `translateY(${-winScroll * 0.06}px)`;
+      }
+    });
+
+    document.getElementById('soundToggle').addEventListener('click', () => window.playMagicSound('click'));
+    document.querySelector('a[href="#pedido"]').addEventListener('click', () => window.playMagicSound('navigate'));
+    document.querySelector('#pedido > a[href*="#agendamento"]').addEventListener('click', () => window.playMagicSound('navigate'));
+    window.addEventListener('storage', event => {
+      if (event.key !== STORAGE_KEY_CART && event.key !== null) return;
+      cart = window.readSharedCart();
+      updateCatalogCart();
+    });
+    
+    resizeCanvas();
+    drawStars();
+    window.updateSoundToggle();
+    updateCatalogCart();
+  </script>
+</body>
+</html>
